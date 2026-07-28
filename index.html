@@ -50,12 +50,14 @@
       margin-bottom: 0;
       letter-spacing: 1px;
       color: #f0e6dc;
+      text-align: center;
     }
     .sub {
       color: var(--muted);
       font-size: 0.75rem;
       margin-bottom: 10px;
       letter-spacing: 0.3px;
+      text-align: center;
     }
     .card {
       background: #141210;
@@ -194,49 +196,93 @@
     }
 
 
+    /* 성격별 글씨 — 기기 공통 폰트 + 자간/굵기/크기로 확실히 구분 */
     body[data-persona="cold"] {
-      font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", -apple-system, sans-serif;
-      letter-spacing: 0.02em;
+      font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+      letter-spacing: 0.06em;
+      font-weight: 400;
+      font-size: 15px;
     }
     body[data-persona="sweet"] {
-      font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", -apple-system, sans-serif;
-      letter-spacing: 0.01em;
+      font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif;
+      letter-spacing: 0.02em;
+      font-weight: 400;
+      font-size: 16px;
+      line-height: 1.55;
     }
     body[data-persona="playful"] {
-      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      letter-spacing: 0.03em;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      letter-spacing: 0.1em;
+      font-weight: 500;
+      font-size: 15.5px;
     }
     body[data-persona="violent"] {
-      font-family: "Malgun Gothic", "Noto Sans KR", sans-serif;
-      letter-spacing: -0.01em;
-      font-weight: 500;
+      font-family: "Malgun Gothic", "Noto Sans KR", "Arial Black", sans-serif;
+      letter-spacing: -0.03em;
+      font-weight: 700;
+      font-size: 15px;
     }
     body[data-persona="scorn"] {
-      font-family: "Noto Serif KR", "Batang", "AppleMyungjo", "Times New Roman", serif;
-      letter-spacing: 0.04em;
+      font-family: "Noto Serif KR", "Batang", "Georgia", "Times New Roman", serif;
+      letter-spacing: 0.12em;
+      font-weight: 400;
+      font-size: 15.5px;
+      font-style: normal;
     }
-    body[data-persona="cold"] h1,
-    body[data-persona="violent"] h1 {
+    body[data-persona="cold"] h1 {
       font-weight: 700;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.2em;
+      text-transform: none;
+      font-size: 1.15rem;
     }
     body[data-persona="sweet"] h1 {
       font-weight: 600;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.06em;
+      font-size: 1.25rem;
+      color: #f5e8e0;
     }
     body[data-persona="playful"] h1 {
-      font-weight: 700;
-      letter-spacing: 0.12em;
+      font-weight: 800;
+      letter-spacing: 0.22em;
+      font-size: 1.2rem;
+      color: #f0d0c0;
+    }
+    body[data-persona="violent"] h1 {
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      font-size: 1.3rem;
+      color: #ffd0c8;
     }
     body[data-persona="scorn"] h1 {
-      font-weight: 600;
-      letter-spacing: 0.15em;
+      font-weight: 500;
+      letter-spacing: 0.28em;
+      font-size: 1.1rem;
       font-style: italic;
+      color: #e8dcc8;
     }
+    body[data-persona="cold"] .modal h3 { letter-spacing: 0.18em; font-weight: 700; }
+    body[data-persona="sweet"] .modal h3 { letter-spacing: 0.05em; font-weight: 600; color: #f5e8e0; }
+    body[data-persona="playful"] .modal h3 { letter-spacing: 0.2em; font-weight: 800; color: #f0d0c0; }
+    body[data-persona="violent"] .modal h3 { letter-spacing: 0.02em; font-weight: 900; color: #ffd0c8; }
+    body[data-persona="scorn"] .modal h3 {
+      letter-spacing: 0.25em;
+      font-weight: 500;
+      font-style: italic;
+      color: #e8dcc8;
+    }
+    body[data-persona="violent"] button {
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    body[data-persona="playful"] button {
+      letter-spacing: 0.08em;
+    }
+    body[data-persona="scorn"] button,
     body[data-persona="scorn"] .modal-content,
     body[data-persona="scorn"] .card {
       font-family: inherit;
     }
+
     .hidden { display: none !important; }
 
     .modal {
@@ -261,6 +307,13 @@
       margin-bottom: 14px;
       letter-spacing: 1px;
       color: #f0e6dc;
+      text-align: center;
+    }
+    #resultTitle, .card > h3, .warning-box {
+      text-align: center;
+    }
+    #masterCaption {
+      text-align: center;
     }
     label { display: block; font-size: 0.82rem; margin: 10px 0 4px; color: var(--muted); letter-spacing: 0.3px; }
     input[type="text"], input[type="number"], select, textarea {
@@ -410,7 +463,7 @@
       <div style="font-size:0.88rem;line-height:1.55;color:var(--text);margin:12px 0 18px;">
         <p style="margin-bottom:10px;">이 앱에 등록하는 순간,<br>네 자지에 대한 통제권은 주인님에게 넘어간다.</p>
         <p style="margin-bottom:10px;">잠금·보고·처벌·금지는 모두 계약의 일부다.<br>앱이 너를 물리적으로 막지는 않는다.<br>다만 계약을 어기는 것은 주인님을 속이는 행위다.</p>
-        <p style="margin-bottom:10px;">정조대의 해제는 주인님의 허락하에서만 허용되고,<br>이 조차 지키지 못할것 같으면 평생 딸딸이나 쳐라.</p>
+        <p style="margin-bottom:10px;">정조대의 해제는 오직 주인님의 허락을 통해서 가능하고,<br>어떠한 핑계도 대지않고 이행할것을 명심해라.</p>
         <p style="color:var(--muted);font-size:0.82rem;">위 내용에 동의하면 소유물로 등록할 수 있다.</p>
       </div>
       <button class="btn-primary" onclick="acceptContract()">계약에 동의한다</button>
@@ -485,6 +538,7 @@
       <input type="text" id="inputMasterName" placeholder="주인님">
 
       <label>주인님 성격</label>
+      <p id="personaLockHint" class="hidden" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.35;">감금 중에는 성격을 바꿀 수 없다. 목표 달성 후, 다시 가두기 전에만 변경 가능.</p>
       <input type="hidden" id="inputPersonality" value="cold">
       <div id="settingsFaceGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px;">
         <div class="face-opt" data-p="cold" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
@@ -541,10 +595,6 @@
       <br>
       <button class="btn-primary" onclick="saveSettings()">저장</button>
       <button class="btn-secondary" onclick="closeModal('settingsModal')">닫기</button>
-
-      <hr style="border:none;border-top:1px solid #2a2220;margin:18px 0 12px;">
-      <p style="font-size:0.75rem;color:var(--muted);margin-bottom:8px;line-height:1.4;">리셋 · 비상 2회와 동일. 업적·기록·사진·감금 전부 삭제 후 처음부터.</p>
-      <button class="btn-danger" onclick="fullResetToStart()">완전 리셋 (처음부터)</button>
     </div>
   </div>
 
@@ -630,10 +680,7 @@
         한 번만 쓸 수 있다.<br>
         두 번 누르면 이번 목표는 실패로 처리되고, 지금까지 쌓인 모든 기록이 지워진다.
       </div>
-      <label>지금 자지 사진 (필수)</label>
-      <input type="file" id="emergencyPhoto" class="cam-only" accept="image/*" capture="environment" onchange="previewPhoto(this, 'emergencyPreview')">
-      <button type="button" class="btn-secondary cam-btn" data-cam-for="emergencyPhoto" data-cam-preview="emergencyPreview">카메라로 촬영</button>
-      <img id="emergencyPreview" class="photo-preview hidden">
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:10px;">비상은 사진 없이 즉시 풀 수 있다. 대신 큰 처벌과 1회 제한이 따른다.</p>
       <label>왜 풀어야 하는지 솔직히 적어</label>
       <textarea id="emergencyReason" placeholder="예: 왼쪽이 심하게 부어서 피가 날 것 같습니다"></textarea>
       <br>
@@ -751,6 +798,24 @@
 
     let state = loadState();
     let currentRequestType = null;
+
+const ACHIEVEMENTS = [
+      { id: 'wear_24h', cat: '시간', title: '첫 24시간', desc: '연속 감금 24시간 달성', reward: null },
+      { id: 'wear_3d', cat: '시간', title: '3일 생존', desc: '연속 감금 3일 달성', reward: { type: 'softPunish', n: 1, label: '다음 처벌 1단계 완화 1회' } },
+      { id: 'wear_7d', cat: '시간', title: '일주일', desc: '연속 감금 7일 달성', reward: { type: 'unlockLong', n: 1, label: '긴 풀기(60분) 확정 1회' } },
+      { id: 'wear_14d', cat: '시간', title: '2주', desc: '연속 감금 14일 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회' } },
+      { id: 'wear_30d', cat: '시간', title: '한 달', desc: '연속 감금 30일 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회 (30일 특전)' } },
+      { id: 'check_3', cat: '성실', title: '성실한 장난감', desc: '상태 바치기 3일 연속', reward: null },
+      { id: 'check_7', cat: '성실', title: '완벽한 보고', desc: '상태 바치기 7일 연속', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
+      { id: 'check_no_ignore', cat: '성실', title: '항상 응답', desc: '확인 알림을 한 번도 무시하지 않음 (감금 3일+)', reward: null },
+      { id: 'no_emergency', cat: '인내', title: '비상 없이', desc: '비상 해제 없이 목표 달성', reward: { type: 'unlockLong', n: 1, label: '긴 풀기 확정 1회' } },
+      { id: 'punish_done', cat: '인내', title: '처벌 수용', desc: '처벌을 끝까지 완료', reward: null },
+      { id: 'reject_10', cat: '인내', title: '거절 10회', desc: '요청이 10번 거절되어도 버팀', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
+      { id: 'mode_normal', cat: '특별', title: '일반 진입', desc: '일반 난이도(4일+) 감금', reward: null },
+      { id: 'mode_expert', cat: '특별', title: '숙련 진입', desc: '숙련 난이도(8일+) 감금', reward: null },
+      { id: 'punish_lv5', cat: '특별', title: '중한 처벌', desc: '처벌 Lv.5 이상 완료', reward: null },
+      { id: 'goal_clear', cat: '특별', title: '목표 완주', desc: '설정한 감금 기간 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회' } }
+    ];
 
     function loadState() {
       try {
@@ -1094,12 +1159,40 @@
       showResult(state.masterName || '주인님', resultMsg);
     }
 
+
+    function isGoalCleared() {
+      if (!state.startTimestamp) return false;
+      const target = getEffectiveTargetDays() * 86400000;
+      if (target <= 0) return false;
+      return getWearMs() >= target;
+    }
+
+    function canChangePersonality() {
+      if (!state.setupDone) return true;
+      if (state.needsRelockReport || state.postOrgasmPending) return false;
+      // 목표 달성 후 (잠금 유지 중이어도) 또는 잠금 해제된 구간
+      if (isGoalCleared()) return true;
+      if (!state.locked) return true;
+      return false;
+    }
+
     function openSettings() {
       document.getElementById('inputTargetDays').value = state.targetDays || 3;
       document.getElementById('inputToyName').value = state.toyName || '허접 자지';
       document.getElementById('inputMasterName').value = state.masterName || '주인님';
       document.getElementById('inputPersonality').value = state.masterPersonality || 'cold';
       syncPersonalityGrid('settings', state.masterPersonality || 'cold');
+      const canP = canChangePersonality();
+      const grid = document.getElementById('settingsFaceGrid');
+      const hint = document.getElementById('personaLockHint');
+      if (grid) {
+        grid.style.opacity = canP ? '1' : '0.4';
+        grid.style.pointerEvents = canP ? '' : 'none';
+      }
+      if (hint) {
+        if (canP) hint.classList.add('hidden');
+        else hint.classList.remove('hidden');
+      }
       document.getElementById('inputShowFace').value = state.showMasterFace !== false ? 'true' : 'false';
       document.getElementById('inputNotif').value = state.notifEnabled ? 'true' : 'false';
       const sfxEl = document.getElementById('inputSfx');
@@ -1112,26 +1205,6 @@
 
 
 
-    async function fullResetToStart() {
-      if (!confirm('완전 리셋: 업적·기록·사진·감금·설정이 모두 사라진다. 계속할까?')) return;
-      if (!confirm('정말 처음으로 돌아간다. 되돌릴 수 없다.')) return;
-      try {
-        localStorage.removeItem('chastityToyState');
-        localStorage.removeItem('masterFaceData');
-        await new Promise((resolve) => {
-          const req = indexedDB.deleteDatabase('chastityPhotoDB');
-          req.onsuccess = () => resolve();
-          req.onerror = () => resolve();
-          req.onblocked = () => resolve();
-        });
-      } catch (e) {}
-      state = { ...defaultState };
-      try { saveState(); } catch (e) {}
-      closeModal('settingsModal');
-      showToast('리셋 완료. 처음부터.');
-      setTimeout(() => location.reload(), 500);
-    }
-
     function saveSettings() {
       const v = parseInt(document.getElementById('inputTargetDays').value, 10);
       if (isNaN(v) || v < 1 || v > 90) {
@@ -1141,9 +1214,14 @@
       state.targetDays = v;
       state.toyName = (document.getElementById('inputToyName').value || '허접 자지').trim();
       state.masterName = (document.getElementById('inputMasterName').value || '주인님').trim();
-      state.masterPersonality = document.getElementById('inputPersonality').value || 'cold';
-      if (typeof PERSONALITY_FACES !== 'undefined' && PERSONALITY_FACES[state.masterPersonality]) {
-        localStorage.setItem('masterFaceData', PERSONALITY_FACES[state.masterPersonality]);
+      const newPersona = document.getElementById('inputPersonality').value || 'cold';
+      if (canChangePersonality()) {
+        state.masterPersonality = newPersona;
+        if (typeof PERSONALITY_FACES !== 'undefined' && PERSONALITY_FACES[state.masterPersonality]) {
+          localStorage.setItem('masterFaceData', PERSONALITY_FACES[state.masterPersonality]);
+        }
+      } else if (newPersona !== (state.masterPersonality || 'cold')) {
+        showToast('감금 중에는 성격을 바꿀 수 없다.');
       }
       state.showMasterFace = document.getElementById('inputShowFace').value === 'true';
       state.notifEnabled = document.getElementById('inputNotif').value === 'true';
@@ -1294,6 +1372,10 @@
     const PERSONALITY_FACES = {"cold": "data:image/jpeg;base64,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", "sweet": "data:image/jpeg;base64,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", "playful": "data:image/jpeg;base64,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", "violent": "data:image/jpeg;base64,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", "scorn": "data:image/jpeg;base64,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"};
 
     function pickPersonality(where, el) {
+      if (where === 'settings' && !canChangePersonality()) {
+        showToast('지금은 성격을 바꿀 수 없다. 목표 달성 후 다시 가두기 전에 변경해.');
+        return;
+      }
       const p = el.getAttribute('data-p');
       const gridId = where === 'setup' ? 'setupFaceGrid' : 'settingsFaceGrid';
       const inputId = where === 'setup' ? 'setupPersonality' : 'inputPersonality';
@@ -1874,38 +1956,46 @@
 
     // ========== 비상 해제 ==========
     function openEmergency() {
-      document.getElementById('emergencyPhoto').value = '';
-      document.getElementById('emergencyPreview').classList.add('hidden');
       document.getElementById('emergencyReason').value = '';
       document.getElementById('emergencyModal').classList.remove('hidden');
     }
 
-    function submitEmergency() {
-      const photoInput = document.getElementById('emergencyPhoto');
+
+    async function wipeAllPersistentData() {
+      try { localStorage.removeItem('chastityToyState'); } catch (e) {}
+      try { localStorage.removeItem('masterFaceData'); } catch (e) {}
+      // 사진 IndexedDB
+      try {
+        photoDbPromise = null;
+        await new Promise((resolve) => {
+          const req = indexedDB.deleteDatabase('chastityPhotoDB');
+          req.onsuccess = () => resolve();
+          req.onerror = () => resolve();
+          req.onblocked = () => resolve();
+          setTimeout(resolve, 1500);
+        });
+      } catch (e) {}
+      state = { ...defaultState };
+      state.photos = {};
+      state.photoList = [];
+      try { saveState(); } catch (e) {}
+    }
+
+    async function submitEmergency() {
       const reason = document.getElementById('emergencyReason').value.trim();
 
-      const emFile = getPhotoFileFromInput(photoInput);
-      if (!emFile) {
-        showToast('카메라로 사진을 촬영하세요.');
-        return;
-      }
       if (reason.length < 5) {
         showToast('사유를 구체적으로 적으세요.');
         return;
       }
 
-      compressImageFile(emFile).then(dataUrl => {
-        savePhotoRecord('emergency', dataUrl, reason.slice(0, 40));
-      }).catch(() => {});
-
       if (state.emergencyUsed >= 1) {
-        addLog('fail', '비상 풀기 두 번 시도 → 실패. 모든 기록 삭제.');
-        localStorage.removeItem('chastityToyState');
-        state = { ...defaultState };
-        saveState();
+        addLog('fail', '비상 풀기 두 번 시도 → 실패. 모든 기록·사진 삭제.');
+        await wipeAllPersistentData();
         closeModal('emergencyModal');
         updateUI();
-        showResult('실패했다', '비상으로 두 번이나 풀려고 했다.\n이번 목표는 실패다.\n지금까지 쌓아온 모든 기록이 지워졌다.');
+        showResult('실패했다', '비상으로 두 번이나 풀려고 했다.\n이번 목표는 실패다.\n기록과 사진이 모두 지워졌다.');
+        setTimeout(() => location.reload(), 800);
         return;
       }
 
@@ -2214,23 +2304,7 @@
     
     
     // ========== 업적 ==========
-    const ACHIEVEMENTS = [
-      { id: 'wear_24h', cat: '시간', title: '첫 24시간', desc: '연속 감금 24시간 달성', reward: null },
-      { id: 'wear_3d', cat: '시간', title: '3일 생존', desc: '연속 감금 3일 달성', reward: { type: 'softPunish', n: 1, label: '다음 처벌 1단계 완화 1회' } },
-      { id: 'wear_7d', cat: '시간', title: '일주일', desc: '연속 감금 7일 달성', reward: { type: 'unlockLong', n: 1, label: '긴 풀기(60분) 확정 1회' } },
-      { id: 'wear_14d', cat: '시간', title: '2주', desc: '연속 감금 14일 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회' } },
-      { id: 'wear_30d', cat: '시간', title: '한 달', desc: '연속 감금 30일 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회 (30일 특전)' } },
-      { id: 'check_3', cat: '성실', title: '성실한 장난감', desc: '상태 바치기 3일 연속', reward: null },
-      { id: 'check_7', cat: '성실', title: '완벽한 보고', desc: '상태 바치기 7일 연속', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
-      { id: 'check_no_ignore', cat: '성실', title: '항상 응답', desc: '확인 알림을 한 번도 무시하지 않음 (감금 3일+)', reward: null },
-      { id: 'no_emergency', cat: '인내', title: '비상 없이', desc: '비상 해제 없이 목표 달성', reward: { type: 'unlockLong', n: 1, label: '긴 풀기 확정 1회' } },
-      { id: 'punish_done', cat: '인내', title: '처벌 수용', desc: '처벌을 끝까지 완료', reward: null },
-      { id: 'reject_10', cat: '인내', title: '거절 10회', desc: '요청이 10번 거절되어도 버팀', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
-      { id: 'mode_normal', cat: '특별', title: '일반 진입', desc: '일반 난이도(4일+) 감금', reward: null },
-      { id: 'mode_expert', cat: '특별', title: '숙련 진입', desc: '숙련 난이도(8일+) 감금', reward: null },
-      { id: 'punish_lv5', cat: '특별', title: '중한 처벌', desc: '처벌 Lv.5 이상 완료', reward: null },
-      { id: 'goal_clear', cat: '특별', title: '목표 완주', desc: '설정한 감금 기간 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회' } }
-    ];
+    
 
     function unlockAchieve(id) {
       if (!state.unlockedAchievements) state.unlockedAchievements = [];
