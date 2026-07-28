@@ -1,0 +1,2729 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#a83b2a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="자지관리대장">
+  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAFQElEQVR4nO3du1UcQRBG4UZH1oaAJReTXIgAQxEQBhHIIAJywcTFIg1k6Mw5o2XeU9Vd/df9TGDRDHu31MxjublcLl8FEPGj9QYAlggaUggaUggaUggaUggaUggaUggaUggaUggaUggaUggaUggaUggaUn623oCjXu5/td4EeY9vH603YbebHq6HJt44okceNmgiji9i3OGCJuT+RAo7TNCE3L8IYTcP+mjIT++fthuCb57vbg89rmXYTYPeEzMBt7cn8FZRNwt6S8xEHNeWuFtEXT1oQtYSLeyqQa/FTMj9Wgu7VtTVTn0Ts7a156/WUawqE3ppZwhZz9K09p7U7hOamPNZel69J7Vr0MScV6uom1w+Ssw5tHie3YKeexUScy5zz7fXlHYJmpgxVjNq86CJGVNqRc0tWJBiehya6fy/198Ps597+PNacUvimDtGbXV82j3ojDEvhXwtY9hTUYcLmum8L+RrmcL2nNKua2hirvf4nnh2YRJ09tunrGLMFPUUi47cJnSW6WwdYZaovfrgsN0JXvFlidrD6aCzLzdg62xPLhM6w3LDe4pmmNIenbDkOKBWbBmittbtmzX2ZHyMmUh9MaF32nsW8PqEydTHrP49nAyaU93z1qLNdGZwyVQvZ34xZELv0GpaMqW3I2gHW6cvU9oeQW+0dUrujXTr1zOltyFoSCHoDaJMxyjbERlBGzq6JmYtbYegIYWgIYWgV3gd3Tj6eNbRywgaUggaUgjagNVRCo52nEfQC6KuV6NuVwQEDSkEDSkEDSkEDSkEDSkEPaPWGcKj348jHdMIGlIIGlIIGlIIGlIIGlIIGlIIGlIIGlJ499EZLa9N5rro45jQkELQkELQkELQkELQkELQkELQkELQkELQkELQkELQkELQkELQkELQkELQkML10CPPd7etN+Ew/sb6PwRd+g55MOxD9rBTB60Q8rXsYaddQyvGPKa+f3PSBg1NKYPOMr2y7OdYyqChK13Q2aZWtv1NFzS0ETSkEDSkpD6xUsPj28e3j73c/6q+HVkQtJOpkK8/R9j2CNrYUshzX0vYdlhDG9oTs8Xj8B1BQwpBGzk7ZZnSNggaUgjagNV0ZUqfR9CQQtCQQtCQQtCQQtAGrM70ccbwPIKGFII2cna6Mp1tEDSkELSho1OW6WyHy0eNDXFuOetHyPaY0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JByKuipi9iz/dUlnDPVy5m3RGNCQwpBQwpBQ4pL0KyjsYVHJ6eD7u09jZ/eP1tvQlW97e/ZnngbAye8RUEbbmvoyMuO3qbWUZH306sPk6B7W3YgJouOXI9yMKXbibx/nl2YraEf3z66WzcOT3rkF95ekUNeYvW/vPtx6B5ieXr/7DaEQS/74N3DzeVy+bL8hnNTuocfNnzNxWz5OxhnCiHFPOi5V1sPSw/4qTGdS3Ga0ESNsVoxl+K45CBqlFI35lIaraGJOocWz7Nr0EuvQqLWtvT8ep5Zdp/QRJ1Pq5hLcTgOPWftLCLHqfu3NqBqXPNTbQ29tjNM675FiLmUihN6sOV6D6Z1P7YMoppXY1YPekDYfYsW8qBZ0KXsu6uDuNvbsyxsdY1806BLOX6rEoH7O/p7TcsbPpoHPejtWmp8F+HOpTBBDwi7PxFCHoQLekDY8UUKeRA26DHijiNixGNdBD2FyP1Fj3dKt0EDU7gFC1IIGlIIGlIIGlIIGlIIGlIIGlIIGlIIGlIIGlIIGlIIGlIIGlL+Aqx3tA7g+XANAAAAAElFTkSuQmCC">
+  <link rel="icon" type="image/png" sizes="192x192" href="data:image/png;base64,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">
+  <link rel="icon" type="image/png" sizes="512x512" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAARu0lEQVR4nO3dvXlUydqG0WIurA4Ba1xMcpkIML4ICIMIxiCCyQUTF4s0OAajD9Copf6p2lVvPWu5Z5CqpX3qvXftbnh1Op2+NwAgyh+zFwAAHE8AAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQ6PXsBbCmT+/+nL0EoKP3n7/OXgKLeXU6nb7PXgRzGPJAa+IglQAIYdgD1xAF+xMAmzLwgZ4EwX4EwEYMfeAIYmAPAqAwAx9YgSCoSQAUZPADKxICtQiAIgx9oBIxsD4BsDiDH6hMCKxLACzK4Ad2IgTWIwAWYugDCcTAGgTAAgx+IJEQmMs/BjSZ4Q+ksv/N5QRgEhc+wE9OA44nAA5m8AOcJwSOIwAOYvADXE4IjCcADlB1+H/48m32EoAOPr59M3sJNxEBYwmAgSoMfkMeslWIAyEwhgAYZNXhb+ADz1k1CERAfwJggJWGv4EP3GOlIBABfQmAjlYZ/IY+MMIqMSAE+hAAncwe/oY+cKTZMSAC7icAOpg5/A1+YKaZISAC7iMA7jBr8Bv6wIpmxYAQuI0AuNGM4W/wAxXMCAERcD0BcIOjh7/BD1R0dAiIgOsIgCsdOfwNfmAHR4aACLicALjCUcPf4Ad2dFQIiIDL/DF7AVUY/gD3OWp/m/2x7CqcAFzgiIvJ4AeSHHEa4CTgeQLgBaOHv8EPJBsdAiLgPI8AnmH4A4w1eh/0OOA8AXCG4Q9wDBEwh0cATxh5sRj8AOeNfCTgccDvnAA8YvgDzDNyn3QS8DsB8AvDH2A+EXAMjwD+NeqiMPgBbjfqkYDHAU4AWmuGP8CqRu2jTgIEwDCGP0Af9tMx4gNgRAW6WAH6GrGvpp8CRAeA4Q9QhwjoKzYADH+AekRAP7EB0JvhD3AM+20fkQHQu/ZcjADH6r3vJp4CxAWA4Q+wBxFwn6gAMPwB9iICbhcVAD0Z/gBrsB/fJiYAkqoOgNulzIuIAHD0D7A3jwKuFxEAPRn+AGuyP19n+wDoWXEuLoC19dyndz8F2D4AAID/2joA3P0D5HEKcJmtA6AXwx+gFvv2y16dTqfvsxcxQq9qcxGxi3/+76+L/9u//v5n4ErgOB/fvunydd5//trl66xkywBw9A/XDfyXCAKq6hUAre0XAQLgGYY/FfUc/I8JASpyCvC07QLA3T+JRg79c8QAVTgFeJo3AZ5h+FPFjOE/8/vCteznT3MC8AQXCxWsNICdBlBBj5OAnU4AtgoAz/5JsNLgf0wIsDLvBfidRwCPGP6sbOXh39r66yOb/f132wTAzn9bE7RWZ7hWWSfcapd5s00A9KAOWVW1oVptveSwz/+0xXsAPPtnVzsMUu8LYDXeC/CDE4B/Gf6sZofh39o+r4N92O9/EACwoN2G5m6vB3ZQPgB87p/d7Dosd31d1NRj36/+ZsDyAQA72X1I7v76oJLSAVC9vgCorfIcKh0APTj+ZxUpd8cpr5P1pe//8QEAK0gbimmvF1YUHQDp9ccaUodh6utmLclzoGwAVH7uAg/Sh2D662cPVedR2QCA6gy/H/wcYI7YAEg+9gHgp9R5UDIAqh63wAN3vb/z86C6inOpZABAZYbd0/xc4FiRAZB63APA0xLnQmQAwCzucp/n5wPHKRcAFZ+zQGuG26X8nKiq2nwqFwAAwP1enU6n77MXcY17CyvxOQ/zrXRX+9ff/5z936qsE0b5+PbNXX/+/eevfRZygNezFwAc45KB+vDfrBQCwBgeAcBgs4fpX3//c/Xd9C1/prfZPzfYXakAqPYGC5jt3iE+OwKgmkpzqlQA3Mvzf4428y621/CeGQFOATha0pyICgBI0XtoOwmA/QgAGGTW3euoYT0rApwCwBgCADYyekg7CYB9CAAYwF1rX36e0J8AgE0cdXfuFAD2UCYAKn20gmwz7laPHsozIsApAFVUmVdlAuBeSR/tAOB2KfMiJgDgCAl3/zO/r1MA6EcAAEAgAQCFzX5D3uzvD9xOAEAnRx9PrzJ8j16HxwDQhwAAgEACADpwV3osP2+4nwCAglY5/n+w2nqAlwkAAAgkAOBOqW/+e8ybAaEWAQAAgQQAFLLq3f+D1dcH/CQA4A6Ooefy84fbCQAACCQAoIgqx+tV1gnpBADcyPHzGvwe4DYCAAACCQAooNqxerX1QiIBADdw7LwWvw+4ngAAgEACAAACCQBYXNXn6VXXDSkEAFzJ8+Y1+b3AdQQAAAQSALCw6sfo1dcPOxMAABBIAMAVPGdem98PXE4AAEAgAQAAgQQALGqXN9Dt8jpgNwIALuT5cg1+T3AZAQAAgQQAAAQSAAAQSADAgnZ749xurwd2IADgAt5YVovfF7xMAABAIAEAAIEEAAAEEgAAEEgAwGJ2fcf8rq8LqhIA8ALvKK/J7w2eJwAAIJAAAIBAAgAAAgkAAAgkAAAgkACAhez+UbndXx9UIgDgGT5KVpvfH5wnAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAgEWk/DW5Ka8TVicA4Ax/jewe/B7haQIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAI9Hr2AmBV/t36cfxsYT4nAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAECg17MXADN9fPtm9hKY7MOXb7OXAFMIAKIY+Dz2+JoQBKQQAEQw+LnUw7UiBNidAGBrBj+3EgLsTgCwJYOfXoQAu/IpALZj+DOC64rdCAC2YpNmJNcXOxEAbMPmzBFcZ+xCALAFmzJHcr2xAwFAeTZjZnDdUZ0AoDSbMDO5/qhMAFCWzZcVuA6pSgAAQCABQEnuuliJ65GKBAAABBIAlONuixW5LqlGAABAIAFAKe6yWJnrk0oEAAAEEgAAEEgAAEAgAUAZnq9SgeuUKgQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEOj17AUAx3n/+euL/82nd38OXwcwnwCAjV0y8F/6M4IA9iQAYEO3DP6XvpYQgL0IANhIz8F/7msLAdiDAIANjBz8576XEIDafAoAijty+K/wfYE+BAAUNnsIz/7+wO0EABS1yvBdZR3AdQQAFLTa0F1tPcDLBAAUs+qwXXVdwNMEABSy+pBdfX3ATwIAiqgyXKusE9IJAAAIJACggGp31dXWC4kEAAAEEgCwuKp301XXDSkEAAAEEgCwsOp30dXXDzsTAAAQSAAAQCABAACBBAAsapfn57u8DtiNAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkACARX169+fsJXSxy+uA3QgAAAgkAAAgkAAAgEACABZW/fl59fXDzgQAAAQSALC4qnfRVdcNKQQAAAQSAFBAtbvpauuFRAIAAAIJACiiyl11lXVCOgEAhaw+XFdfH/CTAIBiVh2yq64LeJoAgIJWG7arrQd4mQCAolYZuqusA7iOAIDCZg/f2d8fuJ0AgOJmDWHDH2p7PXsBwP0ehvH7z18P+15AbU4AACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAMQHw8e2b2UsAoICUeVEmAN5//jp7CQDwoirzqkwAAAD9CAAACCQAACCQAACAQAIAAAJFBUDKRzsAuE3SnCgVAFU+WgFApkpzqlQAAAB9CAAACBQXAEnPdwC4XNp8iAsAAKBgAFR6gwUAOarNp3IBAADcLzIA0p7zAPC8xLkQGQAAkK5kAFR7zgLA3irOpZIB0EPicU91H758m70EeJHrtJ7UeRAbAACQrGwAVDxuAWA/VedR2QDoIfXYB4AfkufA69kLgGt8+PIt+v+wL/n07s/ZS4jm+T+VRJ8AtJZdfwDJ0vf/0gFQ9bkL93GXxYpcl5kqz6HSAQAA3KZ8APSor/RjoIrcbbES12M9Pfb9ynf/rW0QAADA9QTAv5wC1OOuixW4Duux3/+wRQBUP4bhdjZfZnL95dph7mwRAL2owppswszguqvJPv/TNgGwQ41xO5sxR3K9Zdtl3mwTAL2ow7psyhzBdVaX/f13WwXALlXG7WzOjOT6Yqc5s1UA9KISa7NJM4Lrqjb7+n8JgDNcLLV9+PLNhk0XrqX67OdP2+5fA3z/+at/EY3/97Bx2wC4lqHPYzsd/7fmBOBZhsY+3MVxKdfKXuzj5213AtCaUwDOe7yx2xww7LnEbnf/rbX26nQ6fZ+9iFF6RYANAqCeXoG/4/BvzSOAi7hLBKjFvv2yrQOgZ7W5mABq6Llf73r339rmAQAAPG37AHAKAJDD3f/ltg+A3kQAwJrsz9eJCIDeFeciA1hL731597v/1kICoLWMXyYA90uZFzEB0JtTAIA12I9vExUAHgUA7MXR/+2iAqA1EQCwC8P/PnEB0JoIAKjO8L9fZACMIAIAjmG/7SM2AEbUnosSYKwR+2zi3X9rwQHQmggAqMTw7ys6AFoTAQAVGP79xQfAKCIAoA/76RgCoI2rQBctwH1G7aPpd/+ttfbqdDp9n72IVXx69+ewr/3hy7dhXxtgNyNvoAz/H5wA/GLkReE0AOAyhv8xBMAjIgBgHsP/OB4BnDHycUBrHgkA/Gr0DZLh/19OAM4YfbE4DQD4wfCfQwA8QwQAjGX4z+MRwAVGPw5ozSMBIMsRN0CG//MEwIWOiIDWhACwt6NOPg3/l3kEcKGjLiaPBYBdGf5rcQJwpaNOAlpzGgDs4cgbG8P/cgLgBkdGQGtCAKjp6BNNw/86AuBGR0dAa0IAqGHGo0zD/3oC4A4zIqA1IQCsadZ7mAz/2wiADmaFQGtiAJhr5huXDf77CIBOZkZAa0IAONbsTywZ/vcTAB3NjoAHYgAYYfbQf2D49yEABlglBFoTA8B9Vhn6rRn8vQmAQVaKgF8JAuA5Kw38Xxn+/QmAgVaNgF8JAsi26sD/leE/hgA4QIUQeIo4gD1UGPJPMfjHEgAHqRoBADMY/uMJgIMJAYDzDP7jCIBJhADATwb/8QTAZEIASGbwz/PH7AWkc/EDqex/czkBWIjTACCBwb8GAbAoMQDsxNBfjwBYnBAAKjP41yUAihACQCUG//oEQEFiAFiRoV+LAChMCAArMPhrEgAbEQTAEQz8PQiATYkBoCdDfz8CIIQgAK5h4O9PAAQTBUBrhn0qAcCTxAHsxZDnMQEAAIH8Y0AAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAQSAAAQSAAAQCABAACBBAAABBIAABBIAABAIAEAAIEEAAAEEgAAEEgAAEAgAQAAgQQAAAT6H3zfp9jMlMLiAAAAAElFTkSuQmCC">
+  <title>자지 관리 대장</title>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --card: #141414;
+      --leather: #1c1210;
+      --metal: #8a8a8a;
+      --metal-dark: #3a3a3a;
+      --border: #2a2220;
+      --text: #e8e0d8;
+      --muted: #7a6e66;
+      --accent: #a83b2a;
+      --accent-glow: #c94a35;
+      --danger: #8b1e1e;
+      --success: #2a5a3d;
+      --warning: #8a6a20;
+      --latex: #1a0f12;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: #0d0d0d !important;
+      background-color: #0d0d0d !important;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+      background: #0d0d0d !important;
+      background-color: #0d0d0d !important;
+      color: var(--text);
+      line-height: 1.4;
+      padding: 10px;
+      padding-bottom: 24px;
+      min-height: 100vh;
+    }
+    h1 {
+      font-size: 1.2rem;
+      margin-bottom: 0;
+      letter-spacing: 1px;
+      color: #f0e6dc;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 0.75rem;
+      margin-bottom: 10px;
+      letter-spacing: 0.3px;
+    }
+    .card {
+      background: #141210;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      box-shadow: none;
+      position: relative;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 12px; right: 12px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(168,59,42,0.4), transparent);
+    }
+    .card h2 {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .big-time {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin: 2px 0 4px;
+      color: #f5ebe3;
+    }
+    .progress-bar {
+      height: 5px;
+      background: #0d0d0d;
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 8px 0;
+      border: 1px solid #2a2220;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #6b2a1e, var(--accent-glow));
+      border-radius: 3px;
+      transition: width 0.4s;
+      box-shadow: 0 0 8px rgba(168,59,42,0.5);
+    }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .stat { flex: 1; min-width: 90px; }
+    .stat .label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.5px; }
+    .stat .value { font-size: 1.05rem; font-weight: 600; color: #e8dcd0; }
+    button {
+      display: block;
+      width: 100%;
+      padding: 11px 12px;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 6px;
+      letter-spacing: 0.3px;
+      transition: transform 0.1s, box-shadow 0.15s;
+    }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.35; cursor: not-allowed; }
+    .btn-primary {
+      background: linear-gradient(180deg, #b84532 0%, #8a2e20 100%);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(168,59,42,0.35), inset 0 1px 0 rgba(255,255,255,0.15);
+      border: 1px solid #6b2a1e;
+    }
+    .btn-secondary {
+      background: linear-gradient(180deg, #1e1a18 0%, #141210 100%);
+      color: #d0c4b8;
+      border: 1px solid #3a322e;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .btn-danger {
+      background: linear-gradient(180deg, #6b1a1a 0%, #4a1010 100%);
+      color: #f0c0c0;
+      border: 1px solid #5a1818;
+    }
+    .btn-success {
+      background: linear-gradient(180deg, #2a4a35 0%, #1a3025 100%);
+      color: #c0e0c8;
+      border: 1px solid #2a4a35;
+    }
+    .btn-warning {
+      background: linear-gradient(180deg, #6a5018 0%, #4a3810 100%);
+      color: #f0e0b0;
+      border: 1px solid #5a4818;
+    }
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 0.8rem;
+      width: auto;
+      display: inline-block;
+      margin: 4px 4px 4px 0;
+    }
+
+    .btn-ico {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-ico svg {
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    input.cam-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
+      opacity: 0;
+    }
+    .cam-btn { margin-bottom: 8px; }
+    .cam-fallback {
+      display: block;
+      width: 100%;
+      margin-bottom: 10px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+
+    body[data-persona="cold"] {
+      font-family: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", -apple-system, sans-serif;
+      letter-spacing: 0.02em;
+    }
+    body[data-persona="sweet"] {
+      font-family: "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", -apple-system, sans-serif;
+      letter-spacing: 0.01em;
+    }
+    body[data-persona="playful"] {
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      letter-spacing: 0.03em;
+    }
+    body[data-persona="violent"] {
+      font-family: "Malgun Gothic", "Noto Sans KR", sans-serif;
+      letter-spacing: -0.01em;
+      font-weight: 500;
+    }
+    body[data-persona="scorn"] {
+      font-family: "Noto Serif KR", "Batang", "AppleMyungjo", "Times New Roman", serif;
+      letter-spacing: 0.04em;
+    }
+    body[data-persona="cold"] h1,
+    body[data-persona="violent"] h1 {
+      font-weight: 700;
+      letter-spacing: 0.08em;
+    }
+    body[data-persona="sweet"] h1 {
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+    body[data-persona="playful"] h1 {
+      font-weight: 700;
+      letter-spacing: 0.12em;
+    }
+    body[data-persona="scorn"] h1 {
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      font-style: italic;
+    }
+    body[data-persona="scorn"] .modal-content,
+    body[data-persona="scorn"] .card {
+      font-family: inherit;
+    }
+    .hidden { display: none !important; }
+
+    .modal {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: flex; align-items: flex-end; justify-content: center;
+      z-index: 100; padding: 16px;
+    }
+    .modal-content {
+      background: linear-gradient(180deg, #1a1412 0%, #0e0c0b 100%);
+      border-radius: 14px 14px 0 0;
+      padding: 22px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 85vh;
+      overflow-y: auto;
+      border: 1px solid #2a2220;
+      border-bottom: none;
+      box-shadow: 0 -8px 40px rgba(0,0,0,0.6);
+    }
+    .modal h3 {
+      margin-bottom: 14px;
+      letter-spacing: 1px;
+      color: #f0e6dc;
+    }
+    label { display: block; font-size: 0.82rem; margin: 10px 0 4px; color: var(--muted); letter-spacing: 0.3px; }
+    input[type="text"], input[type="number"], select, textarea {
+      width: 100%; padding: 11px;
+      border-radius: 6px;
+      border: 1px solid #2a2220;
+      background: #0c0a09;
+      color: var(--text);
+      font-size: 1rem;
+    }
+    textarea { min-height: 70px; resize: vertical; }
+    .checklist label { display: flex; align-items: center; gap: 8px; margin: 8px 0; color: var(--text); }
+    .checklist input { width: auto; }
+    .log-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #221c1a;
+      font-size: 0.84rem;
+    }
+    .log-item:last-child { border-bottom: none; }
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+    }
+    .badge-beginner { background: #1a2e22; color: #8ad0a0; border: 1px solid #2a4a35; }
+    .badge-normal { background: #2e2618; color: #d0c080; border: 1px solid #4a4020; }
+    .badge-expert { background: #2e1818; color: #e0a0a0; border: 1px solid #5a2828; }
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: #1a1412;
+      border: 1px solid #3a2a28;
+      padding: 12px 20px;
+      border-radius: 8px;
+      z-index: 200;
+      font-size: 0.9rem;
+      max-width: 90%;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+    .photo-preview {
+      max-width: 100%; max-height: 180px;
+      border-radius: 6px;
+      margin-top: 8px;
+      border: 1px solid #2a2220;
+    }
+    .warning-box {
+      background: #1a1010;
+      border: 1px solid #5a2020;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 12px 0;
+      font-size: 0.84rem;
+      color: #e0a0a0;
+    }
+    /* lock accent */
+    .lock-icon {
+      display: inline-block;
+      margin-right: 6px;
+      opacity: 0.85;
+    }
+  </style>
+</head>
+<body>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <h1 style="margin:0;">자지 관리 대장</h1>
+    <span class="badge" id="modeBadge">—</span>
+  </div>
+
+  <div id="dashboard">
+    <!-- 얼굴 중앙 + 남은시간 -->
+    <div class="card" style="text-align:center;padding:12px 10px;">
+      <img id="masterFace" src="" alt="주인님" style="width:96px;height:128px;object-fit:cover;border-radius:10px;border:2px solid var(--accent);display:block;margin:0 auto 6px;">
+      <div style="font-size:0.72rem;color:var(--muted);margin-bottom:4px;" id="masterCaption">주인님이 보고 있다</div>
+      <div class="big-time" id="remainTime" style="font-size:1.4rem;margin:2px 0;">—</div>
+      <div class="progress-bar" style="margin:6px 0;"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <div style="display:flex;justify-content:center;gap:12px;font-size:0.72rem;color:var(--muted);flex-wrap:wrap;">
+        <span>목표 <b style="color:var(--text);" id="targetDays">—</b></span>
+        <span>진행 <b style="color:var(--text);" id="progressPct">—</b></span>
+        <span>달성 <b style="color:var(--accent);" id="wearTime">—</b></span>
+      </div>
+    </div>
+
+    <div id="statusText" style="font-size:0.8rem;color:var(--muted);margin:0 2px 8px;line-height:1.35;">아직 잠기지 않았다.</div>
+
+    <div id="checkAlert" class="card hidden" style="border-color:#a83b2a;background:#1a100e;">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;">
+        <div>
+          <div style="color:#e0a090;font-weight:600;font-size:0.9rem;">확인 요청</div>
+          <div id="checkTimer" style="font-size:1.2rem;font-weight:700;">5:00</div>
+        </div>
+        <button class="btn-primary" style="width:auto;margin:0;padding:10px 14px;" onclick="openCheckResponse()">보여주기</button>
+      </div>
+    </div>
+
+    <div id="punishCard" class="card hidden" style="border-color:#a83b2a;background:#1a100e;">
+      <div id="punishLevel" style="font-size:0.72rem;color:var(--muted);"></div>
+      <div id="punishTitle" style="font-weight:600;margin:2px 0 4px;"></div>
+      <p id="punishTask" style="font-size:0.82rem;margin-bottom:8px;line-height:1.35;"></p>
+      <button class="btn-primary" style="margin-bottom:0;" onclick="openPunishComplete()">처벌 완료 보고</button>
+    </div>
+
+    <div id="lockedActions">
+      <button id="btnDailyCheck" class="btn-primary" onclick="openDailyCheck()"><span class="btn-ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>상태 바치기</span></button>
+      <div id="dailyDoneHint" class="hidden" style="font-size:0.75rem;color:var(--muted);text-align:center;margin-bottom:6px;">오늘 보고 완료</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+        <button id="btnTalk" class="btn-secondary" style="margin:0;" onclick="openTalk()"><span class="btn-ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H8l-4 4V6z"/></svg>대화</span></button>
+        <button id="btnReqUnlock" class="btn-secondary" style="margin:0;" onclick="openRequest('unlock')"><span class="btn-ico"><svg viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9"/><path d="M18 12v3"/><path d="M21 12v2"/></svg>풀기</span></button>
+        <button id="btnReqOrgasm" class="btn-secondary" style="margin:0;" onclick="openRequest('orgasm')"><span class="btn-ico"><svg viewBox="0 0 24 24"><path d="M12 3c0 0-6 7-6 11a6 6 0 0 0 12 0c0-4-6-11-6-11z"/></svg>사정</span></button>
+        <button class="btn-danger" style="margin:0;" onclick="openEmergency()"><span class="btn-ico"><svg viewBox="0 0 24 24"><path d="M12 3L2 21h20L12 3z"/><path d="M12 10v5"/><path d="M12 18h.01"/></svg>비상</span></button>
+      </div>
+    </div>
+
+    <div id="unlockedActions" class="hidden">
+      <p id="relockHint" class="hidden" style="font-size:0.82rem;color:#e0a090;margin-bottom:8px;line-height:1.4;">풀린 상태다. 다시 잠근 뒤 카메라로 보고해야 한다. (사정 후에는 즉시)</p>
+      <button id="btnRelock" class="btn-success" onclick="onRelockClick()"><span class="btn-ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>다시 가두기</span></button>
+    </div>
+
+    <!-- 숨김: 메인 로그 갱신용 -->
+    <div id="logList" class="hidden"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:4px;">
+      <button class="btn-secondary" style="margin:0;padding:10px 6px;font-size:0.78rem;" onclick="openSettings()"><span class="btn-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1"/></svg>설정</span></button>
+      <button class="btn-secondary" style="margin:0;padding:10px 6px;font-size:0.78rem;" onclick="openAchievements()"><span class="btn-ico"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 6.5L21 11l-5 4.5L17.5 22 12 18.5 6.5 22 8 15.5 3 11l6.5-1.5L12 3z"/></svg>업적</span></button>
+      <button class="btn-secondary" style="margin:0;padding:10px 6px;font-size:0.78rem;" onclick="viewHistory()"><span class="btn-ico"><svg viewBox="0 0 24 24"><path d="M8 7h12M8 12h12M8 17h12"/><circle cx="4" cy="7" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="17" r="1.2" fill="currentColor" stroke="none"/></svg>기록</span></button>
+      <button class="btn-secondary" style="margin:0;padding:10px 6px;font-size:0.78rem;" onclick="openPhotoGallery()"><span class="btn-ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="11.5" r="1.5"/><path d="M21 16l-4.5-4.5L9 19"/></svg>사진</span></button>
+    </div>
+    <button id="btnInstall" class="btn-primary hidden" style="margin-top:6px;" onclick="installPWA()">홈 화면에 설치</button>
+  </div>
+
+  <!-- 대화 -->
+  <div id="talkModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>주인님에게 말 걸기</h3>
+      <p id="talkIntro" style="font-size:0.88rem;margin-bottom:12px;line-height:1.45;"></p>
+      <div id="talkChoices" style="display:flex;flex-direction:column;gap:8px;"></div>
+      <button class="btn-secondary" style="margin-top:12px;" onclick="closeModal('talkModal')">닫기</button>
+    </div>
+  </div>
+
+  <!-- 계약 동의 -->
+  <div id="contractModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>소유 계약</h3>
+      <div style="font-size:0.88rem;line-height:1.55;color:var(--text);margin:12px 0 18px;">
+        <p style="margin-bottom:10px;">이 앱에 등록하는 순간,<br>네 자지에 대한 통제권은 주인님에게 넘어간다.</p>
+        <p style="margin-bottom:10px;">잠금·보고·처벌·금지는 모두 계약의 일부다.<br>앱이 너를 물리적으로 막지는 않는다.<br>다만 계약을 어기는 것은 주인님을 속이는 행위다.</p>
+        <p style="color:var(--muted);font-size:0.82rem;">위 내용에 동의하면 소유물로 등록할 수 있다.</p>
+      </div>
+      <button class="btn-primary" onclick="acceptContract()">계약에 동의한다</button>
+    </div>
+  </div>
+
+  <!-- 첫 실행 신상 등록 -->
+  <div id="setupModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>신상 등록</h3>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">처음이구나. 기본값으로 바로 시작해도 되고, 바꿔도 된다.</p>
+
+      <label>너를 부를 호칭</label>
+      <input type="text" id="setupToyName" value="허접 자지" placeholder="허접 자지">
+
+      <label>주인님을 부를 호칭</label>
+      <input type="text" id="setupMasterName" value="주인님" placeholder="주인님">
+
+      <label>관리받고 싶은 주인님 성격</label>
+      <input type="hidden" id="setupPersonality" value="cold">
+      <div id="setupFaceGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px;">
+        <div class="face-opt selected" data-p="cold" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid var(--accent);">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">차가움</div>
+        </div>
+        <div class="face-opt" data-p="sweet" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">다정함</div>
+        </div>
+        <div class="face-opt" data-p="playful" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">장난</div>
+        </div>
+        <div class="face-opt" data-p="violent" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">짜증</div>
+        </div>
+        <div class="face-opt" data-p="scorn" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">경멸</div>
+        </div>
+      </div>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">얼굴을 눌러 선택. 말투·알림 톤이 달라진다</p>
+
+      <label>가둘 일수</label>
+      <input type="number" id="setupTargetDays" min="1" max="90" value="3">
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">1~3일: 초보 / 4~7일: 일반 / 8일+: 숙련</p>
+
+      <label style="margin-top:12px;">주인님 얼굴 (선택)</label>
+      <input type="file" id="setupFaceUpload" accept="image/*" onchange="changeMasterFace(this)">
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">안 올리면 기본 얼굴 사용</p>
+
+      <br>
+      <button class="btn-primary" onclick="finishSetup()">이대로 시작한다</button>
+      <button class="btn-secondary" onclick="finishSetup(true)">기본값으로 바로 시작</button>
+    </div>
+  </div>
+
+  <!-- 설정 모달 -->
+  <div id="settingsModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>설정</h3>
+
+      <label>가둘 일수</label>
+      <input type="number" id="inputTargetDays" min="1" max="90" value="3">
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">1~3일: 초보 / 4~7일: 일반 / 8일+: 숙련</p>
+
+      <label style="margin-top:14px;">너를 부를 호칭</label>
+      <input type="text" id="inputToyName" placeholder="허접 자지">
+
+      <label>주인님을 부를 호칭</label>
+      <input type="text" id="inputMasterName" placeholder="주인님">
+
+      <label>주인님 성격</label>
+      <input type="hidden" id="inputPersonality" value="cold">
+      <div id="settingsFaceGrid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px;">
+        <div class="face-opt" data-p="cold" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">차가움</div>
+        </div>
+        <div class="face-opt" data-p="sweet" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">다정함</div>
+        </div>
+        <div class="face-opt" data-p="playful" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAA4KCw0LCQ4NDA0QDw4RFiQXFhQUFiwgIRokNC43NjMuMjI6QVNGOj1OPjIySGJJTlZYXV5dOEVmbWVabFNbXVn/2wBDAQ8QEBYTFioXFypZOzI7WVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVlZWVn/wAARCACCAGQDASIAAhEBAxEB/8QAGwAAAQUBAQAAAAAAAAAAAAAAAAIDBAUGAQf/xAA6EAACAQMCBAQDBgQFBQAAAAABAgMABBESIQUxQVETImGBI3GRFDJCobHhBlJy0RUkM8HwJTVDYnP/xAAYAQEBAQEBAAAAAAAAAAAAAAACAwEABP/EABwRAQEAAwEBAQEAAAAAAAAAAAABAhEhMUEDEv/aAAwDAQACEQMRAD8ApBXJCwTCHDNsD29a6KP/AC5OwVc0VnCyWsI9Bt61UzXUk8g1NtnYHkPalXs5lkY76R5QKhmNiurHlFbIFrsr6m5YHoKUp0qFyMc6FXq2T709gZ8o0gVwuowVfKQSRvjpXMsrZGQR2pSrqYHrS5gGlBU7Nj61xNBwq6NxCBIcuOvf51bwQtK4RBljyFZbhbmG5UE+UnG9ehcBWPRIOcqnmf5elQznXoxvOpthYpax5O8h5mplFFEbdiiiiuc8qWmL2URRerU+tVnFGzOF/lFeiJ28RJTgAdedLViEVRyXf3pljlgacXmPnSTOmPBG2x3FKVCSBjnRHJpbBO2MUtp/hjHMjFc0MRGABuSvOuQDJ0H8XL5jl/auQxPcB9IJZEL47gc6fsoftNxDGp0l2Az2o2lInx24ksXdR8RQJFI547flWj4Jds6xyptJEMMO4/cVU8KbUTE6+eJGQj5GrWxgW1dWjOVfKe43x+tRq8bCNxIiuvIjNdqs4TOPiQZ3jb8jyqzrBFFFFc55WOW9U97nxSx5nerY/cP0qpvf9VjnmTt2wa9ESyRscqWnMUldxmjOFzWgcJ3PypWDjNPiAskC8jISf+fSgRkxjA54olpN/h7bisf9DD8qm3Vo3C71buBdUYOSnp6VD4Yk0NyssKrq0E5fkATgfpVrczBYP85cs+rcJGoUf3oW9VxnD/D41/xsupykylh9BRcTva8Uxgm3Z45Gx+E8s+4qBw27iTiNssTtpRsENvgE8qs7wK04GN3jAPtnFGnJvixRza8QFxnyJGFlH/rqK59sg1p1OpA3cZrI2Vwst6wYB0e3wy9w3OtBwhmSBrVzqMBKq3dMkD6YxRZVhRRRXMeTtunuKp5zrmmboScVZXU4hiP8zch/vVSu4Oe1eiI5UhDsaeUKbFiWAYuBjG+MfvTIGNVWXCrMTHWyCYAAmMnGR6V1unYzd0fVrBZAF3wgUFsnfqakC18W7MUX3WI0kcgDuTUqHhVuX3gwnQMckVaxwxQszxxqmQBsOgqdyi8xv0yLXEUrQqNTEKmeigYH+5qpk4PKJibqbWeY05Oa0KtkVwjNH+tF/Evqnmiit5IZIoBEoZVUcycEEk/Sl3N1pF3Nn7gCr88fvTfGpMSxxj8ILH3qrlcmMqTsWyfpSk3Byurxe/w8xa/G/lS1QE+tabg10JpYPD3BEur3II/Q1kLWU8P4HLcscTXJ0Rj0Axn9asuAXhs+IpGc+G+nfoDy/OssZPG6ooooOePSQpHE8mCzgHzMcmoUyqrhR02NT5ZFaN40BdmGMAVAliKxo5OSxIPoccq9ERqPkFT6mpFjdvbTIysAA2+eWP7UwkbFtOMHBO9JHT5Voy663VtKZQNUbIx6cx9amafKazfAeKeHF4Fwfhrsr/y+h9K0hZigaIK+d+eM+9Qs1XqmW4kTzi4MemERaUCnHWmiABnGcdBUH7ROxwdMZ5YxuD2qVqFvAXlcsfxE9T6CsK8UPGEMUsZc/ElBdsdN8AewqvRfEO+wB3Ndv7p7q/d32x5QOwpmFTKrDVgZ6+9Vk4hbupF3cfbJ4kXIhjARB6dT71qeB2kd9FMp2c6lDDofLg+xz9KoeEWkEvEUFy+iBQXkfpgDOO9bL+GzZwWAnE0PizsX0Kw8gJOFA70cmxd2shltYpG+8yAn59aKLZDHbRo3MDeipk8leQhtI7bmmgBrJOPnXCctnvmjAJOc/LpXpkRNKCAZj1bPtUMjDEdsirN2AQ6vu43qtAZ3yATvk1zFpw2IfZySPvVZ2k8tso0HK9VPKoViGFtGDgjHTpU2PGoA8jUr6tj4s04jAQGdWVvln86TI5nYOwIUfdU9PU+tRYIh4h1DOOVTQPLmicZi/QRz7bHW4/P96ZtmILKBnfOKseO27Aidc6Tsw7HvTNzbmMWl2qExMirJj5f896pKlZ2pXDo3urkROCkWglgPxDt71f8AD4VjvLrCDBYHl3FR7JLMy+PaSak8Mg6m3BONj2qdC6iaR1IKYGD3NZTkTLCWaCJ0Mr48RtIzyGdqKF5UUWvOjtt2NA3J9RRN5ZN+u9IZsYq7zkyJLJ5M+XvU20iCwRxoAZJJNX02H55PtTGoYz71d2FrHBEjaR4pXzMedHI8Zuno7eNIkjKAhVC56137CHPw3wezVIFKAwdqktoyilBhxhhzp2I+ImBsBzNdZA/OpdhaGWVYk6nc9vWjaUhocNN9FJEELjSSfT96QbNV/huW2uY2EyL8GUAlZFB/IjqDWzt4I7eIJGuB1PU1FvICtndRqPhSKWwPwnr7Vs4Nu7xn2sbOXQzWsTbdUFQ7u4xdrCpwhAyB6nAqZC5FjEWO4QA/pVBeXH/WRpOQmk7dTjYUoN40xnjBIzyoqsS9htF8J1eSQbuVGcHtRXabtlLpcxh+q1FcFkypwanSjVEw9M1XltqrHnPW51vGOhIrVRjasxapiaD1YVqk5UM1fzKApaihRk1b8P4d4qiSXIToO9StW19qFbWsk7hUXJ/StDZW6Wq6V3bq3ekrHHa5KKFBFOxNkVsg2pQNccakKnkRikg11shR68q0GMkYpBNCecZZD+eKy0NzpuJJ+cufJtsDjn7VrL1QOI3i9GY1jo4/j+GTglyue29PFmTQ8FtOI3Vmz2unww5BLHcnYn9aKueAi4lsCbGFVtg5WMu2C+AMt9c0ULetjFiqs/eb50UVZGpsP+rD/UP1rTryoooZq/mlW4BkQHuK1i7bCiipRXPyI179xP6qVDyFFFIPiQOVdbkKKK5jJ3//AHC5/wDoax1zteXH9Roop4syeqcJULwmzCgACFNh8hRRRUb6cf/Z" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">장난</div>
+        </div>
+        <div class="face-opt" data-p="violent" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">짜증</div>
+        </div>
+        <div class="face-opt" data-p="scorn" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
+          <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">경멸</div>
+        </div>
+      </div>
+
+      <label style="margin-top:14px;">주인님 얼굴 보이기</label>
+      <select id="inputShowFace">
+        <option value="true">보이기</option>
+        <option value="false">숨기기</option>
+      </select>
+
+      <label>주인님 얼굴 바꾸기 (선택)</label>
+      <input type="file" id="settingsFaceUpload" accept="image/*" onchange="changeMasterFace(this)">
+
+      <label style="margin-top:14px;">확인 알림</label>
+      <select id="inputNotif">
+        <option value="false">끄기</option>
+        <option value="true">켜기</option>
+      </select>
+
+      <label style="margin-top:14px;">효과음</label>
+      <select id="inputSfx">
+        <option value="false">끄기 (기본)</option>
+        <option value="true">켜기</option>
+      </select>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">짧은 효과음만. BGM·보이스 없음. 공공장소에선 끄길 권함.</p>
+
+      <label>활동 시작 시간</label>
+      <input type="time" id="inputActiveStart" value="08:00">
+
+      <label>활동 종료 시간</label>
+      <input type="time" id="inputActiveEnd" value="23:30">
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">이 시간 안에서만 확인 알림이 울릴 수 있음</p>
+
+      <br>
+      <button class="btn-primary" onclick="saveSettings()">저장</button>
+      <button class="btn-secondary" onclick="closeModal('settingsModal')">닫기</button>
+    </div>
+  </div>
+
+  <!-- 매일 검진 모달 -->
+  <div id="dailyModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>자지 상태 바치기</h3>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">잠긴 자지를 사진으로 보여주고, 상태를 솔직히 고백해.</p>
+      
+      <label>잠긴 자지 사진 (필수)</label>
+      <input type="file" id="dailyPhoto" class="cam-only" accept="image/*" capture="environment" onchange="previewPhoto(this, 'dailyPreview')">
+      <button type="button" class="btn-secondary cam-btn" data-cam-for="dailyPhoto" data-cam-preview="dailyPreview">카메라로 촬영</button>
+      <p style="font-size:0.72rem;color:var(--muted);margin:-4px 0 10px;line-height:1.35;">안 열리면 APK 설정에서 카메라 권한을 허용해라. 시스템 카메라 앱이 실행된다.</p>
+      <img id="dailyPreview" class="photo-preview hidden">
+
+      <div class="checklist" style="margin-top:14px;">
+        <label><input type="checkbox" id="checkSkin"> 쓸리거나 빨개지거나 부은 곳 확인함</label>
+        <label><input type="checkbox" id="checkHygiene"> 자지 위생 상태 확인함</label>
+        <label><input type="checkbox" id="checkFit"> 자물쇠와 링 위치/조임 확인함</label>
+      </div>
+
+      <label>피부 상태</label>
+      <select id="skinGrade">
+        <option value="good">괜찮음</option>
+        <option value="mild">조금 자극받음</option>
+        <option value="bad">많이 아픔 (부음/상처)</option>
+      </select>
+
+      <label>주인님에게 할 말</label>
+      <textarea id="dailyNote" placeholder="예: 왼쪽이 빨갛습니다. 보습제 발랐습니다. 아직도 단단히 잠겨 있습니다."></textarea>
+
+      <br>
+      <button class="btn-primary" onclick="submitDaily()">자지 상태 바치기</button>
+      <button class="btn-secondary" onclick="closeModal('dailyModal')">취소</button>
+    </div>
+  </div>
+
+  <!-- 요청 모달 -->
+  <div id="requestModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="requestTitle">허가 요청</h3>
+      <div id="requestBody"></div>
+      <br>
+      <button class="btn-primary" id="requestSubmitBtn" onclick="submitRequest()">요청하기</button>
+      <button class="btn-secondary" onclick="closeModal('requestModal')">취소</button>
+    </div>
+  </div>
+
+  <!-- 사진 보관함 -->
+  <div id="photoGalleryModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>인증 사진 보관함</h3>
+      <p style="font-size:0.8rem;color:var(--muted);margin-bottom:10px;">IndexedDB에 저장 (최대 200장, 수십~100MB까지 가능). 오래된 것부터 자동 정리.</p>
+      <div id="photoGalleryList" style="max-height:60vh;overflow-y:auto;"></div>
+      <button class="btn-secondary" style="margin-top:12px;" onclick="closeModal('photoGalleryModal')">닫기</button>
+    </div>
+  </div>
+
+  <!-- 재잠금 보고 모달 -->
+  <div id="relockModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>다시 가두고 보고</h3>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:10px;line-height:1.45;">자지를 다시 잠근 뒤, 잠긴 상태를 카메라로 찍어 바쳐라. 보고가 끝나야 감금이 이어진다.</p>
+      <input type="file" id="relockPhoto" class="cam-only" accept="image/*" capture="environment">
+      <button type="button" class="btn-secondary cam-btn" data-cam-for="relockPhoto" data-cam-preview="relockPreview">카메라로 촬영</button>
+      <img id="relockPreview" class="photo-preview hidden">
+      <label id="oralCleanRow" class="hidden" style="display:flex;align-items:flex-start;gap:8px;margin:12px 0;font-size:0.85rem;line-height:1.4;">
+        <input type="checkbox" id="oralCleanCheck" style="margin-top:3px;">
+        <span>주인님이 말한 대로 입으로 정리했다 (선택 · 호감 +)</span>
+      </label>
+      <button class="btn-primary" onclick="submitRelockReport()">잠그고 보고 완료</button>
+      <button class="btn-secondary" onclick="closeModal('relockModal')">닫기</button>
+    </div>
+  </div>
+
+  <!-- 비상 해제 모달 -->
+  <div id="emergencyModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>비상으로 자지 풀기</h3>
+      <div class="warning-box">
+        경고한다.<br>
+        이 버튼을 누르면 가둘 기간이 크게 늘어난다.<br>
+        한 번만 쓸 수 있다.<br>
+        두 번 누르면 이번 목표는 실패로 처리되고, 지금까지 쌓인 모든 기록이 지워진다.
+      </div>
+      <label>지금 자지 사진 (필수)</label>
+      <input type="file" id="emergencyPhoto" class="cam-only" accept="image/*" capture="environment" onchange="previewPhoto(this, 'emergencyPreview')">
+      <button type="button" class="btn-secondary cam-btn" data-cam-for="emergencyPhoto" data-cam-preview="emergencyPreview">카메라로 촬영</button>
+      <img id="emergencyPreview" class="photo-preview hidden">
+      <label>왜 풀어야 하는지 솔직히 적어</label>
+      <textarea id="emergencyReason" placeholder="예: 왼쪽이 심하게 부어서 피가 날 것 같습니다"></textarea>
+      <br>
+      <button class="btn-danger" onclick="submitEmergency()">그래도 풀겠다</button>
+      <button class="btn-secondary" onclick="closeModal('emergencyModal')">참겠다</button>
+    </div>
+  </div>
+
+  <!-- 결과 모달 -->
+  <!-- 처벌 완료 -->
+  <div id="punishModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>처벌 완료 보고</h3>
+      <p id="punishModalTask" style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;"></p>
+      <label>증거 사진 (필수)</label>
+      <input type="file" id="punishPhoto" class="cam-only" accept="image/*" capture="environment" onchange="previewPhoto(this, 'punishPreview')">
+      <button type="button" class="btn-secondary cam-btn" data-cam-for="punishPhoto" data-cam-preview="punishPreview">카메라로 촬영</button>
+      <img id="punishPreview" class="photo-preview hidden">
+      <label>고백</label>
+      <textarea id="punishNote" placeholder="처벌을 어떻게 수행했는지 적어라."></textarea>
+      <br>
+      <button class="btn-primary" onclick="submitPunishment()">처벌 완료</button>
+      <button class="btn-secondary" onclick="closeModal('punishModal')">닫기</button>
+    </div>
+  </div>
+
+  <!-- 확인 알림 응답 -->
+  <div id="checkResponseModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>주인님이 보고 싶어한다</h3>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">잠긴 자지를 지금 보여라. 5분이 지나면 무시한 것으로 기록된다.</p>
+      <label>잠긴 자지 사진 (필수)</label>
+      <input type="file" id="checkPhoto" class="cam-only" accept="image/*" capture="environment" onchange="previewPhoto(this, 'checkPreview')">
+      <button type="button" class="btn-secondary cam-btn" data-cam-for="checkPhoto" data-cam-preview="checkPreview">카메라로 촬영</button>
+      <img id="checkPreview" class="photo-preview hidden">
+      <label>한 마디</label>
+      <textarea id="checkNote" placeholder="예: 아직 단단히 잠겨 있습니다."></textarea>
+      <br>
+      <button class="btn-primary" onclick="submitCheckResponse()">보여드렸습니다</button>
+      <button class="btn-secondary" onclick="closeModal('checkResponseModal')">닫기</button>
+    </div>
+  </div>
+
+  <div id="resultModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 id="resultTitle">결과</h3>
+      <p id="resultMessage" style="margin:12px 0;"></p>
+      <button class="btn-primary" onclick="closeModal('resultModal')">확인</button>
+    </div>
+  </div>
+
+  <!-- 기록 모달 -->
+    <div id="achieveModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>업적</h3>
+      <div id="achieveList" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;"></div>
+      <br>
+      <button class="btn-secondary" onclick="closeModal('achieveModal')">닫기</button>
+    </div>
+  </div>
+
+<div id="historyModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>전체 기록</h3>
+      <div id="fullHistory"></div>
+      <br>
+      <button class="btn-secondary" onclick="closeModal('historyModal')">닫기</button>
+    </div>
+  </div>
+
+  <script>
+    // ========== 상태 관리 ==========
+    const defaultState = {
+      locked: false,
+      startTimestamp: null,
+      pausedWearMs: 0,
+      unlockPauseAt: null,
+      targetDays: 3,
+      lastCheckTimestamp: null,
+      lastCheckSkin: 'good',
+      emergencyUsed: 0,
+      needsRelockReport: false,
+      consecutiveGoodDays: 0,
+      recentRequests: [],
+      history: [],
+      currentUnlockUntil: null,
+      totalPenalties: 0,
+      photos: {},
+      // 호칭 & 설정
+      toyName: '허접 자지',
+      masterName: '주인님',
+      showMasterFace: true,
+      notifEnabled: false,
+      activeStart: '08:00',
+      activeEnd: '23:30',
+      setupDone: false,
+      masterPersonality: 'cold', // cold | sweet | playful | violent | scorn
+      // 확인 알림
+      pendingCheck: null,
+      lastCheckRequestTs: null,
+      activePunishment: null,
+      punishmentHistory: [],
+      requestBanUntil: null,
+      reportEveryHours: 24,
+      affection: 50,
+      lastTalkDate: null,
+      unlockedAchievements: [],
+      rejectCount: 0,
+      checkIgnoreCount: 0,
+      maxConsecutiveChecks: 0,
+      currentConsecutiveChecks: 0
+    };
+
+    let state = loadState();
+    let currentRequestType = null;
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem('chastityToyState');
+        if (raw) return { ...defaultState, ...JSON.parse(raw) };
+      } catch(e) {}
+      return { ...defaultState };
+    }
+
+    function saveState() {
+      // 사진은 IndexedDB, 메타(photoList)만 localStorage
+      const copy = Object.assign({}, state);
+      delete copy.photos;
+      localStorage.setItem('chastityToyState', JSON.stringify(copy));
+    }
+
+    function now() { return Date.now(); }
+
+    // ========== 모드 / 규칙 ==========
+    function getMode() {
+      const t = state.targetDays;
+      if (t <= 3) return 'beginner';
+      if (t <= 7) return 'normal';
+      return 'expert';
+    }
+
+    function getModeLabel(m) {
+      return { beginner: '초보 장난감', normal: '일반', expert: '제대로 된 장난감' }[m] || m;
+    }
+
+    function getRules() {
+      const m = getMode();
+      if (m === 'beginner') {
+        return {
+          edgingMax: 2, edgingIntervalH: 6,
+          unlockNeedPct: 0.8,
+          orgasmNeedPct: 0.5,
+          penaltyMiss: 0.5, penaltyUnlock: 1, penaltyOrgasm: 2, penaltyEmergency: 3
+        };
+      }
+      if (m === 'normal') {
+        return {
+          edgingMax: 1, edgingIntervalH: 12,
+          unlockNeedPct: 1.0,
+          orgasmNeedPct: 0.7,
+          penaltyMiss: 1, penaltyUnlock: 3, penaltyOrgasm: 5, penaltyEmergency: 7
+        };
+      }
+      return {
+        edgingMax: 1, edgingIntervalH: 24,
+        unlockNeedPct: 1.0,
+        orgasmNeedPct: 0.9,
+        penaltyMiss: 2, penaltyUnlock: 5, penaltyOrgasm: 7, penaltyEmergency: 14
+      };
+    }
+
+    // ========== 시간 계산 ==========
+    function getWearMs() {
+      if (!state.startTimestamp) return 0;
+      const paused = state.pausedWearMs || 0;
+      if (!state.locked) {
+        // 풀린 동안: 정지 시점까지의 누적만 표시 (시간 멈춤)
+        if (state.unlockPauseAt) {
+          return Math.max(0, state.unlockPauseAt - state.startTimestamp - paused);
+        }
+        return Math.max(0, (state.savedWearMs != null ? state.savedWearMs : 0));
+      }
+      let ms = now() - state.startTimestamp - paused;
+      return Math.max(0, ms);
+    }
+
+    function pauseWearTimer(reason) {
+      if (!state.locked || !state.startTimestamp) return;
+      // 이미 일시정지 중이면 무시
+      if (state.unlockPauseAt) return;
+      state.unlockPauseAt = now();
+      state.savedWearMs = Math.max(0, state.unlockPauseAt - state.startTimestamp - (state.pausedWearMs || 0));
+      state.locked = false;
+    }
+
+    function resumeWearTimer() {
+      if (state.unlockPauseAt) {
+        const pauseDur = now() - state.unlockPauseAt;
+        state.pausedWearMs = (state.pausedWearMs || 0) + pauseDur;
+        state.unlockPauseAt = null;
+      }
+      state.savedWearMs = null;
+      state.locked = true;
+      state.currentUnlockUntil = null;
+    }
+
+    function formatDuration(ms) {
+      const totalMin = Math.floor(ms / 60000);
+      const days = Math.floor(totalMin / 1440);
+      const hours = Math.floor((totalMin % 1440) / 60);
+      const mins = totalMin % 60;
+      return `${days}일 ${hours}시간 ${mins}분`;
+    }
+
+    function getEffectiveTargetDays() {
+      return state.targetDays + (state.totalPenalties || 0);
+    }
+
+    // ========== 앱 열 때 검사 ==========
+    function onOpenCheck() {
+      if (!state.locked) return;
+
+      // 매일 검진 누락 체크 (24시간 초과)
+      if (state.lastCheckTimestamp) {
+        const hoursSince = (now() - state.lastCheckTimestamp) / 3600000;
+        if (hoursSince > 26) { // 약간의 여유
+          const missedDays = Math.floor(hoursSince / 24);
+          const lvl = Math.min(10, 2 + missedDays); // 누락 일수에 따라 수위
+          state.consecutiveGoodDays = 0;
+          state.currentConsecutiveChecks = 0;
+          state.lastCheckTimestamp = now() - 12*3600000;
+          saveState();
+          assignPunishment(lvl, `자지 상태 바치기 ${missedDays}일 누락`);
+        }
+      }
+
+      // 일시 해제 만료 체크
+      if (state.currentUnlockUntil && now() > state.currentUnlockUntil) {
+        state.currentUnlockUntil = null;
+        addLog('system', '잠깐 푼 시간이 끝났다. 지금 당장 다시 잠궈라.');
+        saveState();
+      }
+    }
+
+    // ========== UI 업데이트 ==========
+    function updateUI() {
+      const wearMs = getWearMs();
+      const targetMs = getEffectiveTargetDays() * 86400000;
+      const pct = targetMs > 0 ? Math.min(100, (wearMs / targetMs) * 100) : 0;
+
+      const remainMs = Math.max(0, targetMs - wearMs);
+      const remainEl = document.getElementById('remainTime');
+      if (remainEl) {
+        if (!state.startTimestamp) remainEl.textContent = '—';
+        else if (remainMs <= 0 && state.locked) remainEl.textContent = '목표 달성';
+        else remainEl.textContent = formatDuration(remainMs) + (state.locked ? '' : ' (정지)');
+      }
+      document.getElementById('wearTime').textContent = state.startTimestamp ? (formatDuration(wearMs) + (state.locked ? '' : ' (정지)')) : '—';
+      document.getElementById('targetDays').textContent = getEffectiveTargetDays() + '일';
+      document.getElementById('progressPct').textContent = pct.toFixed(1) + '%';
+      document.getElementById('progressFill').style.width = pct + '%';
+
+      const mode = getMode();
+      const badge = document.getElementById('modeBadge');
+      badge.textContent = getModeLabel(mode);
+      badge.className = 'badge badge-' + mode;
+
+      const statusEl = document.getElementById('statusText');
+      // 일시 해제 시간 종료 → 보고 후 재잠금 요구
+      if (!state.locked && state.currentUnlockUntil && now() > state.currentUnlockUntil) {
+        state.currentUnlockUntil = null;
+        state.needsRelockReport = true;
+        saveState();
+      }
+
+      if (!state.locked) {
+        statusEl.textContent = state.postOrgasmPending
+          ? '사정 허락 후다. 즉시 다시 잠그고 카메라로 보고해라.'
+          : state.needsRelockReport
+          ? '풀린 상태다. 다시 잠근 뒤 카메라로 보고해야 시간이 다시 흐른다.'
+          : '자지가 아직 자유롭다. 어서 가둬라.';
+        document.getElementById('lockedActions').classList.add('hidden');
+        document.getElementById('unlockedActions').classList.remove('hidden');
+        const hint = document.getElementById('relockHint');
+        if (hint) {
+          if (state.needsRelockReport) hint.classList.remove('hidden');
+          else hint.classList.add('hidden');
+        }
+      } else if (state.currentUnlockUntil && now() < state.currentUnlockUntil) {
+        const remain = Math.ceil((state.currentUnlockUntil - now()) / 60000);
+        statusEl.innerHTML = `<span style="color:var(--warning)">잠깐 풀린 상태</span> (남은 시간 약 ${remain}분)<br>시간이 끝나면 즉시 다시 잠그고 인증해. 사정은 안 된다.`;
+        document.getElementById('lockedActions').classList.remove('hidden');
+        document.getElementById('unlockedActions').classList.add('hidden');
+      } else {
+        statusEl.textContent = '자지가 단단히 잠겨 있다. 잘 참고 있구나.';
+        document.getElementById('lockedActions').classList.remove('hidden');
+        document.getElementById('unlockedActions').classList.add('hidden');
+      }
+
+      // 로그
+      const logs = state.history.slice(-6).reverse();
+      const logEl = document.getElementById('logList');
+      if (logs.length === 0) {
+        logEl.textContent = '기록이 없습니다.';
+      } else {
+        // 메인에는 최근 2줄만
+        logEl.innerHTML = logs.slice(0, 2).map(l => {
+          const d = new Date(l.ts).toLocaleString('ko-KR', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+          return `<div class="log-item"><strong>${d}</strong><br>${l.msg}</div>`;
+        }).join('');
+      }
+
+      // 자지 상태 바치기: 오늘 아직 안 했을 때만 버튼 표시
+      const btnDaily = document.getElementById('btnDailyCheck');
+      const hintDaily = document.getElementById('dailyDoneHint');
+      if (btnDaily && hintDaily) {
+        if (!state.locked) {
+          btnDaily.classList.add('hidden');
+          hintDaily.classList.add('hidden');
+        } else if (isDailyDue()) {
+          btnDaily.classList.remove('hidden');
+          hintDaily.classList.add('hidden');
+        } else {
+          btnDaily.classList.add('hidden');
+          hintDaily.classList.remove('hidden');
+        }
+      }
+
+      // 처벌 카드 + 요청 버튼 잠금
+      const pc = document.getElementById('punishCard');
+      if (pc) {
+        if (state.activePunishment) {
+          pc.classList.remove('hidden');
+          document.getElementById('punishLevel').textContent = 'Lv.' + state.activePunishment.level + ' / 10';
+          document.getElementById('punishTitle').textContent = state.activePunishment.title;
+          document.getElementById('punishTask').textContent = state.activePunishment.task;
+        } else {
+          pc.classList.add('hidden');
+        }
+      }
+      const blocked = hasActivePunishment();
+      ['btnTalk','btnReqUnlock','btnReqOrgasm'].forEach(id => {
+        const b = document.getElementById(id);
+        if (b) {
+          b.disabled = blocked;
+          b.style.opacity = blocked ? '0.4' : '';
+          b.style.pointerEvents = blocked ? 'none' : '';
+        }
+      });
+      checkAchievements();
+      renderAchievements();
+    }
+
+    function isDailyDue() {
+      if (!state.lastCheckTimestamp) return true;
+      const last = new Date(state.lastCheckTimestamp);
+      const n = new Date();
+      return last.getFullYear() !== n.getFullYear() || last.getMonth() !== n.getMonth() || last.getDate() !== n.getDate();
+    }
+
+    // ========== 로그 ==========
+    function addLog(type, msg) {
+      state.history.push({ ts: now(), type, msg });
+      if (state.history.length > 200) state.history = state.history.slice(-150);
+      saveState();
+    }
+
+    // ========== 시작 / 설정 ==========
+    function startLock() {
+      if (state.locked) return;
+      // 비상 후 재시작은 보고 필수
+      if (state.needsRelockReport) {
+        openRelockReport();
+        return;
+      }
+      state.locked = true;
+      state.startTimestamp = now();
+      state.lastCheckTimestamp = now();
+      state.emergencyUsed = 0;
+      state.totalPenalties = 0;
+      state.consecutiveGoodDays = 0;
+      state.currentUnlockUntil = null;
+      state.needsRelockReport = false;
+      state.pausedWearMs = 0;
+      state.unlockPauseAt = null;
+      state.savedWearMs = null;
+      addLog('start', `자지를 가두기 시작. ${state.targetDays}일 목표 (${getModeLabel(getMode())})`);
+      saveState();
+      updateUI();
+      playSfx('lock');
+      showToast('자지가 잠겼다. 이제부터 네 자지는 내 거야.');
+    }
+
+    function onRelockClick() {
+      if (state.needsRelockReport) openRelockReport();
+      else startLock();
+    }
+
+    function openRelockReport() {
+      const inp = document.getElementById('relockPhoto');
+      if (inp) { inp.value = ''; inp._camFile = null; }
+      const prev = document.getElementById('relockPreview');
+      if (prev) { prev.src = ''; prev.classList.add('hidden'); }
+      const h = document.querySelector('#relockModal h3');
+      const p = document.querySelector('#relockModal p');
+      const oralRow = document.getElementById('oralCleanRow');
+      const oralChk = document.getElementById('oralCleanCheck');
+      if (oralChk) oralChk.checked = false;
+      if (state.postOrgasmPending) {
+        if (h) h.textContent = '사정 후 재잠금 보고';
+        if (p) p.innerHTML = '사정이 끝났다. <b>즉시 다시 잠근 뒤</b> 잠긴 상태를 카메라로 찍어 바쳐라. 보고가 끝나야 감금이 이어진다.<br>입으로 정리했다면 아래 선택 항목에 체크해도 된다.';
+        if (oralRow) oralRow.classList.remove('hidden');
+      } else {
+        if (h) h.textContent = '다시 가두고 보고';
+        if (p) p.innerHTML = '자지를 다시 잠근 뒤, 잠긴 상태를 카메라로 찍어 바쳐라. 보고가 끝나야 감금이 이어진다.';
+        if (oralRow) oralRow.classList.add('hidden');
+      }
+      bindCameraButtons();
+      document.getElementById('relockModal').classList.remove('hidden');
+    }
+
+    function submitRelockReport() {
+      const photoInput = document.getElementById('relockPhoto');
+      const rlFile = getPhotoFileFromInput(photoInput);
+      if (!rlFile) {
+        showToast('카메라로 잠긴 자지를 촬영해야 한다.');
+        return;
+      }
+      compressImageFile(rlFile).then(dataUrl => {
+        savePhotoRecord('relock', dataUrl, '재잠금 보고');
+      }).catch(() => {});
+      // 비상 후: 멈췄던 시간 이후부터 다시 진행
+      resumeWearTimer();
+      const wasOrgasm = !!state.postOrgasmPending;
+      const oral = wasOrgasm && document.getElementById('oralCleanCheck')?.checked;
+      state.needsRelockReport = false;
+      state.postOrgasmPending = false;
+      state.lastCheckTimestamp = now();
+      if (!state.startTimestamp) state.startTimestamp = now();
+      let msgLog = wasOrgasm ? '사정 후 다시 잠그고 보고 완료. 타이머 재개.' : '다시 잠그고 보고 완료. 타이머 재개.';
+      let resultMsg = wasOrgasm
+        ? '사정 후 재잠금 확인했다. 다시 내 것이다. 감금을 이어간다.'
+        : '다시 잠근 것 확인했다. 감금을 이어간다.';
+      if (oral) {
+        const bonus = 4;
+        state.affection = Math.max(0, Math.min(100, (state.affection == null ? 50 : state.affection) + bonus));
+        msgLog += ' · 입 정리 보고 (+호감)';
+        const al = affectionReact(bonus, true);
+        resultMsg += '\n' + (al || '…그렇게 처리했구나.');
+        addLog('oral', '사정 후 입 정리 보고 (선택)');
+      }
+      addLog('relock', msgLog);
+      saveState();
+      closeModal('relockModal');
+      updateUI();
+      showResult(state.masterName || '주인님', resultMsg);
+    }
+
+    function openSettings() {
+      document.getElementById('inputTargetDays').value = state.targetDays || 3;
+      document.getElementById('inputToyName').value = state.toyName || '허접 자지';
+      document.getElementById('inputMasterName').value = state.masterName || '주인님';
+      document.getElementById('inputPersonality').value = state.masterPersonality || 'cold';
+      syncPersonalityGrid('settings', state.masterPersonality || 'cold');
+      document.getElementById('inputShowFace').value = state.showMasterFace !== false ? 'true' : 'false';
+      document.getElementById('inputNotif').value = state.notifEnabled ? 'true' : 'false';
+      const sfxEl = document.getElementById('inputSfx');
+      if (sfxEl) sfxEl.value = state.sfxEnabled ? 'true' : 'false';
+      document.getElementById('inputActiveStart').value = state.activeStart || '08:00';
+      document.getElementById('inputActiveEnd').value = state.activeEnd || '23:30';
+      document.getElementById('settingsModal').classList.remove('hidden');
+    }
+
+    function saveSettings() {
+      const v = parseInt(document.getElementById('inputTargetDays').value, 10);
+      if (isNaN(v) || v < 1 || v > 90) {
+        showToast('1~90 사이 숫자를 입력하세요.');
+        return;
+      }
+      state.targetDays = v;
+      state.toyName = (document.getElementById('inputToyName').value || '허접 자지').trim();
+      state.masterName = (document.getElementById('inputMasterName').value || '주인님').trim();
+      state.masterPersonality = document.getElementById('inputPersonality').value || 'cold';
+      if (typeof PERSONALITY_FACES !== 'undefined' && PERSONALITY_FACES[state.masterPersonality]) {
+        localStorage.setItem('masterFaceData', PERSONALITY_FACES[state.masterPersonality]);
+      }
+      state.showMasterFace = document.getElementById('inputShowFace').value === 'true';
+      state.notifEnabled = document.getElementById('inputNotif').value === 'true';
+      const sfxEl = document.getElementById('inputSfx');
+      if (sfxEl) state.sfxEnabled = sfxEl.value === 'true';
+      state.activeStart = document.getElementById('inputActiveStart').value || '08:00';
+      state.activeEnd = document.getElementById('inputActiveEnd').value || '23:30';
+      state.setupDone = true;
+      addLog('settings', `설정 저장: ${state.toyName} / ${state.masterName} / ${v}일`);
+      saveState();
+      closeModal('settingsModal');
+      updateUI();
+      applyNames();
+      loadMasterFace();
+      if (state.notifEnabled && typeof Notification !== 'undefined' && Notification.permission === 'default') {
+        Notification.requestPermission().then(p => {
+          showToast(p === 'granted' ? '알림 권한이 허용됐다.' : '알림 권한이 거부됐다. 앱 안에서만 확인된다.');
+        });
+      } else {
+        showToast('설정을 저장했다.');
+      }
+    }
+
+
+    function applyPersonalityStyle() {
+      const p = state.masterPersonality || 'cold';
+      document.body.setAttribute('data-persona', p);
+    }
+
+    function applyNames() {
+      const toy = state.toyName || '허접 자지';
+      const master = state.masterName || '주인님';
+      const faceCard = document.querySelector('#masterFace')?.closest('.card');
+      if (faceCard) {
+        faceCard.style.display = state.showMasterFace !== false ? '' : 'none';
+      }
+      const caption = document.getElementById('masterCaption');
+      if (caption) caption.textContent = `${master}이 내려다보고 있다`;
+      const sub = document.querySelector('.sub');
+      if (sub) sub.textContent = `네 자지는 이미 쇠사슬에 묶여 있다. 허락 없이 만지지 마.`;
+    
+      applyPersonalityStyle();
+      applyPersonalityStyle();
+    }
+
+
+    function getTone() {
+      const p = state.masterPersonality || 'cold';
+      const master = state.masterName || '주인님';
+      const toy = state.toyName || '허접 자지';
+      const tones = {
+        cold: {
+          checkTitle: `${master}이 확인한다`,
+          checkBody: '5분 안에 보여.',
+          checkLog: `${master}이 확인하고 싶어한다. 5분 안에 보여라.`,
+          checkOk: '확인됐다.',
+          checkMiss: '무시했다. 기록한다.',
+          start: `${toy}, 잠겼다. 참아.`,
+          edgeAsk: '만지고 싶다고? 얼마나 필요한지 말해.',
+          unlockAsk: '풀고 싶다고? 사유를 짧게 적어.',
+          orgasmAsk: '싸게 해달라고? …기대하지 마.',
+          edgeOk: (m) => `허락한다. ${m}분. 엣징만. 사정은 금지. 시간 끝나면 즉시 잠궈.`,
+          unlockOk: (m) => `${m}분 풀어 준다. 만지는 건 최소로. 끝나면 바로 잠궈.`,
+          orgasmOk: '싸도 된다. 한 번이다. 끝나면 다시 가둬.',
+          edgeNo: '안 된다. 손대지 마.',
+          unlockNo: '풀지 마. 그대로 있어.',
+          orgasmNo: '싸는 건 없다. 참아.',
+          emergency: '비상인가. …한 번이다. 기록에 남긴다.'
+        },
+        sweet: {
+          checkTitle: `${master}이 보고 싶어해`,
+          checkBody: '보고 싶어서 그래. 5분 안에 자지 보여줘.',
+          checkLog: `${master}이 보고 싶어한다. 5분 안에 보여드려.`,
+          checkOk: '잘 보여줬네. 착하다.',
+          checkMiss: '왜 안 보여줬어… 조금 실망이야.',
+          start: `${toy}, 이제 내 거야. 잘 참아보자.`,
+          edgeAsk: '만지고 싶었어? 얼마나 만지고 싶은지 말해봐. 에징까지는 생각해 줄게.',
+          unlockAsk: '잠깐 풀고 싶은 거야? 왜 그런지 말해봐. 들어줄게.',
+          orgasmAsk: '싸게 해달라고…? 정말 참기 힘들었어? 솔직히 말해.',
+          edgeOk: (m) => `그래, ${m}분 동안 만져도 돼. 에징까지만이야. 싸면 안 돼. 시간 되면 착하게 다시 잠궈.`,
+          unlockOk: (m) => `${m}분만 풀어줄게. 끝나면 다시 잠그는 거 약속해.`,
+          orgasmOk: '이번엔 싸도 돼. 그동안 잘 참았으니까. 끝나면 다시 내 자지로 돌아와.',
+          edgeNo: '아직은 안 돼. 조금만 더 참아볼래? 네가 참는 모습도 좋아.',
+          unlockNo: '지금은 안 풀게. 조금만 더 견뎌줘. 내가 보고 있을게.',
+          orgasmNo: '싸는 건 아직이야. 더 쌓아두자. 나중에 더 기분 좋을 거야.',
+          emergency: '비상이야…? 알겠어. 대신 기록에 남을 거야.'
+        },
+        playful: {
+          checkTitle: `${master}이 심심하다`,
+          checkBody: '자지 보고 싶네. 5분 안에 보여봐~',
+          checkLog: `${master}이 장난처럼 확인을 요청했다.`,
+          checkOk: '오호, 잘 잠겨 있네.',
+          checkMiss: '무시해? 재미있는데. 기록한다.',
+          start: `${toy} 잠금 완료~ 이제부터 갖고 논다.`,
+          edgeAsk: '만지고 싶어? 얼마나 애원하는지 들어볼까.',
+          unlockAsk: '풀고 싶다고? 재밌는 이유면 생각해 줄게.',
+          orgasmAsk: '싸게 해달라고 빌어? 표정 상상되네.',
+          edgeOk: (m) => `좋아~ ${m}분 만져. 에징만 가능. 싸면 바로 처분이야.`,
+          unlockOk: (m) => `${m}분 풀어줄게. 그 안에 사고 치지 마.`,
+          orgasmOk: '특별히 싸게 해줄게. 한 번이야. 끝나고 다시 가둬.',
+          edgeNo: '놉. 더 굶겨야지. 손이 근질근질하지?',
+          unlockNo: '풀기 싫어. 잠긴 채로 더 있어봐.',
+          orgasmNo: '사정? 꿈도 꾸지 마. 더 참아~',
+          emergency: '비상 카드네. 한 번만이야. 다음엔 안 받아줘.'
+        },
+        violent: {
+          checkTitle: `${master}이 확인한다`,
+          checkBody: '지금 당장 보여. 5분이다.',
+          checkLog: `${master}이 확인을 요구했다.`,
+          checkOk: '됐다. 잠긴 거 확인했다.',
+          checkMiss: '무시해? 짜증 나네. 처분한다.',
+          start: `${toy}, 가뒀다. 불만 있으면 삼켜.`,
+          edgeAsk: '만지고 싶다고? 말은 해 봐. 기분 좋지는 않아.',
+          unlockAsk: '풀라고? 이유가 뭔데. 짧게 말해.',
+          orgasmAsk: '싸게 해달라고? …웃기네. 말해 봐.',
+          edgeOk: (m) => `${m}분이다. 에징만. 싸면 끝장이야. 시간 되면 즉시 잠궈.`,
+          unlockOk: (m) => `${m}분 풀어 준다. 그 안에 사고 치면 처분한다.`,
+          orgasmOk: '싸. 이번만이다. 끝나면 알아서 가둬.',
+          edgeNo: '손대지 마. 듣기 싫다.',
+          unlockNo: '풀지 마. 그대로 있어.',
+          orgasmNo: '사정 금지. 더 참아.',
+          emergency: '비상? …한 번만 봐준다. 두 번은 없다.'
+        },
+        scorn: {
+          checkTitle: `${master}이 하찮은 걸 확인한다`,
+          checkBody: '그 자지, 5분 안에 보여. 기다릴 가치도 없지만.',
+          checkLog: `${master}이 경멸하듯 확인을 요청했다.`,
+          checkOk: '그래. 아직 잠겨 있군. 그 정도야.',
+          checkMiss: '무시? 역시 한심하다. 기록한다.',
+          start: `${toy}… 가둬 뒀다. 그게 네 분수지.`,
+          edgeAsk: '만지고 싶다고? 그 하찮은 걸로? 얼마나 간절한지 들어나 볼까.',
+          unlockAsk: '풀고 싶다고? 네 사정이 나랑 무슨 상관이지.',
+          orgasmAsk: '싸게 해달라고? 가소롭네. 그래도 말해 봐.',
+          edgeOk: (m) => `특별히 ${m}분 만지게 해 주지. 에징만. 싸면 더 비참해질 뿐이다.`,
+          unlockOk: (m) => `${m}분 풀어 준다. 감사하는 게 좋을 거다.`,
+          orgasmOk: '싸 봐. 한 번이다. 그래도 네가 자유로워지진 않아.',
+          edgeNo: '안 된다. 네 욕망 따위 관심 없어.',
+          unlockNo: '풀지 마. 잠긴 채로 있어. 그게 어울려.',
+          orgasmNo: '사정? 웃기지 마. 더 참아. 네 분수에 맞게.',
+          emergency: '비상으로 풀라고? …한심하지만 한 번은 들어준다. 빚인 줄 알아.'
+        }
+      };
+      return tones[p] || tones.cold;
+    }
+
+
+
+    const PERSONALITY_FACES = {"cold": "data:image/jpeg;base64,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", "sweet": "data:image/jpeg;base64,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", "playful": "data:image/jpeg;base64,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", "violent": "data:image/jpeg;base64,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", "scorn": "data:image/jpeg;base64,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"};
+
+    function pickPersonality(where, el) {
+      const p = el.getAttribute('data-p');
+      const gridId = where === 'setup' ? 'setupFaceGrid' : 'settingsFaceGrid';
+      const inputId = where === 'setup' ? 'setupPersonality' : 'inputPersonality';
+      document.getElementById(inputId).value = p;
+      document.querySelectorAll('#' + gridId + ' .face-opt img').forEach(img => {
+        img.style.border = '2px solid transparent';
+      });
+      el.querySelector('img').style.border = '2px solid var(--accent)';
+      // 미리보기: 메인 얼굴도 바로 반영
+      const main = document.getElementById('masterFace');
+      if (main && PERSONALITY_FACES[p]) {
+        main.src = PERSONALITY_FACES[p];
+        localStorage.setItem('masterFaceData', PERSONALITY_FACES[p]);
+      }
+    }
+
+    function syncPersonalityGrid(where, value) {
+      const gridId = where === 'setup' ? 'setupFaceGrid' : 'settingsFaceGrid';
+      const inputId = where === 'setup' ? 'setupPersonality' : 'inputPersonality';
+      const inp = document.getElementById(inputId);
+      if (inp) inp.value = value || 'cold';
+      document.querySelectorAll('#' + gridId + ' .face-opt').forEach(el => {
+        const on = el.getAttribute('data-p') === (value || 'cold');
+        el.querySelector('img').style.border = on ? '2px solid var(--accent)' : '2px solid transparent';
+      });
+    }
+
+    function acceptContract() {
+      closeModal('contractModal');
+      document.getElementById('setupModal').classList.remove('hidden');
+    }
+
+    function initialAffection(p) {
+      const map = { sweet: 70, playful: 60, cold: 50, violent: 40, scorn: 30 };
+      return map[p] != null ? map[p] : 50;
+    }
+
+    function finishSetup(useDefault) {
+      if (useDefault) {
+        state.toyName = '허접 자지';
+        state.masterName = '주인님';
+        state.targetDays = 3;
+        state.masterPersonality = 'cold';
+      } else {
+        state.toyName = (document.getElementById('setupToyName').value || '허접 자지').trim();
+        state.masterName = (document.getElementById('setupMasterName').value || '주인님').trim();
+        state.masterPersonality = document.getElementById('setupPersonality').value || 'cold';
+        const v = parseInt(document.getElementById('setupTargetDays').value, 10);
+        state.targetDays = (isNaN(v) || v < 1) ? 3 : Math.min(90, v);
+      }
+      state.affection = initialAffection(state.masterPersonality);
+      state.setupDone = true;
+      // 선택한 성격 얼굴 적용
+      if (PERSONALITY_FACES[state.masterPersonality]) {
+        localStorage.setItem('masterFaceData', PERSONALITY_FACES[state.masterPersonality]);
+      }
+      saveState();
+      closeModal('setupModal');
+      applyNames();
+      loadMasterFace();
+      updateUI();
+      showToast(`${state.masterName}의 ${state.toyName}으로 등록됐다.`);
+    }
+
+    // ========== 매일 검진 ==========
+    function openDailyCheck() {
+      document.getElementById('dailyPhoto').value = '';
+      document.getElementById('dailyPreview').classList.add('hidden');
+      document.getElementById('checkSkin').checked = false;
+      document.getElementById('checkHygiene').checked = false;
+      document.getElementById('checkFit').checked = false;
+      document.getElementById('skinGrade').value = 'good';
+      document.getElementById('dailyNote').value = '';
+      document.getElementById('dailyModal').classList.remove('hidden');
+    }
+
+    function submitDaily() {
+      const photoInput = document.getElementById('dailyPhoto');
+      if (!photoInput.files || !photoInput.files[0]) {
+        showToast('사진을 반드시 첨부하세요.');
+        return;
+      }
+      if (!document.getElementById('checkSkin').checked ||
+          !document.getElementById('checkHygiene').checked ||
+          !document.getElementById('checkFit').checked) {
+        showToast('체크리스트를 모두 확인하세요.');
+        return;
+      }
+
+      const grade = document.getElementById('skinGrade').value;
+      const note = document.getElementById('dailyNote').value.trim();
+
+      const file = getPhotoFileFromInput(photoInput);
+      if (!file) {
+        showToast('카메라로 사진을 촬영해야 한다.');
+        return;
+      }
+      compressImageFile(file).then(dataUrl => {
+        savePhotoRecord('daily', dataUrl, grade);
+
+        state.lastCheckTimestamp = now();
+        state.lastCheckSkin = grade;
+
+        if (grade === 'good') state.consecutiveGoodDays = (state.consecutiveGoodDays || 0) + 1;
+        else state.consecutiveGoodDays = 0;
+
+        state.currentConsecutiveChecks = (state.currentConsecutiveChecks || 0) + 1;
+        if (state.currentConsecutiveChecks > (state.maxConsecutiveChecks || 0)) {
+          state.maxConsecutiveChecks = state.currentConsecutiveChecks;
+        }
+
+        let msg = `자지 상태 바침 (피부: ${grade === 'good' ? '괜찮음' : grade === 'mild' ? '조금 자극' : '많이 아픔'})`;
+        if (note) msg += ` — ${note}`;
+        addLog('daily', msg);
+
+        if (grade === 'bad') {
+          addLog('warning', '자지 피부가 많이 아프다. 풀어달라고 빌 수 있다.');
+        }
+
+        saveState();
+        closeModal('dailyModal');
+        updateUI();
+        showToast('자지 상태를 바쳤다. 사진도 보관했다.');
+      }).catch(() => showToast('사진 저장에 실패했다.'));
+    }
+
+    // ========== 허가 요청 ==========
+
+    function todayKey() {
+      const d = new Date();
+      return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+    }
+
+
+    function affectionReact(delta, silent) {
+      if (!delta) return '';
+      const p = state.masterPersonality || 'cold';
+      const up = {
+        cold: ['…조금 나아 보이는군.', '그 태도는 나쁘지 않다.', '인정해 두지.'],
+        sweet: ['조금 더 좋아졌어.', '네 덕분에 기분이 좋아졌어.', '착하네… 호감이 생기네.'],
+        playful: ['오, 점수 올랐어~', '좀 더 마음에 드네.', '좋아, 가산점~'],
+        violent: ['…마음에 든다.', '그 정도는 인정한다.', '나쁘지 않군.'],
+        scorn: ['…겨우 쓸 만해졌군.', '그 정도면 조금은 봐줄 만하다.', '하찮지만, 조금은 나아졌다.']
+      };
+      const down = {
+        cold: ['실망이다.', '점수가 깎였다.', '태도를 고쳐라.'],
+        sweet: ['조금 서운해…', '그렇게 나오면 마음이 식어.', '아쉽네…'],
+        playful: ['감점이야.', '그거 별로였어.', '점수 내려간다~'],
+        violent: ['짜증 난다.', '감점이다.', '더 듣기 싫군.'],
+        scorn: ['역시 한심하군.', '기대하지 말았어야지.', '네 가치만 더 떨어졌다.']
+      };
+      const pool = delta > 0 ? (up[p] || up.cold) : (down[p] || down.cold);
+      const line = pool[Math.floor(Math.random() * pool.length)];
+      playSfx(delta > 0 ? 'affUp' : 'affDown');
+      if (!silent) showToast(line);
+      return line;
+    }
+
+    function openTalk() {
+      if (hasActivePunishment()) {
+        showToast('처벌을 먼저 끝내라.');
+        return;
+      }
+      if (state.lastTalkDate === todayKey()) {
+        showToast('오늘은 이미 대화했다. 내일 다시 와.');
+        return;
+      }
+      const p = state.masterPersonality || 'cold';
+      const intros = {
+        cold: '말해. 길게는 듣지 않는다.',
+        sweet: '응? 무슨 말 하려고? 들어줄게.',
+        playful: '오~ 말 걸었네. 뭐야, 재밌는 거?',
+        violent: '뭐야. 빨리 말해.',
+        scorn: '하찮은 것이 말을 걸다니. …짧게 해.'
+      };
+      document.getElementById('talkIntro').textContent = intros[p] || intros.cold;
+
+      // 선택지는 동일, 호감 등락은 성격마다 다름 (정답이 다름)
+      const labels = {
+        miss: '보고 싶고… 참기 힘들다고 솔직히 말하기',
+        thanks: '가둬 주셔서 감사합니다 (복종 인사)',
+        status: '오늘 자지 상태·하루를 담담히 보고',
+        tease: '살짝 장난·애교 섞어 말하기',
+        complain: '불만·하소연하기'
+      };
+      // cold: 간결·예의 / sweet: 솔직·애정 / playful: 애교·재미 / violent: 짧고 군말 없음 / scorn: 복종만, 애교 혐오
+      const deltas = {
+        cold:     { miss: 2, thanks: 5, status: 6, tease: -2, complain: -6 },
+        sweet:    { miss: 8, thanks: 5, status: 4, tease: 3, complain: -3 },
+        playful:  { miss: 3, thanks: 2, status: 1, tease: 8, complain: -5 },
+        violent:  { miss: 0, thanks: 3, status: 5, tease: -4, complain: -10 },
+        scorn:    { miss: -2, thanks: 8, status: 4, tease: -8, complain: -10 }
+      };
+      const table = deltas[p] || deltas.cold;
+      const order = ['miss', 'thanks', 'status', 'tease', 'complain'];
+      const box = document.getElementById('talkChoices');
+      box.innerHTML = order.map(id =>
+        `<button class="btn-secondary" style="margin:0;text-align:left;" onclick="submitTalk('${id}')">${labels[id]}</button>`
+      ).join('');
+      document.getElementById('talkModal').classList.remove('hidden');
+    }
+
+    function submitTalk(kind) {
+      const p = state.masterPersonality || 'cold';
+      const deltas = {
+        cold:     { miss: 2, thanks: 5, status: 6, tease: -2, complain: -6 },
+        sweet:    { miss: 8, thanks: 5, status: 4, tease: 3, complain: -3 },
+        playful:  { miss: 3, thanks: 2, status: 1, tease: 8, complain: -5 },
+        violent:  { miss: 0, thanks: 3, status: 5, tease: -4, complain: -10 },
+        scorn:    { miss: -2, thanks: 8, status: 4, tease: -8, complain: -10 }
+      };
+      const d = (deltas[p] || deltas.cold)[kind] || 0;
+      const affBefore = state.affection == null ? 50 : state.affection;
+
+      state.affection = Math.max(0, Math.min(100, affBefore + d));
+      state.lastTalkDate = todayKey();
+      addLog('talk', `대화 (${kind})`);
+      saveState();
+      closeModal('talkModal');
+      const affLine = d ? affectionReact(d, true) : '';
+
+      // 호감 구간: low <35, mid, high >=70 — 대답 톤이 달라짐
+      const band = affBefore >= 70 ? 'high' : affBefore < 35 ? 'low' : 'mid';
+      const replies = {
+        cold: {
+          miss:  { low: '하소연하지 마. 더 참아.', mid: '…알겠다. 더 참아.', high: '보고 싶다고. …조금은 이해한다. 그래도 규칙은 지킨다.' },
+          thanks:{ low: '말뿐이면 의미 없다.', mid: '당연한 일이다.', high: '예의는 인정한다. 계속 그렇게 해.' },
+          status:{ low: '늦게라도 보고하라.', mid: '보고 받았다. 그걸로 충분하다.', high: '성실하군. 그 태도를 유지해.' },
+          tease: { low: '장난할 처지가 아니다.', mid: '장난은 사절이다.', high: '…가끔은 넘어가 주겠다. 다음엔 예의 있게.' },
+          complain:{ low: '불만은 더 이상 듣지 않는다.', mid: '불만은 삼켜라.', high: '힘들다는 건 안다. 그래도 견뎌라.' }
+        },
+        sweet: {
+          miss:  { low: '갑자기 애교? …조금 서운했지만, 알겠어.', mid: '보고 싶다고… 알겠어. 잘 참고 있네.', high: '나도 보고 싶었어. 잘 참아줘서 고마워. 대견해.' },
+          thanks:{ low: '말은 고맙다… 행동이 더 중요해.', mid: '고마워. 그렇게 말해 주니 기분 좋다.', high: '네가 그렇게 말해 주면 정말 좋아. 내 장난감 맞아.' },
+          status:{ low: '보고는 받아 둘게.', mid: '알려줘서 고마워. 무리하지 마.', high: '매일 이렇게 알려 주면 안심돼. 착하다.' },
+          tease: { low: '지금은 장난칠 분위기가 아니야.', mid: '귀엽네… 그래도 규칙은 지켜야 해.', high: '애교 부리면 약해지잖아… 조금만이야.' },
+          complain:{ low: '힘들었구나. 그래도 약속은 지켜야지.', mid: '힘들었구나. 조금만 더 버텨볼래?', high: '많이 힘들었지… 안아 주고 싶지만, 규칙이 있어. 조금만 더.' }
+        },
+        playful: {
+          miss:  { low: '이제 와서 솔직? 점수 조금만.', mid: '참기 힘들다고? 그런 솔직함도 나쁘지 않네.', high: '보고 싶다고 바로 말하네. 귀여운데? 더 지켜볼게~' },
+          thanks:{ low: '형식적인 인사는 시시해.', mid: '예의 바르네. 좋아.', high: '예의까지 완벽하네. 마음에 들어.' },
+          status:{ low: '심심한 보고네.', mid: '보고 접수~', high: '성실한 보고, 좋아. 보너스 기분이다.' },
+          tease: { low: '애교로 덮으려 하지 마.', mid: '호오, 애교? 마음에 드는데.', high: '그 애교, 중독성 있는데. 더 해봐' },
+          complain:{ low: '하소연 금지. 감점이다.', mid: '하소연? 그게 네 매력이냐. 감점.', high: '투정 부려도… 오늘은 웃어줄게. 다음엔 안 된다.' }
+        },
+        violent: {
+          miss:  { low: '듣기 싫다. 참아.', mid: '참기 힘들면 더 참아. 그게 네 일이다.', high: '…보고 싶다고. 말은 들었다. 그래도 참아.' },
+          thanks:{ low: '말만 번지르르하군.', mid: '말은 잘하네.', high: '예의는 통과다. 계속해.' },
+          status:{ low: '늦게 보고하지 마.', mid: '들었다. 군말 없이 보고하니 낫다.', high: '깔끔한 보고다. 그 태도를 유지해.' },
+          tease: { low: '애교 붙이면 더 빡친다.', mid: '애교 붙이지 마.', high: '…그 정도 장난은 참아 준다. 한 번이다.' },
+          complain:{ low: '불만? 더 듣기 싫다. 처분감이다.', mid: '불만? 더 듣기 싫다.', high: '투정은 한 번만 넘긴다. 다음엔 없다.' }
+        },
+        scorn: {
+          miss:  { low: '욕망을 들이밀지 마. 역겹군.', mid: '참기 힘들다고? 네 욕망 따위 관심 없다.', high: '…가끔은 그런 하찮은 말도 들어 주지. 착각하지 마.' },
+          thanks:{ low: '뒤늦은 예의군.', mid: '…그 정도 예의는 있군. 겨우 쓸 만해.', high: '복종하는 태도는 인정한다. 네가 할 수 있는 최선이지.' },
+          status:{ low: '시시한 보고다.', mid: '보고라. 복종은 말로 하는 것이다.', high: '성실한 보고. 소유물치고는 쓸 만하군.' },
+          tease: { low: '애교? 분수도 모르는군.', mid: '애교? 가소롭군. 네 분수를 잊지 마.', high: '…그 애교는 거절한다. 복종으로 말해.' },
+          complain:{ low: '하소연할 자격도 없다.', mid: '하소연할 자격이 있다고 생각하나.', high: '불만은 들었지만, 바꿀 생각은 없다. 네 처지를 받아들여.' }
+        }
+      };
+      const pack = (replies[p] || replies.cold)[kind] || {};
+      let line = pack[band] || pack.mid || '…알겠다.';
+      if (typeof affLine === 'string' && affLine) line = line + '\n' + affLine;
+      showResult(state.masterName || '주인님', line);
+      updateUI();
+    }
+
+    function openRequest(type) {
+      if (hasActivePunishment()) {
+        showToast('처벌을 먼저 끝내라.');
+        return;
+      }
+      if (state.requestBanUntil && now() < state.requestBanUntil) {
+        const h = Math.ceil((state.requestBanUntil - now()) / 3600000);
+        showToast('요청 금지 중이다. 약 ' + h + '시간 남음.');
+        return;
+      }
+      if (type === 'edging') type = 'unlock'; // 구버전 호환
+      currentRequestType = type;
+      const titleMap = { unlock: '잠깐 풀어달라고 빌기', orgasm: '싸게 해달라고 빌기' };
+      document.getElementById('requestTitle').textContent = titleMap[type] || '요청';
+      const tone = getTone();
+
+      let html = '';
+      if (type === 'unlock') {
+        html = `
+          <p style="font-size:0.9rem;margin-bottom:10px;">${tone.unlockAsk}</p>
+          <label>이유</label>
+          <select id="reqReasonType">
+            <option value="edge">에징·자극</option>
+            <option value="hygiene">위생·세척</option>
+            <option value="pain">통증·불편</option>
+            <option value="other">기타</option>
+          </select>
+          <label>얼마나 (분)</label>
+          <input type="number" id="reqMinutes" min="5" max="180" value="20">
+          <label>사연 (짧게)</label>
+          <textarea id="reqReason" placeholder="왜 잠깐 풀어야 하는지"></textarea>
+          <label>지금 자지 사진 (카메라만)</label>
+          <input type="file" id="reqPhoto" class="cam-only" accept="image/*" capture="environment">
+          <button type="button" class="btn-secondary cam-btn" data-cam-for="reqPhoto" data-cam-preview="">카메라로 촬영</button>
+        `;
+      } else {
+        html = `
+          <p style="font-size:0.9rem;margin-bottom:10px;">${tone.orgasmAsk}</p>
+          <div style="font-size:0.8rem;color:#e0a090;margin-bottom:10px;line-height:1.5;border:1px solid #5a3028;border-radius:8px;padding:10px;background:#1a100e;">
+            <b>사정 조건 · 사후 처리</b><br>
+            · 24시간 쿨타임 / 거절 시 처벌 각오 (첫 거절은 경고)<br>
+            · 목표 진행·성실 보고·호감이 낮으면 거의 불허<br>
+            · 허락 후: 사정 → 즉시 재잠금 → 카메라 보고<br>
+            · 보고 없이 방치하면 추가 처벌
+          </div>
+          <label>지금 자지 사진 (카메라만)</label>
+          <input type="file" id="reqPhoto" class="cam-only" accept="image/*" capture="environment">
+          <button type="button" class="btn-secondary cam-btn" data-cam-for="reqPhoto" data-cam-preview="">카메라로 촬영</button>
+        `;
+      }
+      document.getElementById('requestBody').innerHTML = html;
+      bindCameraButtons();
+      document.getElementById('requestModal').classList.remove('hidden');
+    }
+
+    function calcApprovalChance(type, minutes) {
+      const rules = getRules();
+      const wearMs = getWearMs();
+      const targetMs = getEffectiveTargetDays() * 86400000;
+      const progress = targetMs > 0 ? wearMs / targetMs : 0;
+
+      let chance = 0.25; // 기본
+
+      // 호감도 (대화로 쌓임, 눈에 안 보임)
+      // 호감은 요청 허락에 거의 영향 없음 (최대 ±3%p)
+      const aff = state.affection == null ? 50 : state.affection;
+      chance += (aff - 50) / 250;
+
+      // 잘 지킨 기간
+      chance += Math.min(0.35, (state.consecutiveGoodDays || 0) * 0.06);
+
+      // 진행률
+      if (type === 'unlock') {
+        if (progress >= rules.unlockNeedPct) chance += 0.4;
+        else if (progress >= rules.unlockNeedPct - 0.15) chance += 0.15;
+        else chance -= 0.25;
+      }
+      if (type === 'orgasm') {
+        // 최소 조건: 모드 요구 진행률의 70% 미만이면 사실상 불가
+        if (progress < rules.orgasmNeedPct * 0.7) {
+          chance = 0.02;
+        } else if (progress >= rules.orgasmNeedPct) {
+          chance += 0.35;
+        } else {
+          chance -= 0.15;
+        }
+        // 성실 보고 부족
+        if ((state.consecutiveGoodDays || 0) < 2) chance -= 0.12;
+        // 호감 매우 낮으면 추가 감점
+        if ((state.affection == null ? 50 : state.affection) < 35) chance -= 0.1;
+      }
+      if (type === 'edging') {
+        chance += 0.15;
+        // 하루 횟수 / 간격 체크
+        const recentEdging = (state.recentRequests || []).filter(r => 
+          r.type === 'edging' && (now() - r.ts) < 86400000
+        );
+        if (recentEdging.length >= rules.edgingMax) chance = 0.05;
+        const lastEdging = recentEdging.sort((a,b)=>b.ts-a.ts)[0];
+        if (lastEdging && (now() - lastEdging.ts) < rules.edgingIntervalH * 3600000) {
+          chance = 0.08;
+        }
+      }
+
+      // 요청 시간이 길수록 불리
+      if (minutes) {
+        if (minutes <= 15) chance += 0.1;
+        else if (minutes >= 45) chance -= 0.25;
+        else if (minutes >= 30) chance -= 0.1;
+      }
+
+      // 최근 요청이 많으면 불리
+      const recent = (state.recentRequests || []).filter(r => (now() - r.ts) < 48*3600000);
+      chance -= recent.length * 0.08;
+
+      // 피부 심각하면 해제 쪽 가산
+      if (type === 'unlock' && state.lastCheckSkin === 'bad') chance += 0.25;
+
+      return Math.max(0.03, Math.min(0.92, chance));
+    }
+
+    function submitRequest() {
+      const type = currentRequestType;
+      const photoInput = document.getElementById('reqPhoto');
+      const reqFile = getPhotoFileFromInput(photoInput);
+      if (!reqFile) {
+        showToast('카메라로 사진을 촬영해야 요청할 수 있습니다.');
+        return;
+      }
+
+      let minutes = 15;
+      if (type !== 'orgasm') {
+        minutes = parseInt(document.getElementById('reqMinutes')?.value || '15', 10);
+        if (isNaN(minutes) || minutes < 5) {
+          showToast('시간을 올바르게 입력하세요.');
+          return;
+        }
+      }
+
+      // 요청 사진 저장 (비동기 시작)
+      const reqKind = type === 'orgasm' ? 'orgasm' : 'unlock';
+      compressImageFile(reqFile).then(dataUrl => {
+        savePhotoRecord(reqKind, dataUrl, type);
+      }).catch(() => {});
+
+      // 강제 쿨다운: 사정 24시간 / 해제 12시간 내 동일 요청은 무조건 불허
+      const cooldownMs = type === 'orgasm' ? 24 * 3600000 : (type === 'unlock' ? 12 * 3600000 : 6 * 3600000);
+      const recentSame = (state.recentRequests || []).filter(r => r.type === type && (now() - r.ts) < cooldownMs);
+      const isRepeat = recentSame.length > 0;
+      const hardDeny = isRepeat && (type === 'orgasm' || type === 'unlock');
+
+      // 6시간 안 재요청(쿨다운보다 짧은 구간)도 호감·멘트용으로 따로 봄
+      const recentSpam = (state.recentRequests || []).filter(r => r.type === type && (now() - r.ts) < 6 * 3600000);
+      const isSpam = recentSpam.length > 0;
+
+      let chance = calcApprovalChance(type, minutes);
+      if (isSpam) chance *= 0.45;
+      if (type === 'orgasm') chance = Math.min(chance, 0.22);
+      if (hardDeny) chance = 0;
+
+      const approved = !hardDeny && Math.random() < chance;
+
+      state.recentRequests = state.recentRequests || [];
+      state.recentRequests.push({ type, ts: now(), approved });
+      if (state.recentRequests.length > 30) state.recentRequests = state.recentRequests.slice(-20);
+
+      const p = state.masterPersonality || 'cold';
+      const master = state.masterName || '주인님';
+
+      if (approved) {
+        if (type === 'unlock') {
+          pauseWearTimer('unlock');
+          state.currentUnlockUntil = now() + minutes * 60000;
+          // 일시 해제는 locked false + 타이머 정지, 시간 끝나면 다시 잠그라고 안내
+          addLog('approve', `풀기 허락 (${minutes}분) · 타이머 정지`);
+          playSfx('approve');
+          showResult(master, getTone().unlockOk(minutes));
+        } else {
+          // 사정 허락: 타이머 정지 + 사후 재잠금 보고 필수
+          if (typeof pauseWearTimer === 'function') pauseWearTimer('orgasm');
+          else { state.locked = false; state.currentUnlockUntil = null; }
+          state.needsRelockReport = true;
+          state.postOrgasmPending = true;
+          addLog('approve', '사정 허락 · 사후 재잠금 보고 필요');
+          const oralHint = {
+            cold: '나온 것은… 입으로 처리하면 보기 좋겠지. 강요는 아니다.',
+            sweet: '싸면… 가능하면 입으로 정리해 줄래? 그러면 내가 좀 더 기분이 좋을 것 같아. 의무는 아니야.',
+            playful: '다 싸면 혀로 치우는 거, 내가 좋아하는데. 해볼래? 안 해도 되긴 해~',
+            violent: '나온 건 입으로 치워. …하라곤 안 했다. 하면 마음에 든다.',
+            scorn: '흘리지 말고 입으로 처리해 보면 어떨까. 네 분수를 아는 짓이지. 필수는 아니다.'
+          };
+          const hint = oralHint[p] || oralHint.cold;
+          playSfx('approve');
+          showResult(master, getTone().orgasmOk + '\n' + hint + '\n사정 후 즉시 다시 잠그고 카메라로 보고해라.');
+        }
+      } else {
+        state.rejectCount = (state.rejectCount || 0) + 1;
+
+        let msg = '';
+        if (type === 'unlock') {
+          if (hardDeny) {
+            const cdUnlock = {
+              cold: '12시간 안엔 다시 안 푼다. 참아.',
+              sweet: '아직 12시간도 안 지났어. 지금은 안 돼. 조금 더 기다려.',
+              playful: '쿨타임이야~ 12시간 전에는 풀기 없다.',
+              violent: '12시간 안이다. 꺼져.',
+              scorn: '12시간도 못 참고 또 빌다니. 거절이다.'
+            };
+            msg = cdUnlock[p] || cdUnlock.cold;
+          } else if (isSpam) {
+            const spamUnlock = {
+              cold: '또 물어본다. 대답은 같다. 안 된다.',
+              sweet: '아까도 말했잖아… 지금은 정말 안 돼. 조금 서운하다.',
+              playful: '같은 말 반복? 심심하지 않아? 거절이야~',
+              violent: '또? 듣기 싫다. 꺼져.',
+              scorn: '같은 청원을 반복하다니. 한심하군. 거절이다.'
+            };
+            msg = spamUnlock[p] || spamUnlock.cold;
+          } else {
+            msg = getTone().unlockNo;
+          }
+          let affDropLine = '';
+          if (isSpam || hardDeny) {
+            state.affection = Math.max(0, (state.affection == null ? 50 : state.affection) - 5);
+            affDropLine = affectionReact(-5, true);
+          }
+          addLog('reject', '풀기 거절' + (hardDeny ? ' (12시간 쿨)' : isSpam ? ' (재요청)' : ''));
+          playSfx('reject');
+          showResult(master, msg + (affDropLine ? '\n' + affDropLine : ''));
+        } else {
+          // 사정 거절: 계정당 첫 거절은 경고만, 이후는 처벌
+          if (!state.orgasmWarned) {
+            state.orgasmWarned = true;
+            const warnMsg = {
+              cold: '거절한다. 다음에도 사정을 빌면 처분한다. 이번만 경고다.',
+              sweet: '안 돼… 이번엔 경고만 할게. 다음에도 무리해서 빌면 벌을 줄 수밖에 없어.',
+              playful: '놉. 이번엔 봐줄게. 다음엔 벌 타임이야, 기억해~',
+              violent: '거절. 다음엔 처벌이다. 기억해.',
+              scorn: '거절이다. 한 번의 경고만 주마. 다음 청원에는 처분이 따른다.'
+            };
+            msg = warnMsg[p] || warnMsg.cold;
+            addLog('reject', '사정 거절 · 첫 경고 (처벌 없음)');
+            playSfx('reject');
+            showResult(master, msg);
+          } else {
+            if (hardDeny) {
+              const cdOrgasm = {
+                cold: '경고했는데도 24시간 안에 또 빌었다. 처분한다.',
+                sweet: '경고했는데… 하루도 안 지나서 또. 벌을 받을 차례야.',
+                playful: '경고 기억 안 나? 쿨타임+재요청. 벌 타임~',
+                violent: '경고 무시. 처벌.',
+                scorn: '경고를 듣고도 또 사정을 빌다니. 처분한다.'
+              };
+              msg = cdOrgasm[p] || cdOrgasm.cold;
+            } else if (isSpam) {
+              const spamOrgasm = {
+                cold: '경고 후에도 반복한다. 처분한다.',
+                sweet: '또 싸게 해달라고…? 경고했는데. 이번에는 벌을 줄 수밖에 없어.',
+                playful: '경고 듣고도 또? 벌 받을 준비해~',
+                violent: '또 사정? 처벌이다.',
+                scorn: '경고를 무시한 청원이다. 처분하마.'
+              };
+              msg = spamOrgasm[p] || spamOrgasm.cold;
+            } else {
+              const orgasmNoLong = {
+                cold: (getTone().orgasmNo || '싸는 건 없다.') + ' 경고는 끝났다. 처분한다.',
+                sweet: (getTone().orgasmNo || '아직은 안 돼.') + ' 지난번에 경고했잖아. 이번엔 벌이야.',
+                playful: (getTone().orgasmNo || '꿈도 꾸지 마.') + ' 경고는 이미 썼지. 벌 타임~',
+                violent: (getTone().orgasmNo || '사정 금지.') + ' 경고 끝. 처벌.',
+                scorn: (getTone().orgasmNo || '분수에 맞게.') + ' 경고는 소진됐다. 처분한다.'
+              };
+              msg = orgasmNoLong[p] || orgasmNoLong.cold;
+            }
+            let affDropLine = '';
+            if (isSpam || hardDeny) {
+              state.affection = Math.max(0, (state.affection == null ? 50 : state.affection) - 8);
+              affDropLine = affectionReact(-8, true);
+            }
+            addLog('reject', '사정 거절' + (hardDeny ? ' (24시간 쿨)' : isSpam ? ' (재요청)' : '') + ' · 처벌');
+            playSfx('reject');
+            showResult(master, msg + (affDropLine ? '\n' + affDropLine : ''));
+            const baseLv = (hardDeny || isSpam) ? 4 : 2;
+            saveState();
+            closeModal('requestModal');
+            assignPunishment(baseLv, hardDeny ? '사정 쿨타임 위반' : isSpam ? '사정 재요청 거절' : '사정 요청 거절');
+            updateUI();
+            return;
+          }
+        }
+      }
+
+      saveState();
+      closeModal('requestModal');
+      updateUI();
+    }
+
+    // ========== 비상 해제 ==========
+    function openEmergency() {
+      document.getElementById('emergencyPhoto').value = '';
+      document.getElementById('emergencyPreview').classList.add('hidden');
+      document.getElementById('emergencyReason').value = '';
+      document.getElementById('emergencyModal').classList.remove('hidden');
+    }
+
+    function submitEmergency() {
+      const photoInput = document.getElementById('emergencyPhoto');
+      const reason = document.getElementById('emergencyReason').value.trim();
+
+      const emFile = getPhotoFileFromInput(photoInput);
+      if (!emFile) {
+        showToast('카메라로 사진을 촬영하세요.');
+        return;
+      }
+      if (reason.length < 5) {
+        showToast('사유를 구체적으로 적으세요.');
+        return;
+      }
+
+      compressImageFile(emFile).then(dataUrl => {
+        savePhotoRecord('emergency', dataUrl, reason.slice(0, 40));
+      }).catch(() => {});
+
+      if (state.emergencyUsed >= 1) {
+        addLog('fail', '비상 풀기 두 번 시도 → 실패. 모든 기록 삭제.');
+        localStorage.removeItem('chastityToyState');
+        state = { ...defaultState };
+        saveState();
+        closeModal('emergencyModal');
+        updateUI();
+        showResult('실패했다', '비상으로 두 번이나 풀려고 했다.\n이번 목표는 실패다.\n지금까지 쌓아온 모든 기록이 지워졌다.');
+        return;
+      }
+
+      state.emergencyUsed = 1;
+      pauseWearTimer('emergency');
+      state.needsRelockReport = true;
+      state.consecutiveGoodDays = 0;
+
+      addLog('emergency', `비상으로 자지 풂. 타이머 정지. 사유: ${reason}. 재잠금 보고 필요.`);
+      saveState();
+      closeModal('emergencyModal');
+      assignPunishment(8, '비상 해제');
+      updateUI();
+      showResult(state.masterName || '주인님', getTone().emergency);
+    }
+
+    // ========== 유틸 ==========
+
+    // ========== 사진 저장 (IndexedDB, 대용량) ==========
+    const MAX_PHOTOS = 200;
+    const PHOTO_DB = 'chastityPhotoDB';
+    const PHOTO_STORE = 'photos';
+    let photoDbPromise = null;
+
+    function openPhotoDb() {
+      if (photoDbPromise) return photoDbPromise;
+      photoDbPromise = new Promise((resolve, reject) => {
+        const req = indexedDB.open(PHOTO_DB, 1);
+        req.onupgradeneeded = function(e) {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains(PHOTO_STORE)) {
+            const store = db.createObjectStore(PHOTO_STORE, { keyPath: 'id' });
+            store.createIndex('ts', 'ts', { unique: false });
+            store.createIndex('kind', 'kind', { unique: false });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+      return photoDbPromise;
+    }
+
+    function compressImageFile(fileOrBlob, maxSide, quality) {
+      maxSide = maxSide || 960;
+      quality = quality || 0.8;
+      return new Promise((resolve, reject) => {
+        const url = URL.createObjectURL(fileOrBlob);
+        const img = new Image();
+        img.onload = function() {
+          let w = img.width, h = img.height;
+          if (w > maxSide || h > maxSide) {
+            if (w >= h) { h = Math.round(h * maxSide / w); w = maxSide; }
+            else { w = Math.round(w * maxSide / h); h = maxSide; }
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = w; canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          URL.revokeObjectURL(url);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = function() {
+          URL.revokeObjectURL(url);
+          reject(new Error('image load fail'));
+        };
+        img.src = url;
+      });
+    }
+
+    function getPhotoFileFromInput(input) {
+      if (!input) return null;
+      if (input.files && input.files[0]) return input.files[0];
+      if (input._camFile) return input._camFile;
+      return null;
+    }
+
+    function dataUrlToBlob(dataUrl) {
+      const parts = dataUrl.split(',');
+      const mime = (parts[0].match(/:(.*?);/) || [])[1] || 'image/jpeg';
+      const bin = atob(parts[1]);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      return new Blob([arr], { type: mime });
+    }
+
+    async function savePhotoRecord(kind, dataUrl, note) {
+      const id = kind + '_' + now();
+      const blob = dataUrlToBlob(dataUrl);
+      const meta = { id, kind, ts: now(), note: note || '', size: blob.size };
+      state.photoList = state.photoList || [];
+      state.photoList.push({ id, kind, ts: meta.ts, note: meta.note, size: meta.size });
+      while (state.photoList.length > MAX_PHOTOS) {
+        const old = state.photoList.shift();
+        if (old) {
+          try {
+            const db = await openPhotoDb();
+            db.transaction(PHOTO_STORE, 'readwrite').objectStore(PHOTO_STORE).delete(old.id);
+          } catch (e) {}
+        }
+      }
+      try {
+        const db = await openPhotoDb();
+        await new Promise((resolve, reject) => {
+          const tx = db.transaction(PHOTO_STORE, 'readwrite');
+          tx.objectStore(PHOTO_STORE).put({ id, kind, ts: meta.ts, note: meta.note, blob });
+          tx.oncomplete = resolve;
+          tx.onerror = () => reject(tx.error);
+        });
+      } catch (e) {
+        console.warn('photo idb save fail', e);
+      }
+      // 메타만 localStorage (용량 작음)
+      try { saveState(); } catch (e) {}
+      return id;
+    }
+
+    async function loadPhotoBlob(id) {
+      try {
+        const db = await openPhotoDb();
+        return await new Promise((resolve, reject) => {
+          const req = db.transaction(PHOTO_STORE, 'readonly').objectStore(PHOTO_STORE).get(id);
+          req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+          req.onerror = () => reject(req.error);
+        });
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function openPhotoGallery() {
+      const list = (state.photoList || []).slice().reverse();
+      const el = document.getElementById('photoGalleryList');
+      if (!el) return;
+      if (!list.length) {
+        el.innerHTML = '<p style="color:var(--muted);font-size:0.85rem;">저장된 사진이 없다.</p>';
+        document.getElementById('photoGalleryModal').classList.remove('hidden');
+        return;
+      }
+      const kindLabel = { daily: '상태보고', unlock: '풀기요청', orgasm: '사정요청', emergency: '비상', relock: '재잠금', check: '확인', punish: '처벌' };
+      el.innerHTML = '<p style="color:var(--muted);font-size:0.8rem;">불러오는 중…</p>';
+      document.getElementById('photoGalleryModal').classList.remove('hidden');
+
+      const parts = [];
+      let total = 0;
+      for (const p of list) {
+        const blob = await loadPhotoBlob(p.id);
+        const d = new Date(p.ts).toLocaleString('ko-KR');
+        const label = kindLabel[p.kind] || p.kind;
+        const sz = p.size ? (p.size / 1024).toFixed(0) + 'KB' : '';
+        if (blob) total += blob.size;
+        const src = blob ? URL.createObjectURL(blob) : '';
+        parts.push(`<div style="margin-bottom:12px;border:1px solid #2a2220;border-radius:8px;overflow:hidden;background:#120e0c;">
+          ${src ? `<img src="${src}" style="width:100%;display:block;max-height:280px;object-fit:contain;background:#000;">` : '<div style="padding:20px;color:#666;">사진 없음</div>'}
+          <div style="padding:8px;font-size:0.78rem;color:var(--muted);">${d} · ${label}${sz ? ' · ' + sz : ''}${p.note ? ' — ' + p.note : ''}</div>
+        </div>`);
+      }
+      const mb = (total / (1024 * 1024)).toFixed(1);
+      el.innerHTML = `<p style="font-size:0.8rem;color:var(--muted);margin-bottom:10px;">${list.length}장 · 약 ${mb}MB (IndexedDB)</p>` + parts.join('');
+    }
+
+    function previewPhoto(input, imgId) {
+      const img = document.getElementById(imgId);
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          img.src = e.target.result;
+          img.classList.remove('hidden');
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.add('hidden');
+    }
+
+
+    // ========== 효과음 (Web Audio, 파일 없음) ==========
+    let sfxCtx = null;
+    function getSfxCtx() {
+      if (!sfxCtx) {
+        try { sfxCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return null; }
+      }
+      if (sfxCtx.state === 'suspended') sfxCtx.resume().catch(() => {});
+      return sfxCtx;
+    }
+    function playTone(freq, dur, type, vol, when) {
+      const ctx = getSfxCtx();
+      if (!ctx) return;
+      const t0 = ctx.currentTime + (when || 0);
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = type || 'square';
+      osc.frequency.setValueAtTime(freq, t0);
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol || 0.08, t0 + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.02);
+    }
+    function playSfx(kind) {
+      if (!state.sfxEnabled) return;
+      const p = state.masterPersonality || 'cold';
+      // 성격별 피치 보정
+      const pitch = { cold: 1.0, sweet: 1.12, playful: 1.18, violent: 0.88, scorn: 0.92 }[p] || 1;
+      try {
+        if (kind === 'approve') {
+          playTone(520 * pitch, 0.06, 'triangle', 0.07);
+          playTone(780 * pitch, 0.09, 'triangle', 0.05, 0.07);
+        } else if (kind === 'reject') {
+          playTone(180 * pitch, 0.12, 'square', 0.06);
+        } else if (kind === 'punish') {
+          playTone(90 * pitch, 0.18, 'sawtooth', 0.05);
+          playTone(70 * pitch, 0.22, 'square', 0.04, 0.05);
+        } else if (kind === 'lock') {
+          playTone(400 * pitch, 0.04, 'square', 0.06);
+          playTone(280 * pitch, 0.08, 'triangle', 0.05, 0.05);
+        } else if (kind === 'check') {
+          playTone(660 * pitch, 0.05, 'sine', 0.05);
+          playTone(660 * pitch, 0.05, 'sine', 0.04, 0.12);
+        } else if (kind === 'affUp') {
+          playTone(600 * pitch, 0.05, 'sine', 0.035);
+          playTone(900 * pitch, 0.07, 'sine', 0.03, 0.05);
+        } else if (kind === 'affDown') {
+          playTone(400 * pitch, 0.06, 'sine', 0.03);
+          playTone(280 * pitch, 0.1, 'sine', 0.025, 0.05);
+        } else if (kind === 'click') {
+          playTone(900 * pitch, 0.03, 'square', 0.03);
+        }
+      } catch (e) {}
+    }
+
+    function showResult(title, msg) {
+      document.getElementById('resultTitle').textContent = title;
+      document.getElementById('resultMessage').textContent = msg;
+      document.getElementById('resultModal').classList.remove('hidden');
+    }
+
+    function showToast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast';
+      t.textContent = msg;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 2800);
+    }
+
+    function openAchievements() {
+      renderAchievements();
+      document.getElementById('achieveModal').classList.remove('hidden');
+    }
+
+    function viewHistory() {
+      const el = document.getElementById('fullHistory');
+      if (!state.history.length) {
+        el.textContent = '기록이 없습니다.';
+      } else {
+        el.innerHTML = state.history.slice().reverse().map(l => {
+          const d = new Date(l.ts).toLocaleString('ko-KR');
+          return `<div class="log-item"><strong>${d}</strong><br>${l.msg}</div>`;
+        }).join('');
+      }
+      document.getElementById('historyModal').classList.remove('hidden');
+    }
+
+    // ========== 주인님 얼굴 ==========
+    const DEFAULT_MASTER_FACE = "data:image/jpeg;base64," + (function(){
+      // compact default face embedded
+      return localStorage.getItem('masterFaceData') || null;
+    })();
+
+    function loadMasterFace() {
+      const img = document.getElementById('masterFace');
+      if (!img) return;
+      const defaultFace = "data:image/jpeg;base64,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";
+      img.onerror = function() {
+        localStorage.removeItem('masterFaceData');
+        img.src = defaultFace;
+      };
+      const saved = localStorage.getItem('masterFaceData');
+      if (saved && saved.startsWith('data:image')) {
+        img.src = saved;
+      } else {
+        localStorage.removeItem('masterFaceData');
+        img.src = defaultFace;
+      }
+    }
+
+    function changeMasterFace(input) {
+      if (!input.files || !input.files[0]) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = e.target.result;
+        // limit size roughly
+        if (data.length > 500000) {
+          showToast('이미지가 너무 크다. 더 작은 걸로 올려.');
+          return;
+        }
+        localStorage.setItem('masterFaceData', data);
+        document.getElementById('masterFace').src = data;
+        showToast('주인님 얼굴을 바꿨다.');
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+
+    
+    
+    // ========== 업적 ==========
+    const ACHIEVEMENTS = [
+      { id: 'wear_24h', cat: '시간', title: '첫 24시간', desc: '연속 감금 24시간 달성' },
+      { id: 'wear_3d', cat: '시간', title: '3일 생존', desc: '연속 감금 3일 달성' },
+      { id: 'wear_7d', cat: '시간', title: '일주일', desc: '연속 감금 7일 달성' },
+      { id: 'wear_14d', cat: '시간', title: '2주', desc: '연속 감금 14일 달성' },
+      { id: 'wear_30d', cat: '시간', title: '한 달', desc: '연속 감금 30일 달성' },
+      { id: 'check_3', cat: '성실', title: '성실한 장난감', desc: '상태 바치기 3일 연속' },
+      { id: 'check_7', cat: '성실', title: '완벽한 보고', desc: '상태 바치기 7일 연속' },
+      { id: 'check_no_ignore', cat: '성실', title: '항상 응답', desc: '확인 알림을 한 번도 무시하지 않음 (감금 3일+)' },
+      { id: 'no_emergency', cat: '인내', title: '비상 없이', desc: '비상 해제 없이 목표 달성' },
+      { id: 'punish_done', cat: '인내', title: '처벌 수용', desc: '처벌을 끝까지 완료' },
+      { id: 'reject_10', cat: '인내', title: '거절 10회', desc: '요청이 10번 거절되어도 버팀' },
+      { id: 'mode_normal', cat: '특별', title: '일반 진입', desc: '일반 난이도(4일+) 감금' },
+      { id: 'mode_expert', cat: '특별', title: '숙련 진입', desc: '숙련 난이도(8일+) 감금' },
+      { id: 'punish_lv5', cat: '특별', title: '중한 처벌', desc: '처벌 Lv.5 이상 완료' },
+      { id: 'goal_clear', cat: '특별', title: '목표 완주', desc: '설정한 감금 기간 달성' }
+    ];
+
+    function unlockAchieve(id) {
+      if (!state.unlockedAchievements) state.unlockedAchievements = [];
+      if (state.unlockedAchievements.includes(id)) return false;
+      const a = ACHIEVEMENTS.find(x => x.id === id);
+      if (!a) return false;
+      state.unlockedAchievements.push(id);
+      addLog('achieve', `업적 달성: ${a.title} — ${a.desc}`);
+      saveState();
+      showToast(`업적: ${a.title}`);
+      return true;
+    }
+
+    function checkAchievements() {
+      if (!state.locked) return;
+      const wearMs = getWearMs();
+      const day = wearMs / 86400000;
+      if (day >= 1) unlockAchieve('wear_24h');
+      if (day >= 3) unlockAchieve('wear_3d');
+      if (day >= 7) unlockAchieve('wear_7d');
+      if (day >= 14) unlockAchieve('wear_14d');
+      if (day >= 30) unlockAchieve('wear_30d');
+      if ((state.currentConsecutiveChecks || 0) >= 3) unlockAchieve('check_3');
+      if ((state.currentConsecutiveChecks || 0) >= 7) unlockAchieve('check_7');
+      if (day >= 3 && (state.checkIgnoreCount || 0) === 0) unlockAchieve('check_no_ignore');
+      if ((state.rejectCount || 0) >= 10) unlockAchieve('reject_10');
+      const mode = getMode();
+      if (mode === 'normal' || mode === 'expert') unlockAchieve('mode_normal');
+      if (mode === 'expert') unlockAchieve('mode_expert');
+      const targetMs = getEffectiveTargetDays() * 86400000;
+      if (wearMs >= targetMs && targetMs > 0) {
+        unlockAchieve('goal_clear');
+        if ((state.emergencyUsed || 0) === 0) unlockAchieve('no_emergency');
+      }
+    }
+
+    function renderAchievements() {
+      const el = document.getElementById('achieveList');
+      if (!el) return;
+      const unlocked = state.unlockedAchievements || [];
+      el.innerHTML = ACHIEVEMENTS.map(a => {
+        const on = unlocked.includes(a.id);
+        return `<div style="display:flex;gap:10px;align-items:flex-start;padding:8px;border-radius:8px;background:${on ? 'rgba(180,120,60,0.15)' : 'rgba(0,0,0,0.2)'};border:1px solid ${on ? 'var(--accent)' : '#2a2420'};opacity:${on ? '1' : '0.55'};">
+          <div style="font-size:1.1rem;">${on ? '[달성]' : '[미달성]'}</div>
+          <div style="flex:1;">
+            <div style="font-size:0.72rem;color:var(--muted);">${a.cat}</div>
+            <div style="font-weight:600;font-size:0.9rem;">${a.title}</div>
+            <div style="font-size:0.75rem;color:var(--muted);">${a.desc}</div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+
+    // ========== 처벌 시스템 ==========
+    const PUNISH_LEVELS = [
+      { level: 1, title: '반나절 연장', task: '잠금 시간이 반나절(12시간) 추가된다. 별도 인증 없이 적용된다.', daysAdd: 0.5, auto: true },
+      { level: 2, title: '하루 연장', task: '잠금 시간이 하루 추가된다. 별도 인증 없이 적용된다.', daysAdd: 1, auto: true },
+      { level: 3, title: '요청 금지', task: '내일까지 엣징·해제·사정 요청을 할 수 없다. 완료 보고로 규칙을 인지했다고 밝혀라.', daysAdd: 0, requestBanHours: 24 },
+      { level: 4, title: '야한 컨텐츠 금지', task: '처벌 기간 동안 야한 영상·글·음성 등을 보거나 듣지 마라. 지키겠다는 고백과 잠긴 자지 사진을 바쳐라.', daysAdd: 0.5 },
+      { level: 5, title: '보고 주기 강화', task: '앞으로 더 자주 상태를 바쳐야 한다. 규칙을 인지했다는 고백과 사진을 올려라.', daysAdd: 0, reportTighter: true },
+      { level: 6, title: '노팬티 하루', task: '하루 동안 팬티 없이 지내라. 잠긴 자지가 보이게 노팬티 인증 사진을 바쳐라.', daysAdd: 0.5 },
+      { level: 7, title: '아랫배 낙서', task: '아랫배에 음란한 문구를 쓰고 사진으로 바쳐라. (예: 주인님의 것, 사용 중 등)', daysAdd: 1 },
+      { level: 8, title: '완전 노출 인증', task: '옷 없이 잠긴 자지가 분명히 보이게 전신(얼굴 제외 가능) 사진을 바쳐라.', daysAdd: 1 },
+      { level: 9, title: '3일 연장', task: '잠금 시간이 3일 추가된다. 별도 인증 없이 적용된다.', daysAdd: 3, auto: true },
+      { level: 10, title: '음모 제거', task: '음모를 정리/제거하고, 정리된 상태와 잠긴 자지가 보이게 사진을 바쳐라.', daysAdd: 2 }
+    ];
+
+    function assignPunishment(level, reason) {
+      playSfx('punish');
+      level = Math.max(1, Math.min(10, level|0));
+      if (state.activePunishment) {
+        level = Math.max(state.activePunishment.level, level);
+      }
+      const aff = state.affection == null ? 50 : state.affection;
+      let note = '';
+      // 호감 높으면 처벌 수위 완화, 대신 호감 하락
+      if (aff >= 70 && level > 1) {
+        const reduce = aff >= 85 ? 2 : 1;
+        const newLv = Math.max(1, level - reduce);
+        if (newLv < level) {
+          note = ` (호감으로 Lv.${level}→${newLv})`;
+          level = newLv;
+          const drop = reduce === 2 ? 12 : 8;
+          state.affection = Math.max(0, aff - drop);
+          affectionReact(-drop, false);
+        }
+      } else if (aff >= 55 && level > 1) {
+        // 중간 이상이면 1단계만 완화 가능 (확률적 X, 고정 소폭)
+        const newLv = Math.max(1, level - 1);
+        if (newLv < level && level >= 4) {
+          note = ` (호감으로 Lv.${level}→${newLv})`;
+          level = newLv;
+          state.affection = Math.max(0, aff - 5);
+          affectionReact(-5, false);
+        }
+      } else if (aff < 35) {
+        // 호감 낮으면 한 단계 가중 (최대 10)
+        if (level < 10) {
+          note = ` (낮은 호감으로 Lv.${level}→${level + 1})`;
+          level = level + 1;
+        }
+      }
+      const def = PUNISH_LEVELS[level - 1];
+      state.totalPenalties = (state.totalPenalties || 0) + (def.daysAdd || 0);
+      if (def.requestBanHours) {
+        state.requestBanUntil = now() + def.requestBanHours * 3600000;
+      }
+      if (def.reportTighter) {
+        state.reportEveryHours = Math.max(8, (state.reportEveryHours || 24) - 6);
+      }
+      if (def.auto) {
+        addLog('punish', `처벌 Lv.${def.level} 「${def.title}」 즉시 적용` + (reason ? ` (${reason})` : '') + note + (def.daysAdd ? ` · +${def.daysAdd}일` : ''));
+        state.activePunishment = null;
+        saveState();
+        updateUI();
+        showToast(`처벌 Lv.${def.level}: ${def.title}`);
+        return;
+      }
+      state.activePunishment = {
+        level: def.level,
+        title: def.title,
+        task: def.task,
+        daysAdd: def.daysAdd || 0,
+        reason: reason || '',
+        assignedAt: now()
+      };
+      addLog('punish', `처벌 Lv.${def.level} 「${def.title}」 부과` + (reason ? ` (${reason})` : '') + note);
+      saveState();
+      updateUI();
+      showToast(`처벌 Lv.${def.level}이 내려왔다. 완료할 때까지 요청 불가.`);
+    }
+
+
+    function openPunishComplete() {
+      if (!state.activePunishment) return;
+      document.getElementById('punishModalTask').textContent = state.activePunishment.task;
+      document.getElementById('punishPhoto').value = '';
+      document.getElementById('punishPreview').classList.add('hidden');
+      document.getElementById('punishNote').value = '';
+      document.getElementById('punishModal').classList.remove('hidden');
+    }
+
+    function submitPunishment() {
+      if (!state.activePunishment) {
+        closeModal('punishModal');
+        return;
+      }
+      const photo = document.getElementById('punishPhoto');
+      if (!photo.files || !photo.files[0]) {
+        showToast('증거 사진을 첨부해라.');
+        return;
+      }
+      const note = document.getElementById('punishNote').value.trim();
+      if (note.length < 4) {
+        showToast('처벌을 수행한 내용을 짧게라도 적어라.');
+        return;
+      }
+      const p = state.activePunishment;
+      addLog('punish_ok', `처벌 Lv.${p.level} 「${p.title}」 완료 — ${note}`);
+      if (!state.punishmentHistory) state.punishmentHistory = [];
+      state.punishmentHistory.push({ ...p, completedAt: now(), note });
+      state.activePunishment = null;
+      unlockAchieve('punish_done');
+      if (p.level >= 5) unlockAchieve('punish_lv5');
+      saveState();
+      closeModal('punishModal');
+      updateUI();
+      showToast('처벌 완료. 다시 요청할 수 있다.');
+    }
+
+    function hasActivePunishment() {
+      return !!(state.activePunishment && state.activePunishment.level);
+    }
+
+
+    // ========== 확인 알림 ==========
+    let checkTimerInterval = null;
+
+    function isInActiveHours() {
+      const nowD = new Date();
+      const cur = nowD.getHours() * 60 + nowD.getMinutes();
+      const [sh, sm] = (state.activeStart || '08:00').split(':').map(Number);
+      const [eh, em] = (state.activeEnd || '23:30').split(':').map(Number);
+      const start = sh * 60 + sm;
+      const end = eh * 60 + em;
+      if (start <= end) return cur >= start && cur <= end;
+      return cur >= start || cur <= end;
+    }
+
+    function triggerCheck(manual) {
+      if (!manual && !state.notifEnabled) return;
+      if (!manual && !isInActiveHours()) return;
+      if (state.pendingCheck && !state.pendingCheck.responded) {
+        showToast('이미 확인 요청이 진행 중이다.');
+        return;
+      }
+      // 너무 자주 방지
+      if (!manual && state.lastCheckRequestTs && (now() - state.lastCheckRequestTs) < 6 * 3600000) {
+        return;
+      }
+
+      const startTs = now();
+      state.pendingCheck = {
+        startTs,
+        deadlineTs: startTs + 5 * 60 * 1000,
+        responded: false
+      };
+      state.lastCheckRequestTs = startTs;
+      const tone = getTone();
+      addLog('check', tone.checkLog);
+      playSfx('check');
+      saveState();
+
+      // 브라우저 알림
+      if (state.notifEnabled && typeof Notification !== 'undefined') {
+        if (Notification.permission === 'granted') {
+          try {
+            new Notification(tone.checkTitle, {
+              body: tone.checkBody,
+              requireInteraction: true
+            });
+          } catch (e) {}
+        } else if (Notification.permission !== 'denied') {
+          Notification.requestPermission();
+        }
+      }
+
+      // 화면 문구도 성격에 맞춤
+      const h2 = document.querySelector('#checkAlert h2');
+      const p = document.querySelector('#checkAlert p');
+      if (h2) h2.textContent = tone.checkTitle;
+      if (p) p.textContent = tone.checkBody;
+
+      updateCheckUI();
+      showToast(tone.checkTitle);
+    }
+
+    function updateCheckUI() {
+      const box = document.getElementById('checkAlert');
+      const timerEl = document.getElementById('checkTimer');
+      if (!box || !timerEl) return;
+
+      const pc = state.pendingCheck;
+      if (!pc || pc.responded) {
+        box.classList.add('hidden');
+        if (checkTimerInterval) {
+          clearInterval(checkTimerInterval);
+          checkTimerInterval = null;
+        }
+        return;
+      }
+
+      const remain = pc.deadlineTs - now();
+      if (remain <= 0) {
+        // 시간 초과
+        pc.responded = false;
+        state.pendingCheck = null;
+        addLog('check_miss', getTone().checkMiss);
+        // 가벼운 처벌: 연속 성실 일수 리셋 + 소폭 연장
+        state.consecutiveGoodDays = 0;
+        state.checkIgnoreCount = (state.checkIgnoreCount || 0) + 1;
+        saveState();
+        box.classList.add('hidden');
+        assignPunishment(3, '확인 알림 무시');
+        showToast(getTone().checkMiss);
+        updateUI();
+        return;
+      }
+
+      box.classList.remove('hidden');
+      const sec = Math.ceil(remain / 1000);
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      timerEl.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+
+      if (!checkTimerInterval) {
+        checkTimerInterval = setInterval(() => {
+          updateCheckUI();
+          updateUI();
+        }, 1000);
+      }
+    }
+
+    function openCheckResponse() {
+      document.getElementById('checkPhoto').value = '';
+      document.getElementById('checkPreview').classList.add('hidden');
+      document.getElementById('checkNote').value = '';
+      document.getElementById('checkResponseModal').classList.remove('hidden');
+    }
+
+    function submitCheckResponse() {
+      const photoInput = document.getElementById('checkPhoto');
+      if (!photoInput.files || !photoInput.files[0]) {
+        showToast('사진을 반드시 첨부해라.');
+        return;
+      }
+      if (!state.pendingCheck || state.pendingCheck.responded) {
+        showToast('진행 중인 확인 요청이 없다.');
+        closeModal('checkResponseModal');
+        return;
+      }
+      if (now() > state.pendingCheck.deadlineTs) {
+        showToast('이미 시간이 지났다.');
+        closeModal('checkResponseModal');
+        updateCheckUI();
+        return;
+      }
+
+      const note = document.getElementById('checkNote').value.trim();
+      state.pendingCheck.responded = true;
+      state.pendingCheck = null;
+      let msg = '확인 요청에 응답했다. 자지를 보여줌.';
+      if (note) msg += ` — ${note}`;
+      addLog('check_ok', msg);
+      saveState();
+      closeModal('checkResponseModal');
+      updateCheckUI();
+      updateUI();
+      showToast(getTone().checkOk);
+    }
+
+    // 설정에서 알림 켜면 권한 요청
+    const _origSaveSettings = saveSettings;
+    // saveSettings already exists; hook permission on notif enable inside save is fine via re-read
+
+
+    // ========== 카메라 (APK: 네이티브 인텐트 우선) ==========
+    let camStream = null;
+    let camTarget = null;
+    let camBlob = null;
+
+    function isSecureCamContext() {
+      try {
+        return !!(window.isSecureContext && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+      } catch (e) { return false; }
+    }
+
+    // APK/Android에서 가장 잘 되는 방식: capture 속성이 있는 file input 클릭
+    function openNativeCamera(inputId, previewId) {
+      const input = document.getElementById(inputId);
+      if (!input) {
+        showToast('사진 입력란을 찾을 수 없다.');
+        return;
+      }
+      try {
+        input.setAttribute('accept', 'image/*');
+        // environment = 후면 카메라 우선. 일부 웹뷰는 user/environment 무시하고 카메라 앱만 연다.
+        input.setAttribute('capture', 'environment');
+        input.value = '';
+        // change 시 미리보기 연결
+        if (previewId) {
+          input.onchange = function() {
+            previewPhoto(input, previewId);
+          };
+        }
+        // 사용자 제스처 안에서 동기 클릭해야 카메라가 열림
+        input.click();
+      } catch (e) {
+        showToast('카메라를 열 수 없다. APK에 카메라 권한이 있는지 확인해라.');
+      }
+    }
+
+    function openCameraFor(inputId, previewId) {
+      // 1순위: 네이티브 카메라 앱 (WebView/APK 호환)
+      openNativeCamera(inputId, previewId);
+    }
+
+    // 선택: 인앱 실시간 카메라 (HTTPS 등 보안 컨텍스트에서만)
+    function openLiveCamera(inputId, previewId) {
+      if (!isSecureCamContext()) {
+        showToast('이 환경에선 인앱 카메라 불가. 일반 촬영 버튼을 사용해라.');
+        openNativeCamera(inputId, previewId);
+        return;
+      }
+      camTarget = { inputId, previewId };
+      camBlob = null;
+      const prev = document.getElementById('cameraShotPreview');
+      if (prev) { prev.src = ''; prev.classList.add('hidden'); }
+      const conf = document.getElementById('cameraConfirmBtn');
+      if (conf) conf.classList.add('hidden');
+      document.getElementById('cameraModal').classList.remove('hidden');
+      const video = document.getElementById('cameraVideo');
+      if (video) video.classList.remove('hidden');
+      const start = (stream) => {
+        camStream = stream;
+        video.srcObject = stream;
+        video.play().catch(() => {});
+      };
+      navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } }
+      }).then(start).catch(() => {
+        navigator.mediaDevices.getUserMedia({ audio: false, video: true }).then(start).catch(() => {
+          showToast('카메라 권한 거부. 네이티브 촬영으로 전환한다.');
+          closeCameraModal();
+          openNativeCamera(inputId, previewId);
+        });
+      });
+    }
+
+    function stopCamStream() {
+      if (camStream) {
+        camStream.getTracks().forEach(t => t.stop());
+        camStream = null;
+      }
+      const video = document.getElementById('cameraVideo');
+      if (video) video.srcObject = null;
+    }
+
+    function closeCameraModal() {
+      stopCamStream();
+      camBlob = null;
+      const m = document.getElementById('cameraModal');
+      if (m) m.classList.add('hidden');
+    }
+
+    function shutterCamera() {
+      const video = document.getElementById('cameraVideo');
+      const canvas = document.getElementById('cameraCanvas');
+      if (!video || !video.videoWidth) {
+        showToast('카메라가 아직 준비되지 않았다.');
+        return;
+      }
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      canvas.toBlob((blob) => {
+        if (!blob) { showToast('촬영 실패'); return; }
+        camBlob = blob;
+        const url = URL.createObjectURL(blob);
+        const prev = document.getElementById('cameraShotPreview');
+        prev.src = url;
+        prev.classList.remove('hidden');
+        document.getElementById('cameraConfirmBtn').classList.remove('hidden');
+      }, 'image/jpeg', 0.85);
+    }
+
+    function confirmCameraShot() {
+      if (!camBlob || !camTarget) { showToast('먼저 촬영해라.'); return; }
+      const file = new File([camBlob], 'capture_' + Date.now() + '.jpg', { type: 'image/jpeg' });
+      const input = document.getElementById(camTarget.inputId);
+      if (!input) { closeCameraModal(); return; }
+      try {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        input.files = dt.files;
+      } catch (e) {
+        input._camFile = file;
+      }
+      if (camTarget.previewId) {
+        const prev = document.getElementById(camTarget.previewId);
+        if (prev) {
+          prev.src = URL.createObjectURL(camBlob);
+          prev.classList.remove('hidden');
+        }
+      }
+      try { input.dispatchEvent(new Event('change', { bubbles: true })); } catch (e) {}
+      closeCameraModal();
+      showToast('사진이 첨부되었다.');
+    }
+
+    function bindCameraButtons() {
+      document.querySelectorAll('[data-cam-for]').forEach(btn => {
+        btn.onclick = function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          const id = btn.getAttribute('data-cam-for');
+          const prev = btn.getAttribute('data-cam-preview') || '';
+          openNativeCamera(id, prev);
+        };
+      });
+      // 숨긴 input도 라벨처럼 동작하도록 유지
+      document.querySelectorAll('input.cam-only').forEach(inp => {
+        if (!inp.getAttribute('capture')) inp.setAttribute('capture', 'environment');
+        if (!inp.getAttribute('accept')) inp.setAttribute('accept', 'image/*');
+      });
+    }
+
+
+
+
+    // ========== PWA (호스팅 환경에서만 동작, APK/WebView에선 무시) ==========
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
+    }
+    let deferredInstall = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredInstall = e;
+      const btn = document.getElementById('btnInstall');
+      if (btn) btn.classList.remove('hidden');
+    });
+    function installPWA() {
+      if (!deferredInstall) {
+        showToast('브라우저 메뉴에서 「홈 화면에 추가」를 눌러라.');
+        return;
+      }
+      deferredInstall.prompt();
+      deferredInstall.userChoice.then(() => {
+        deferredInstall = null;
+        const btn = document.getElementById('btnInstall');
+        if (btn) btn.classList.add('hidden');
+      });
+    }
+
+    // ========== 초기화 ==========
+    bindCameraButtons();
+    onOpenCheck();
+    updateUI();
+    loadMasterFace();
+    applyNames();
+    updateCheckUI();
+    if (!state.setupDone) {
+      document.getElementById('contractModal').classList.remove('hidden');
+    }
+    if (state.notifEnabled && state.locked && isInActiveHours() && Math.random() < 0.15) {
+      setTimeout(() => triggerCheck(false), 3000);
+    }
+    setInterval(updateUI, 60000);
+  </script>
+
+  <!-- 카메라 전용 촬영 -->
+  <div id="cameraModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>인앱 카메라</h3>
+      <p style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;">일부 환경에서만 동작한다. 안 되면 닫고 「카메라로 촬영」을 눌러라.</p>
+      <video id="cameraVideo" autoplay playsinline style="width:100%;max-height:50vh;background:#000;border-radius:8px;"></video>
+      <canvas id="cameraCanvas" class="hidden"></canvas>
+      <img id="cameraShotPreview" class="photo-preview hidden" style="margin-top:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;">
+        <button type="button" class="btn-primary" style="margin:0;" onclick="shutterCamera()">촬영</button>
+        <button type="button" class="btn-secondary" style="margin:0;" onclick="closeCameraModal()">취소</button>
+      </div>
+      <button type="button" id="cameraConfirmBtn" class="btn-primary hidden" style="margin-top:8px;" onclick="confirmCameraShot()">이 사진 사용</button>
+    </div>
+  </div>
+
+</body>
+</html>
