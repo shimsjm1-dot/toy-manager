@@ -460,7 +460,7 @@
 
         <div id="unlockedActions" class="hidden">
       <p id="relockHint" class="hidden" style="font-size:0.82rem;color:#e0a090;margin-bottom:8px;line-height:1.4;">풀린 상태다. 다시 잠근 뒤 카메라로 보고해야 한다.</p>
-      <button id="btnCompleteGoal" class="btn-primary hidden" onclick="completeGoalAndPrepare()">목표 완료 · 새 감금 준비</button>
+      <button id="btnCompleteGoal" class="btn-primary hidden" onclick="completeGoalAndPrepare()">목표 달성 · 잠금 해제</button>
       <button id="btnRelock" class="btn-success" onclick="onRelockClick()"><span class="btn-ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>다시 가두기</span></button>
     </div>
 
@@ -516,18 +516,18 @@
       <div id="setupFaceGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;">
         <div class="face-opt selected" data-p="noona" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
           <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid var(--accent);">
-          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">옆집 누나</div>
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">옆집 누나 · 초보</div>
         </div>
         <div class="face-opt" data-p="mesugaki" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
           <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
-          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">메스가키</div>
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">메스가키 · 중급</div>
         </div>
         <div class="face-opt" data-p="iljin" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;">
           <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
-          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">일진</div>
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">일진 · 상급</div>
         </div>
       </div>
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">얼굴을 눌러 선택. 말투·알림 톤이 달라진다</p>
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">얼굴을 눌러 선택. 누나=초보 / 메스가키=중급 / 일진=상급</p>
 
       <label>가둘 일수</label>
       <input type="number" id="setupTargetDays" min="1" max="90" value="3">
@@ -564,15 +564,15 @@
       <div id="settingsFaceGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;">
         <div class="face-opt selected" data-p="noona" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
           <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid var(--accent);">
-          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">옆집 누나</div>
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">옆집 누나 · 초보</div>
         </div>
         <div class="face-opt" data-p="mesugaki" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
           <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
-          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">메스가키</div>
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">메스가키 · 중급</div>
         </div>
         <div class="face-opt" data-p="iljin" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;">
           <img src="data:image/jpeg;base64,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" style="width:100%;border-radius:8px;border:2px solid transparent;">
-          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">일진</div>
+          <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">일진 · 상급</div>
         </div>
       </div>
 
@@ -790,7 +790,11 @@
       activeStart: '08:00',
       activeEnd: '23:30',
       setupDone: false,
-      masterPersonality: 'noona', // cold | sweet | playful | violent | scorn
+      masterPersonality: 'noona',
+      goalNotified: false,
+      goalUnlockReady: false,
+      talkCountToday: 0,
+      lastTalkTs: 0, // cold | sweet | playful | violent | scorn
       // 확인 알림
       pendingCheck: null,
       lastCheckRequestTs: null,
@@ -974,8 +978,10 @@ const ACHIEVEMENTS = [
       const remainEl = document.getElementById('remainTime');
       if (remainEl) {
         if (!state.startTimestamp) remainEl.textContent = '—';
-        else if (remainMs <= 0 && state.locked) remainEl.textContent = '목표 달성';
-        else remainEl.textContent = formatDuration(remainMs) + (state.locked ? '' : ' (정지)');
+        else if (remainMs <= 0 && state.locked) {
+          remainEl.textContent = '목표 달성';
+          if (typeof notifyGoalReached === 'function') notifyGoalReached();
+        } else remainEl.textContent = formatDuration(remainMs) + (state.locked ? '' : ' (정지)');
       }
       document.getElementById('wearTime').textContent = state.startTimestamp ? (formatDuration(wearMs) + (state.locked ? '' : ' (정지)')) : '—';
       document.getElementById('targetDays').textContent = getEffectiveTargetDays() + '일';
@@ -1024,7 +1030,7 @@ const ACHIEVEMENTS = [
         const hint = document.getElementById('relockHint');
         if (hint) {
           hint.classList.remove('hidden');
-          hint.textContent = '목표를 달성했다. 「목표 완료」를 누른 뒤 다시 가둘 수 있다.';
+          hint.textContent = '목표 달성. 「잠금 해제」 후, 다시 가두면 새 목표가 시작된다.';
         }
         const bg = document.getElementById('btnCompleteGoal');
         const br = document.getElementById('btnRelock');
@@ -1117,52 +1123,82 @@ const ACHIEVEMENTS = [
     // ========== 시작 / 설정 ==========
 
     function completeGoalAndPrepare() {
-      if (!isGoalCleared()) {
+      if (!isGoalCleared() && !state.goalUnlockReady) {
         showToast('아직 목표 시간이 되지 않았다.');
         return;
       }
+      const p = normalizePersonality(state.masterPersonality || 'noona');
+      // 목표 해제 확률: 누나 100% / 메스가키 90% / 일진 80%
+      const chance = { noona: 1, mesugaki: 0.9, iljin: 0.8 }[p] ?? 1;
+      const roll = Math.random();
+      if (roll > chance) {
+        // 거절: 1시간 미만 추가 (15~50분)
+        const extraMin = 15 + Math.floor(Math.random() * 36); // 15~50
+        const extraMs = extraMin * 60000;
+        // 목표를 살짝 뒤로: startTimestamp를 앞으로 당겨 착용 인정 시간을 줄임 = 남은 목표 증가
+        if (state.startTimestamp) {
+          state.startTimestamp += extraMs;
+        }
+        state.totalPenalties = (state.totalPenalties || 0) + extraMin / (60 * 24);
+        state.goalNotified = false; // 다시 달성 시 알림
+        state.goalUnlockReady = false;
+        addLog('goal', `목표 해제 거절 (+${extraMin}분)`);
+        saveState();
+        updateUI();
+        const denyLine = {
+          noona: `미안… 조금만 더 참아 줄래? ${extraMin}분만 더.`,
+          mesugaki: `푸후, 아직 안 풀어줌~ ${extraMin}분 더 잠겨 있어, 바보.`,
+          iljin: `거절이다. ${extraMin}분 더 채워라.`
+        };
+        try { playSfx('reject'); } catch (e) {}
+        showResult(state.masterName || '주인님', denyLine[p] || denyLine.iljin);
+        return;
+      }
+
       unlockAchieve('goal_clear');
       if ((state.emergencyUsed || 0) === 0) unlockAchieve('no_emergency');
+      try { if (typeof pauseWearTimer === 'function') pauseWearTimer('goal'); } catch (e) {}
       state.locked = false;
       state.currentUnlockUntil = null;
       state.needsRelockReport = false;
       state.postOrgasmPending = false;
       state.unlockPauseAt = null;
-      // 다음 감금을 위해 타이머 기준 초기화 (업적·티켓·호감 유지)
+      state.goalUnlockReady = false;
+      state.goalNotified = false;
       state.startTimestamp = null;
       state.pausedWearMs = 0;
       state.savedWearMs = null;
       state.totalPenalties = 0;
-      addLog('goal', '목표 달성. 새 감금을 시작할 수 있다.');
+      state.requestBanUntil = null;
+      state.activePunishment = null;
+      addLog('goal', '목표 달성 해제. 다시 가두면 새 목표가 시작된다.');
       saveState();
       updateUI();
-      showResult(state.masterName || '주인님', '목표를 채웠다. 잘 참았다.\\n다시 가두기 전에 설정·성격을 바꿀 수 있다.');
+      const okLine = {
+        noona: '목표 채웠네. 잘 참았어.\n이제 풀어줄게. 다시 가두면 새 시작이야.',
+        mesugaki: '칫, 시간은 채웠네. 풀어줌~\n다시 잠그면 또 처음부터니까 각오해.',
+        iljin: '시간 충족. 해제 허가한다.\n다시 잠그면 새 목표다.'
+      };
+      try { playSfx('approve'); } catch (e) {}
+      showResult(state.masterName || '주인님', okLine[p] || okLine.noona);
     }
 
-    function startLock() {
-      if (state.locked) return;
-      // 비상 후 재시작은 보고 필수
-      if (state.needsRelockReport) {
-        openRelockReport();
-        return;
-      }
-      state.locked = true;
-      state.startTimestamp = now();
-      state.lastCheckTimestamp = now();
-      state.emergencyUsed = 0;
-      state.totalPenalties = 0;
-      state.consecutiveGoodDays = 0;
-      state.currentUnlockUntil = null;
-      state.needsRelockReport = false;
-      state.pausedWearMs = 0;
-      state.unlockPauseAt = null;
-      state.savedWearMs = null;
-      addLog('start', `자지를 가두기 시작. ${state.targetDays}일 목표 (${getModeLabel(getMode())})`);
+
+    function notifyGoalReached() {
+      if (state.goalNotified) return;
+      state.goalNotified = true;
+      state.goalUnlockReady = true;
+      addLog('goal', '목표 시간 달성. 해제 허락 가능.');
       saveState();
-      updateUI();
-      playSfx('lock');
-      showToast('자지가 잠겼다. 이제부터 네 자지는 내 거야.');
+      try { playSfx('approve'); } catch (e) {}
+      showToast('목표 달성 — 해제 버튼이 열렸다.');
+      try {
+        if (state.notifEnabled && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+          new Notification('목표 달성', { body: '감금 목표를 채웠다. 앱에서 해제할 수 있다.', requireInteraction: true });
+        }
+      } catch (e) {}
     }
+
 
     function onRelockClick() {
       if (state.needsRelockReport) openRelockReport();
@@ -1682,15 +1718,44 @@ const ACHIEVEMENTS = [
         showToast('처벌을 먼저 끝내라.');
         return;
       }
-      if (state.lastTalkDate === todayKey()) {
-        showToast('오늘은 이미 대화했다. 내일 다시 와.');
+      if (state.lastTalkDate !== todayKey()) {
+        state.talkCountToday = 0;
+        state.lastTalkDate = todayKey();
+      }
+      const maxTalk = 3;
+      if ((state.talkCountToday || 0) >= maxTalk) {
+        showToast('오늘은 대화 ' + maxTalk + '번 끝. 내일 다시 와.');
+        return;
+      }
+      if (state.lastTalkTs && (now() - state.lastTalkTs) < 2 * 3600000) {
+        const left = Math.ceil((2 * 3600000 - (now() - state.lastTalkTs)) / 60000);
+        showToast('조금만 뒤에 다시 말해. 약 ' + left + '분 후.');
         return;
       }
       const p = normalizePersonality(state.masterPersonality || 'noona');
+      const leftN = maxTalk - (state.talkCountToday || 0);
       const intros = {
-        noona: pickLine(['응? 누나한테 할 말 있어?', '뭐야, 얼굴 보고 말 걸고 싶었어?', '자, 말해봐. 들어줄게.']),
-        mesugaki: pickLine(['뭐야~ 또 빌려고?', '푸후, 말 걸었어? 재밌는 거면 들어줌.', '하등분이 말을? 짧게 해봐.']),
-        iljin: pickLine(['말해.', '짧게. 요점만.', '뭐야. 빨리.'])
+        noona: pickLine([
+          '응? 누나한테 할 말 있어?',
+          '뭐야, 얼굴 보고 말 걸고 싶었어?',
+          '자, 말해봐. 들어줄게.',
+          '또 생각나서 온 거야? 괜찮아, 말해.',
+          '잠긴 채로 잘 참고 있지? 무슨 일이야.'
+        ]),
+        mesugaki: pickLine([
+          '뭐야~ 또 빌려고?',
+          '푸후, 말 걸었어? 재밌는 거면 들어줌.',
+          '하등분이 말을? 짧게 해봐.',
+          '또 왔어? 심심했어~',
+          '자지 자랑하러 온 건 아니지? 말해봐.'
+        ]),
+        iljin: pickLine([
+          '말해.',
+          '짧게. 요점만.',
+          '뭐야. 빨리.',
+          '또. 한 마디로.',
+          '시간 없다. 말해.'
+        ])
       };
       document.getElementById('talkIntro').textContent = intros[p] || intros.cold;
 
@@ -1729,6 +1794,8 @@ const ACHIEVEMENTS = [
 
       state.affection = Math.max(0, Math.min(100, affBefore + d));
       state.lastTalkDate = todayKey();
+      state.talkCountToday = (state.talkCountToday || 0) + 1;
+      state.lastTalkTs = now();
       // talk log after reply built below
       saveState();
       closeModal('talkModal');
