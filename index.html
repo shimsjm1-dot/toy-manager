@@ -530,8 +530,20 @@
       <p style="font-size:0.75rem;color:var(--muted);margin-top:6px;">얼굴을 눌러 선택. 누나=초보 / 메스가키=중급 / 일진=상급</p>
 
       <label>가둘 일수</label>
-      <input type="number" id="setupTargetDays" min="1" max="90" value="3">
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">1~3일: 초보 / 4~7일: 일반 / 8일+: 숙련</p>
+      <select id="setupTargetMode" onchange="onTargetModeChange('setup')">
+        <option value="beginner">초보 (1~5일 선택)</option>
+        <option value="normal">일반 (6~10일 선택)</option>
+        <option value="expert">숙련 (11일 이상 직접 입력)</option>
+      </select>
+      <select id="setupTargetDays" style="margin-top:8px;">
+        <option value="1">1일</option>
+        <option value="2">2일</option>
+        <option value="3" selected>3일</option>
+        <option value="4">4일</option>
+        <option value="5">5일</option>
+      </select>
+      <input type="number" id="setupTargetCustom" class="hidden" min="11" max="90" value="14" placeholder="11 이상" style="margin-top:8px;">
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">초보 1~5 / 일반 6~10 / 숙련 11일 이상 직접 입력</p>
 
       <label style="margin-top:12px;">주인님 얼굴 (선택)</label>
       <input type="file" id="setupFaceUpload" accept="image/*" onchange="changeMasterFace(this)">
@@ -549,8 +561,20 @@
       <h3>설정</h3>
 
       <label>가둘 일수</label>
-      <input type="number" id="inputTargetDays" min="1" max="90" value="3">
-      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">1~3일: 초보 / 4~7일: 일반 / 8일+: 숙련</p>
+      <select id="inputTargetMode" onchange="onTargetModeChange('settings')">
+        <option value="beginner">초보 (1~5일 선택)</option>
+        <option value="normal">일반 (6~10일 선택)</option>
+        <option value="expert">숙련 (11일 이상 직접 입력)</option>
+      </select>
+      <select id="inputTargetDays" style="margin-top:8px;">
+        <option value="1">1일</option>
+        <option value="2">2일</option>
+        <option value="3" selected>3일</option>
+        <option value="4">4일</option>
+        <option value="5">5일</option>
+      </select>
+      <input type="number" id="inputTargetCustom" class="hidden" min="11" max="90" value="14" placeholder="11 이상" style="margin-top:8px;">
+      <p style="font-size:0.75rem;color:var(--muted);margin-top:4px;">초보 1~5 / 일반 6~10 / 숙련 11일 이상 직접 입력</p>
 
       <label style="margin-top:14px;">너를 부를 호칭</label>
       <input type="text" id="inputToyName" placeholder="허접 자지">
@@ -860,8 +884,8 @@ const ACHIEVEMENTS = [
     // ========== 모드 / 규칙 ==========
     function getMode() {
       const t = state.targetDays;
-      if (t <= 3) return 'beginner';
-      if (t <= 7) return 'normal';
+      if (t <= 5) return 'beginner';
+      if (t <= 10) return 'normal';
       return 'expert';
     }
 
@@ -1157,6 +1181,11 @@ const ACHIEVEMENTS = [
 
       unlockAchieve('goal_clear');
       if ((state.emergencyUsed || 0) === 0) unlockAchieve('no_emergency');
+      // 난이도별 클리어 보상
+      const mode = getMode();
+      if (mode === 'beginner') grantTicket('softPunish', 1, '초보 클리어');
+      else if (mode === 'normal') grantTicket('unlockLong', 1, '일반 클리어');
+      else grantTicket('orgasm', 1, '숙련 클리어');
       try { if (typeof pauseWearTimer === 'function') pauseWearTimer('goal'); } catch (e) {}
       state.locked = false;
       state.currentUnlockUntil = null;
@@ -1283,7 +1312,7 @@ const ACHIEVEMENTS = [
     }
 
     function openSettings() {
-      document.getElementById('inputTargetDays').value = state.targetDays || 3;
+      syncTargetDaysUI('settings', state.targetDays || 3);
       document.getElementById('inputToyName').value = state.toyName || '허접 자지';
       document.getElementById('inputMasterName').value = state.masterName || '주인님';
       document.getElementById('inputPersonality').value = state.masterPersonality || 'noona';
@@ -1312,9 +1341,9 @@ const ACHIEVEMENTS = [
 
 
     function saveSettings() {
-      const v = parseInt(document.getElementById('inputTargetDays').value, 10);
+      const v = readTargetDays('settings');
       if (isNaN(v) || v < 1 || v > 90) {
-        showToast('1~90 사이 숫자를 입력하세요.');
+        showToast('일수를 올바르게 선택/입력해라.');
         return;
       }
       state.targetDays = v;
@@ -1593,6 +1622,62 @@ const ACHIEVEMENTS = [
       return map[p] != null ? map[p] : 50;
     }
 
+
+    function onTargetModeChange(where) {
+      const modeEl = document.getElementById(where === 'setup' ? 'setupTargetMode' : 'inputTargetMode');
+      const sel = document.getElementById(where === 'setup' ? 'setupTargetDays' : 'inputTargetDays');
+      const custom = document.getElementById(where === 'setup' ? 'setupTargetCustom' : 'inputTargetCustom');
+      if (!modeEl || !sel || !custom) return;
+      const mode = modeEl.value;
+      if (mode === 'expert') {
+        sel.classList.add('hidden');
+        custom.classList.remove('hidden');
+        if (parseInt(custom.value, 10) < 11) custom.value = 11;
+      } else {
+        custom.classList.add('hidden');
+        sel.classList.remove('hidden');
+        const opts = mode === 'beginner'
+          ? [1,2,3,4,5]
+          : [6,7,8,9,10];
+        const cur = parseInt(sel.value, 10);
+        sel.innerHTML = opts.map(d => `<option value="${d}" ${d===cur?'selected':''}>${d}일</option>`).join('');
+        if (!opts.includes(cur)) sel.value = String(opts[0]);
+      }
+    }
+
+    function readTargetDays(where) {
+      const modeEl = document.getElementById(where === 'setup' ? 'setupTargetMode' : 'inputTargetMode');
+      const sel = document.getElementById(where === 'setup' ? 'setupTargetDays' : 'inputTargetDays');
+      const custom = document.getElementById(where === 'setup' ? 'setupTargetCustom' : 'inputTargetCustom');
+      const mode = modeEl ? modeEl.value : 'beginner';
+      if (mode === 'expert') {
+        let v = parseInt(custom && custom.value, 10);
+        if (isNaN(v) || v < 11) v = 11;
+        return Math.min(90, v);
+      }
+      let v = parseInt(sel && sel.value, 10);
+      if (isNaN(v)) v = mode === 'normal' ? 7 : 3;
+      return v;
+    }
+
+    function syncTargetDaysUI(where, days) {
+      const d = days || 3;
+      const modeEl = document.getElementById(where === 'setup' ? 'setupTargetMode' : 'inputTargetMode');
+      const sel = document.getElementById(where === 'setup' ? 'setupTargetDays' : 'inputTargetDays');
+      const custom = document.getElementById(where === 'setup' ? 'setupTargetCustom' : 'inputTargetCustom');
+      if (!modeEl) return;
+      let mode = 'beginner';
+      if (d >= 11) mode = 'expert';
+      else if (d >= 6) mode = 'normal';
+      modeEl.value = mode;
+      onTargetModeChange(where);
+      if (mode === 'expert') {
+        if (custom) custom.value = d;
+      } else if (sel) {
+        sel.value = String(d);
+      }
+    }
+
     function finishSetup(useDefault) {
       if (useDefault) {
         state.toyName = '허접 자지';
@@ -1603,8 +1688,7 @@ const ACHIEVEMENTS = [
         state.toyName = (document.getElementById('setupToyName').value || '허접 자지').trim();
         state.masterName = (document.getElementById('setupMasterName').value || '주인님').trim();
         state.masterPersonality = normalizePersonality(document.getElementById('setupPersonality').value || 'noona');
-        const v = parseInt(document.getElementById('setupTargetDays').value, 10);
-        state.targetDays = (isNaN(v) || v < 1) ? 3 : Math.min(90, v);
+        state.targetDays = readTargetDays('setup');
       }
       state.affection = initialAffection(state.masterPersonality);
       state.setupDone = true;
@@ -1685,6 +1769,64 @@ const ACHIEVEMENTS = [
     }
 
     // ========== 허가 요청 ==========
+
+
+    function ensureTickets() {
+      state.rewardTickets = state.rewardTickets || { orgasm: 0, unlockLong: 0, softPunish: 0 };
+      return state.rewardTickets;
+    }
+    function grantTicket(type, n, reason) {
+      n = n || 1;
+      const t = ensureTickets();
+      const caps = { softPunish: 5, unlockLong: 2, orgasm: 1 };
+      const cap = caps[type] != null ? caps[type] : 99;
+      const before = t[type] || 0;
+      if (before >= cap) {
+        addLog('reward', (reason || type) + ' — 보유 상한이라 받지 못함');
+        showToast('보상 상한이다. (' + type + ' 최대 ' + cap + ')');
+        return 0;
+      }
+      const add = Math.min(n, cap - before);
+      t[type] = before + add;
+      const labels = { softPunish: '처벌 완화권', unlockLong: '긴 풀기권', orgasm: '사정 허가권' };
+      addLog('reward', (reason || '') + ' → ' + (labels[type] || type) + ' +' + add);
+      showToast((labels[type] || type) + ' +' + add);
+      saveState();
+      return add;
+    }
+    function weekKey() {
+      const d = new Date();
+      // simple: year + week number
+      const onejan = new Date(d.getFullYear(), 0, 1);
+      const week = Math.ceil((((d - onejan) / 86400000) + onejan.getDay() + 1) / 7);
+      return d.getFullYear() + '-W' + week;
+    }
+    function checkDailyTalkMission() {
+      if (state.lastTalkDate !== todayKey()) return;
+      if ((state.talkCountToday || 0) < 3) return;
+      if (state.dailyMissionDate === todayKey()) return; // already claimed
+      state.dailyMissionDate = todayKey();
+      // 주간 카운트
+      const wk = weekKey();
+      if (state.weeklyMissionWeek !== wk) {
+        state.weeklyMissionWeek = wk;
+        state.weeklyDailySuccess = 0;
+        state.weeklyMissionClaimed = false;
+      }
+      state.weeklyDailySuccess = (state.weeklyDailySuccess || 0) + 1;
+      // 일일 보상: 처벌 완화 기본, 12% 긴 풀기
+      if (Math.random() < 0.12) {
+        grantTicket('unlockLong', 1, '일일 미션(대화 3회) 보너스');
+      } else {
+        grantTicket('softPunish', 1, '일일 미션(대화 3회)');
+      }
+      // 주간: 7일 연속 일일 미션
+      if ((state.weeklyDailySuccess || 0) >= 7 && !state.weeklyMissionClaimed) {
+        state.weeklyMissionClaimed = true;
+        grantTicket('orgasm', 1, '주간 미션(7일 일일 미션)');
+      }
+      saveState();
+    }
 
     function todayKey() {
       const d = new Date();
@@ -1796,6 +1938,7 @@ const ACHIEVEMENTS = [
       state.lastTalkDate = todayKey();
       state.talkCountToday = (state.talkCountToday || 0) + 1;
       state.lastTalkTs = now();
+      try { checkDailyTalkMission(); } catch (e) {}
       // talk log after reply built below
       saveState();
       closeModal('talkModal');
@@ -2525,10 +2668,8 @@ const ACHIEVEMENTS = [
       state.unlockedAchievements.push(id);
       let rewardMsg = '';
       if (a.reward && a.reward.type) {
-        state.rewardTickets = state.rewardTickets || { orgasm: 0, unlockLong: 0, softPunish: 0 };
-        state.rewardTickets[a.reward.type] = (state.rewardTickets[a.reward.type] || 0) + (a.reward.n || 1);
-        rewardMsg = ' · 보상: ' + (a.reward.label || a.reward.type);
-        addLog('reward', `보상 획득: ${a.reward.label || a.reward.type}`);
+        const added = grantTicket(a.reward.type, a.reward.n || 1, '업적 ' + a.title);
+        rewardMsg = added ? (' · 보상: ' + (a.reward.label || a.reward.type)) : ' · 보상 상한';
       }
       addLog('achieve', `업적 달성: ${a.title} — ${a.desc}` + rewardMsg);
       saveState();
@@ -2566,8 +2707,8 @@ const ACHIEVEMENTS = [
       const t = state.rewardTickets || { orgasm: 0, unlockLong: 0, softPunish: 0 };
       const bag = `<div style="font-size:0.8rem;color:#e0a090;margin-bottom:12px;line-height:1.45;padding:8px;border:1px solid #5a3028;border-radius:8px;">
         보유 보상<br>
-        사정 확정 ${t.orgasm||0}회 · 긴 풀기 ${t.unlockLong||0}회 · 처벌 완화 ${t.softPunish||0}회<br>
-        <span style="color:var(--muted);font-size:0.72rem;">사정/풀기 요청 시 자동 사용. 쿨타임(24h/12h) 안에서는 확정권도 사용 불가.</span>
+        사정 허가 ${t.orgasm||0}/1 · 긴 풀기 ${t.unlockLong||0}/2 · 처벌 완화 ${t.softPunish||0}/5<br>
+        <span style="color:var(--muted);font-size:0.72rem;">일일: 대화 3회 / 주간: 일일 7회 성공 시 사정권. 요청 시 자동 사용(쿨 중 불가).</span>
       </div>`;
       el.innerHTML = bag + ACHIEVEMENTS.map(a => {
         const on = unlocked.includes(a.id);
