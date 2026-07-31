@@ -1041,12 +1041,32 @@ const ACHIEVEMENTS = [
         const bg = document.getElementById('btnCompleteGoal');
         const br = document.getElementById('btnRelock');
         if (bg) bg.classList.add('hidden');
-        if (br) br.classList.remove('hidden');
+        if (br) {
+          br.classList.remove('hidden');
+          br.disabled = false;
+          br.style.opacity = '1';
+          br.style.pointerEvents = 'auto';
+        }
       } else if (state.currentUnlockUntil && now() < state.currentUnlockUntil) {
+        // 일시 해제 중에도 다시 가두기 가능해야 함
         const remain = Math.ceil((state.currentUnlockUntil - now()) / 60000);
-        statusEl.innerHTML = `<span style="color:var(--warning)">잠깐 풀린 상태</span> (남은 시간 약 ${remain}분)<br>시간이 끝나면 즉시 다시 잠그고 인증해. 사정은 안 된다.`;
-        document.getElementById('lockedActions').classList.remove('hidden');
-        document.getElementById('unlockedActions').classList.add('hidden');
+        statusEl.innerHTML = `<span style="color:var(--warning)">잠깐 풀린 상태</span> (남은 시간 약 ${remain}분)<br>끝나기 전에 「다시 가두기」로 잠가도 된다.`;
+        document.getElementById('lockedActions').classList.add('hidden');
+        document.getElementById('unlockedActions').classList.remove('hidden');
+        const bg = document.getElementById('btnCompleteGoal');
+        const br = document.getElementById('btnRelock');
+        if (bg) bg.classList.add('hidden');
+        if (br) {
+          br.classList.remove('hidden');
+          br.disabled = false;
+          br.style.opacity = '';
+          br.style.pointerEvents = '';
+        }
+        const hint = document.getElementById('relockHint');
+        if (hint) {
+          hint.classList.remove('hidden');
+          hint.textContent = '일시 해제 중이다. 다시 가둘 수 있다.';
+        }
       } else if (typeof isGoalCleared === 'function' && isGoalCleared()) {
         statusEl.innerHTML = '<span style="color:#c0e0c8">목표 달성</span><br>새 감금을 준비할 수 있다.';
         document.getElementById('lockedActions').classList.add('hidden');
@@ -1229,12 +1249,60 @@ const ACHIEVEMENTS = [
     }
 
 
-    function onRelockClick() {
-      if (state.needsRelockReport) openRelockReport();
-      else startLock();
+    
+    function startLock() {
+      if (state.locked && !(state.currentUnlockUntil && now() < state.currentUnlockUntil)) {
+        // 이미 잠금 중이면 무시 (일시 해제 재잠금은 허용)
+        if (!state.currentUnlockUntil) return;
+      }
+      state.currentUnlockUntil = null;
+      state.needsRelockReport = false;
+      state.postOrgasmPending = false;
+      state.locked = true;
+      if (!state.startTimestamp) {
+        state.startTimestamp = now();
+        state.pausedWearMs = 0;
+        state.unlockPauseAt = null;
+        state.savedWearMs = null;
+        state.emergencyUsed = 0;
+        state.totalPenalties = 0;
+        state.consecutiveGoodDays = 0;
+        state.goalNotified = false;
+        state.goalUnlockReady = false;
+        addLog('start', '자지를 가두기 시작. ' + state.targetDays + '일 목표 (' + getModeLabel(getMode()) + ')');
+      } else {
+        try { if (typeof resumeWearTimer === 'function') resumeWearTimer(); } catch (e) {}
+        state.locked = true;
+        addLog('start', '다시 가둠. 타이머 재개.');
+      }
+      state.lastCheckTimestamp = state.lastCheckTimestamp || now();
+      saveState();
+      updateUI();
+      try { playSfx('lock'); } catch (e) {}
+      showToast('자지가 잠겼다.');
     }
 
-    function openRelockReport() {
+    function onRelockClick() {
+      // 일시 해제 시간 안이면 사진 없이 바로 재잠금
+      if (state.currentUnlockUntil && now() < state.currentUnlockUntil) {
+        state.currentUnlockUntil = null;
+        state.needsRelockReport = false;
+        startLock();
+        return;
+      }
+      // 목표 달성 후 완전 해제 상태 (새 감금)
+      if (!state.locked && !state.needsRelockReport && !state.postOrgasmPending) {
+        startLock();
+        return;
+      }
+      if (state.needsRelockReport || state.postOrgasmPending) {
+        openRelockReport();
+        return;
+      }
+      startLock();
+    }
+
+function openRelockReport() {
       const inp = document.getElementById('relockPhoto');
       if (inp) { inp.value = ''; inp._camFile = null; }
       const prev = document.getElementById('relockPreview');
@@ -1261,14 +1329,16 @@ const ACHIEVEMENTS = [
       const photoInput = document.getElementById('relockPhoto');
       const rlFile = getPhotoFileFromInput(photoInput);
       if (!rlFile) {
-        showToast('카메라로 잠긴 자지를 촬영해야 한다.');
-        return;
+        // 사진 없으면 경고만 하고 잠금은 가능 (카메라 이슈 대비)
+        if (!confirm('사진 없이 다시 가둘까? (가능하면 촬영을 권장)')) return;
       }
-      compressImageFile(rlFile).then(dataUrl => {
-        savePhotoRecord('relock', dataUrl, '재잠금 보고');
-      }).catch(() => {});
-      // 비상 후: 멈췄던 시간 이후부터 다시 진행
+      if (rlFile) {
+        compressImageFile(rlFile).then(dataUrl => {
+          savePhotoRecord('relock', dataUrl, '재잠금 보고');
+        }).catch(() => {});
+      }
       resumeWearTimer();
+      state.locked = true;
       const wasOrgasm = !!state.postOrgasmPending;
       const oral = wasOrgasm && document.getElementById('oralCleanCheck')?.checked;
       state.needsRelockReport = false;
