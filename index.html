@@ -610,10 +610,9 @@
       <input type="file" id="settingsFaceUpload" accept="image/*" onchange="changeMasterFace(this)">
 
       <label style="margin-top:14px;">확인 알림</label>
-      <select id="inputNotif">
-        <option value="false">끄기</option>
-        <option value="true">켜기</option>
-      </select>
+      <input type="hidden" id="inputNotif" value="false">
+      <button type="button" id="btnNotifToggle" class="btn-primary" style="width:100%;margin-top:4px;" onclick="toggleNotifications()">알림 켜기</button>
+      <p id="notifStatusText" style="font-size:0.75rem;color:var(--muted);margin-top:6px;line-height:1.4;">꺼짐 · 버튼을 누르면 권한 요청과 함께 켜진다.</p>
 
       <label style="margin-top:14px;">효과음</label>
       <select id="inputSfx">
@@ -1401,7 +1400,9 @@ function openRelockReport() {
         else hint.classList.remove('hidden');
       }
       document.getElementById('inputShowFace').value = state.showMasterFace !== false ? 'true' : 'false';
-      document.getElementById('inputNotif').value = state.notifEnabled ? 'true' : 'false';
+      const nEl = document.getElementById('inputNotif');
+      if (nEl) nEl.value = state.notifEnabled ? 'true' : 'false';
+      try { refreshNotifUI(); } catch (e) {}
       const sfxEl = document.getElementById('inputSfx');
       if (sfxEl) sfxEl.value = state.sfxEnabled ? 'true' : 'false';
       document.getElementById('inputActiveStart').value = state.activeStart || '08:00';
@@ -1443,15 +1444,8 @@ function openRelockReport() {
       updateUI();
       applyNames();
       loadMasterFace();
-      if (state.notifEnabled) {
-        requestNotificationPermission(true).then(p => {
-          if (p === 'granted') {
-            showAppNotification('알림 설정 완료', '확인 요청 알림이 켜졌다.');
-          }
-        });
-      } else {
-        showToast('설정을 저장했다.');
-      }
+      try { refreshNotifUI(); } catch (e) {}
+      showToast('설정을 저장했다.');
     }
 
 
@@ -1777,6 +1771,7 @@ function openRelockReport() {
       loadMasterFace();
       updateUI();
       showToast(`${state.masterName}의 ${state.toyName}으로 등록됐다.`);
+      setTimeout(() => { try { maybeAskNotifOnLaunch(); } catch (e) {} }, 600);
     }
 
     // ========== 매일 검진 ==========
@@ -2980,6 +2975,99 @@ function openRelockReport() {
 
     // 확인 알림 스케줄 (페이지가 열려 있을 때)
 
+
+    function getNotifPermission() {
+      if (!('Notification' in window)) return 'unsupported';
+      return Notification.permission; // granted | denied | default
+    }
+
+    function refreshNotifUI() {
+      const btn = document.getElementById('btnNotifToggle');
+      const st = document.getElementById('notifStatusText');
+      const hidden = document.getElementById('inputNotif');
+      const perm = getNotifPermission();
+      const on = !!state.notifEnabled && perm === 'granted';
+      if (hidden) hidden.value = on ? 'true' : (state.notifEnabled ? 'true' : 'false');
+      if (btn) {
+        if (perm === 'unsupported') {
+          btn.textContent = '알림 지원 안 됨';
+          btn.disabled = true;
+          btn.className = 'btn-secondary';
+        } else if (perm === 'denied') {
+          btn.textContent = '알림 차단됨 · 설정에서 허용 필요';
+          btn.disabled = false;
+          btn.className = 'btn-danger';
+        } else if (on) {
+          btn.textContent = '알림 켜짐 · 누르면 끄기';
+          btn.disabled = false;
+          btn.className = 'btn-success';
+        } else {
+          btn.textContent = '알림 꺼짐 · 누르면 켜기';
+          btn.disabled = false;
+          btn.className = 'btn-primary';
+        }
+      }
+      if (st) {
+        if (perm === 'unsupported') st.textContent = '이 브라우저/웹뷰는 알림 API를 지원하지 않는다.';
+        else if (perm === 'denied') st.textContent = '사이트가 알림을 차단했다. 주소창 자물쇠/사이트 설정 → 알림 허용 후 다시 눌러라.';
+        else if (on) st.textContent = '켜짐 · 확인 요청 알림을 받을 수 있다. (백그라운드는 OS에 따라 제한)';
+        else if (state.notifEnabled && perm !== 'granted') st.textContent = '앱에선 켜짐으로 저장됐지만, 브라우저 권한이 없다. 버튼을 다시 눌러 허용해라.';
+        else st.textContent = '꺼짐 · 버튼 한 번으로 권한 요청 + 알림 켜기.';
+      }
+    }
+
+    function toggleNotifications() {
+      const perm = getNotifPermission();
+      if (perm === 'unsupported') {
+        showToast('이 환경은 알림을 지원하지 않는다.');
+        refreshNotifUI();
+        return;
+      }
+      // 이미 켜짐 + 권한 있음 → 끄기
+      if (state.notifEnabled && perm === 'granted') {
+        state.notifEnabled = false;
+        saveState();
+        refreshNotifUI();
+        showToast('알림을 껐다.');
+        return;
+      }
+      // 차단된 경우: 안내
+      if (perm === 'denied') {
+        showToast('브라우저가 알림을 막았다. 사이트 설정에서 알림을 허용한 뒤 다시 눌러라.');
+        refreshNotifUI();
+        return;
+      }
+      // 켜기: 권한 요청
+      requestNotificationPermission(true).then(p => {
+        if (p === 'granted') {
+          state.notifEnabled = true;
+          saveState();
+          refreshNotifUI();
+          showAppNotification('알림 켜짐', '이제 확인 요청 알림을 받을 수 있다.');
+        } else {
+          state.notifEnabled = false;
+          saveState();
+          refreshNotifUI();
+        }
+      });
+    }
+
+    function maybeAskNotifOnLaunch() {
+      if (!state.setupDone) return;
+      if (state.notifPromptDone) return;
+      if (!('Notification' in window)) return;
+      // 아직 결정 안 했으면 한 번만 부드럽게 제안
+      if (Notification.permission === 'default' && !state.notifEnabled) {
+        state.notifPromptDone = true;
+        saveState();
+        setTimeout(() => {
+          if (confirm('확인 알림을 켤까?\\n주인님 확인 요청을 놓치지 않으려면 허용을 눌러라.')) {
+            toggleNotifications();
+          }
+        }, 900);
+      }
+    }
+
     function requestNotificationPermission(forceToast) {
       if (!('Notification' in window)) {
         if (forceToast) showToast('이 환경은 알림을 지원하지 않는다.');
@@ -3461,7 +3549,10 @@ function openRelockReport() {
     updateCheckUI();
     if (!state.setupDone) {
       document.getElementById('contractModal').classList.remove('hidden');
+    } else {
+      try { maybeAskNotifOnLaunch(); } catch (e) {}
     }
+    try { refreshNotifUI(); } catch (e) {}
     if (state.notifEnabled && state.locked && isInActiveHours() && Math.random() < 0.15) {
       setTimeout(() => triggerCheck(false), 3000);
     }
