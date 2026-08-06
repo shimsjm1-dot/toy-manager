@@ -342,6 +342,50 @@
     .checklist label { display: flex; align-items: center; gap: 8px; margin: 8px 0; color: var(--text); }
     .checklist input { width: auto; }
     .log-item {
+      padding: 12px 12px;
+      margin-bottom: 10px;
+      border: 1px solid #2a2220;
+      border-radius: 10px;
+      background: rgba(20, 14, 12, 0.55);
+      font-size: 0.84rem;
+      line-height: 1.45;
+    }
+    .log-item .log-time {
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.02em;
+      margin-bottom: 6px;
+    }
+    .log-item .log-title {
+      font-weight: 600;
+      color: #f0e4dc;
+      margin-bottom: 4px;
+    }
+    .log-item .log-body {
+      font-size: 0.8rem;
+      color: #c8b8b0;
+    }
+    .log-item .log-reply {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #1a1412;
+      border-left: 3px solid var(--accent);
+      color: #e8d4c8;
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+    .log-item .log-tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      border-radius: 999px;
+      margin-bottom: 6px;
+      background: #2a2018;
+      color: #c0a090;
+      border: 1px solid #3a3028;
+    }
+    .log-item-legacy {
       padding: 10px 0;
       border-bottom: 1px solid #221c1a;
       font-size: 0.84rem;
@@ -1766,8 +1810,12 @@ function checkUnlockDeadline() {
       } else {
         // 메인에는 최근 2줄만
         logEl.innerHTML = logs.slice(0, 2).map(l => {
-          const d = new Date(l.ts).toLocaleString('ko-KR', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
-          return `<div class="log-item"><strong>${d}</strong><br>${l.msg}</div>`;
+          try {
+            return buildHistoryCardHtml(l, '');
+          } catch (e) {
+            const d = new Date(l.ts).toLocaleString('ko-KR', {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+            return '<div class="log-item"><div class="log-time">' + d + '</div><div class="log-title">' + String(l.msg || '').replace(/</g,'&lt;') + '</div></div>';
+          }
         }).join('');
       }
 
@@ -3049,8 +3097,8 @@ function isGoalCleared() {
           }
         }
 
-        let msg = (wasMandatory ? '[필수] ' : '[추가] ') + '자지 상태 바침 (피부: ' + (grade === 'good' ? '괜찮음' : grade === 'mild' ? '조금 자극' : '많이 아픔') + ')';
-        if (note) msg += ' — ' + note;
+        const skinLabel = grade === 'good' ? '괜찮음' : grade === 'mild' ? '조금 자극' : '많이 아픔';
+        let msg = (wasMandatory ? '상태 보고' : '추가 상태 보고') + ' · 피부 ' + skinLabel;
         Promise.resolve(pid).then(id => {
           addLog('daily', msg, { photoId: id, note: note || '' });
         });
@@ -3978,7 +4026,7 @@ if (!assertNotSilenced('미션')) return;
         let line = pack[band] || pack.mid || '…알겠다.';
         if (typeof affLine === 'string' && affLine) line = line + '\n' + affLine;
         if (ticketLine) line = line + ticketLine;
-        try { addLog('talk', toyName() + ' 대화 (' + kind + ')', { reply: line, note: kind }); } catch (e) {}
+        try { addLog('talk', '대화', { reply: line, note: kind }); } catch (e) {}
         showResult(state.masterName || '주인님', line);
         updateUI();
       } catch (err) {
@@ -4151,7 +4199,7 @@ if (!assertNotSilenced('고백')) return;
       document.getElementById('requestModal').classList.remove('hidden');
     }
 
-    function calcApprovalChance(type, minutes) {
+    function calcApprovalChance(type, minutes, reason) {
       const rules = getRules();
       const wearMs = getWearMs();
       const targetMs = getEffectiveTargetDays() * 86400000;
@@ -4172,6 +4220,13 @@ if (!assertNotSilenced('고백')) return;
         if (progress >= rules.unlockNeedPct) chance += 0.4;
         else if (progress >= rules.unlockNeedPct - 0.15) chance += 0.15;
         else chance -= 0.25;
+
+        // 사유별 보정 (위생 높음 · 에징 낮음 · 통증/기타 중간)
+        const r = reason || '';
+        if (r === 'hygiene') chance += 0.28;
+        else if (r === 'edge') chance -= 0.18;
+        else if (r === 'pain') chance += 0.08;
+        else if (r === 'other') chance += 0.05;
       }
       if (type === 'orgasm') {
         // 최소 조건: 모드 요구 진행률의 70% 미만이면 사실상 불가
@@ -4256,7 +4311,12 @@ if (!assertNotSilenced('고백')) return;
       const recentSpam = (state.recentRequests || []).filter(r => r.type === type && (now() - r.ts) < 6 * 3600000);
       const isSpam = recentSpam.length > 0;
 
-      let chance = calcApprovalChance(type, minutes);
+      let reason = '';
+      try {
+        const rt = document.getElementById('reqReasonType');
+        if (rt) reason = rt.value || '';
+      } catch (e) {}
+      let chance = calcApprovalChance(type, minutes, reason);
       if (isSpam) chance *= 0.45;
       if (type === 'orgasm') {
         // 일반 상한 22%, 하드코어는 더 낮게
@@ -4352,6 +4412,38 @@ if (!assertNotSilenced('고백')) return;
           } else {
             msg = getTone().unlockNo;
           }
+          // 사유별 거절 멘트 (캐릭터)
+          try {
+            const p2 = (typeof normalizePersonality === 'function')
+              ? normalizePersonality(state.masterPersonality || 'noona')
+              : (state.masterPersonality || 'noona');
+            const r = reason || '';
+            const byReason = {
+              hygiene: {
+                noona: '샤워하고 싶은 거지? 찬 채로 씻고 물기만 잘 말려. 그건 허락할게.',
+                mesugaki: '씻고 싶다고 풀자고? 잠근 채로 씻고 잘 말려~ 그게 네 위생이야.',
+                queen: '위생? 풀어줄 필요 없다. 잠긴 채 씻고 물기를 제대로 말려라.'
+              },
+              edge: {
+                noona: '자극 때문에 풀고 싶은 거구나… 지금은 안 돼. 조금 더 참아 봐.',
+                mesugaki: '에징하려고 풀자고? 거절~ 잠긴 채로 답답한 거 즐겨.',
+                queen: '자극 때문에 빌었군. 안 된다. 잠긴 채로 견뎌라.'
+              },
+              pain: {
+                noona: '아픈 건 걱정돼. 그래도 지금은 유지해 보자. 심하면 꼭 다시 말해.',
+                mesugaki: '아프다고? 조금은 참아 봐. 진짜 심하면 그때 다시 말해~',
+                queen: '불편하다고 바로 풀리는 줄 알았나. 견딜 만하면 유지한다. 위급하면 비상이다.'
+              },
+              other: {
+                noona: '사유는 알았어. 그래도 오늘은 잠근 채로 가자.',
+                mesugaki: '기타 사유? 흐음, 그래도 거절~',
+                queen: '이유가 그게 전부인가. 거절한다.'
+              }
+            };
+            if (byReason[r] && !isSpam) {
+              msg = byReason[r][p2] || byReason[r].noona;
+            }
+          } catch (e) {}
           let affDropLine = '';
           if (isSpam || hardDeny) {
             setAffection(getAffection() - 5);
@@ -4766,7 +4858,95 @@ if (!assertNotSilenced('고백')) return;
       document.getElementById('achieveModal').classList.remove('hidden');
     }
 
-    async function viewHistory() {
+    
+    function talkKindLabel(kind) {
+      const map = {
+        miss: '보고 싶었어요', thanks: '감사', status: '상태 이야기',
+        tease: '애교', complain: '불만', beg: '부탁',
+        pride: '자랑', askrule: '규칙 질문'
+      };
+      return map[kind] || '';
+    }
+
+    function historyTypeLabel(type) {
+      return {
+        start: '감금', relock: '다시 잠금', daily: '상태 보고', mission: '미션',
+        talk: '대화', confess: '양심 고백', approve: '허락', reject: '거절',
+        emergency: '비상', punish_ok: '처벌 완료', oral: '입 정리',
+        goal: '목표', fail: '실패', request: '요청'
+      }[type] || '';
+    }
+
+    function cleanHistoryMsg(l) {
+      let msg = String(l.msg || '');
+      // 기술 표기 제거
+      msg = msg.replace(/^\[필수\]\s*/g, '').replace(/^\[추가\]\s*/g, '');
+      msg = msg.replace(/\s*\((?:miss|thanks|status|tease|complain|beg|pride|askrule)\)\s*/gi, '');
+      msg = msg.replace(/\s*—\s*$/, '');
+      // note가 msg 끝에 중복된 경우 제거
+      if (l.note) {
+        const n = String(l.note).trim();
+        if (n && msg.endsWith(n)) {
+          msg = msg.slice(0, msg.length - n.length).replace(/\s*[—\-·]\s*$/, '').trim();
+        }
+        if (n && msg.indexOf(' — ' + n) >= 0) {
+          msg = msg.split(' — ' + n).join('').trim();
+        }
+      }
+      return msg.trim();
+    }
+
+    function buildHistoryCardHtml(l, imgHtml) {
+      const d = new Date(l.ts);
+      const timeStr = d.toLocaleString('ko-KR', {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      });
+      const tag = historyTypeLabel(l.type);
+      let title = cleanHistoryMsg(l);
+      let body = '';
+
+      // 상태 보고: 제목/피부/메모 분리
+      if (l.type === 'daily') {
+        const skin = (title.match(/피부:\s*([^)]+)/) || [])[1];
+        title = title.indexOf('추가') >= 0 || (l.msg || '').indexOf('[추가]') >= 0
+          ? '추가 상태 보고'
+          : '상태 보고';
+        if (skin) body = '피부 상태 · ' + skin;
+      }
+      // 대화: 선택 한글화
+      if (l.type === 'talk') {
+        const kind = l.note || '';
+        const kl = talkKindLabel(kind);
+        title = kl ? ('대화 · ' + kl) : '대화';
+        body = '';
+      }
+
+      let noteHtml = '';
+      if (l.note && l.type !== 'talk') {
+        const n = String(l.note).trim();
+        // 대화 kind 코드 숨김, 상태 메모만
+        if (n && !/^(miss|thanks|status|tease|complain|beg|pride|askrule)$/i.test(n)) {
+          if (!title.includes(n) && !(body && body.includes(n))) {
+            noteHtml = '<div class="log-body" style="margin-top:6px;">「' + n.replace(/</g,'&lt;') + '」</div>';
+          }
+        }
+      }
+      const replyHtml = l.reply
+        ? '<div class="log-reply">' + String(l.reply).replace(/</g,'&lt;').replace(/\n/g,'<br>') + '</div>'
+        : '';
+      const bodyHtml = body ? '<div class="log-body">' + body.replace(/</g,'&lt;') + '</div>' : '';
+      return (
+        '<div class="log-item">' +
+          (tag ? '<span class="log-tag">' + tag + '</span>' : '') +
+          '<div class="log-time">' + timeStr + '</div>' +
+          '<div class="log-title">' + title.replace(/</g,'&lt;') + '</div>' +
+          bodyHtml + noteHtml + replyHtml + (imgHtml || '') +
+        '</div>'
+      );
+    }
+
+async function viewHistory() {
       const el = document.getElementById('fullHistory');
       if (!state.history.length) {
         el.textContent = '기록이 없습니다.';
@@ -4779,22 +4959,19 @@ if (!assertNotSilenced('고백')) return;
       const items = state.history.filter(l => ACTION[l.type]).slice().reverse().slice(0, 80);
       const parts = [];
       for (const l of items) {
-        const d = new Date(l.ts).toLocaleString('ko-KR');
         let imgHtml = '';
         if (l.photoId && typeof loadPhotoBlob === 'function') {
           try {
             const blob = await loadPhotoBlob(l.photoId);
             if (blob) {
               const url = URL.createObjectURL(blob);
-              imgHtml = `<img src="${url}" style="width:100%;max-height:200px;object-fit:contain;margin-top:8px;border-radius:6px;background:#000;">`;
+              imgHtml = '<img src="' + url + '" style="width:100%;max-height:200px;object-fit:contain;margin-top:10px;border-radius:8px;background:#000;">';
             }
           } catch (e) {}
         }
-        const note = l.note ? `<div style="font-size:0.78rem;color:var(--muted);margin-top:4px;">메모: ${l.note}</div>` : '';
-        const reply = l.reply ? `<div style="font-size:0.82rem;color:#e0c8b8;margin-top:6px;padding:8px;background:#1a1412;border-radius:6px;line-height:1.4;">${String(l.reply).replace(/\n/g,'<br>')}</div>` : '';
-        parts.push(`<div class="log-item"><strong>${d}</strong><br>${l.msg}${note}${reply}${imgHtml}</div>`);
+        parts.push(buildHistoryCardHtml(l, imgHtml));
       }
-      el.innerHTML = parts.join('');
+      el.innerHTML = parts.length ? parts.join('') : '<p style="color:var(--muted);font-size:0.85rem;">표시할 기록이 없습니다.</p>';
     }
 
     // ========== 주인님 얼굴 ==========
