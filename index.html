@@ -706,7 +706,14 @@
   <div id="lockStartModal" class="modal hidden">
     <div class="modal-content">
       <h3 style="text-align:center;">이번 감금 목표</h3>
-      <p style="font-size:0.82rem;color:var(--muted);margin:8px 0 12px;line-height:1.45;text-align:center;">가두는 순간에 일수를 정한다. 시작 후에는 바꿀 수 없다.</p>
+      <p style="font-size:0.82rem;color:var(--muted);margin:8px 0 12px;line-height:1.45;text-align:center;">캐릭터와 일수를 정한다. 시작 후에는 바꿀 수 없다.</p>
+      <label style="font-size:0.8rem;color:var(--muted);">주인님 캐릭터</label>
+      <input type="hidden" id="lockStartPersonality" value="noona">
+      <div id="lockStartFaceGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px;">
+        <div class="face-opt selected" data-p="noona" onclick="pickPersonality('lockStart',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="noona" style="width:100%;border-radius:8px;border:2px solid var(--accent);"><div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">옆집 누나</div></div>
+        <div class="face-opt" data-p="mesugaki" onclick="pickPersonality('lockStart',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="mesugaki" style="width:100%;border-radius:8px;border:2px solid transparent;"><div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">메스가키</div></div>
+        <div class="face-opt" data-p="queen" onclick="pickPersonality('lockStart',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="queen" style="width:100%;border-radius:8px;border:2px solid transparent;"><div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">밤의 여왕</div></div>
+      </div>
       <input type="hidden" id="lockStartTargetMode" value="beginner">
       <p id="lockStartDiffHint" style="font-size:0.85rem;color:#e0a090;margin:4px 0 8px;text-align:center;">—</p>
       <label style="font-size:0.8rem;color:var(--muted);">목표 일수</label>
@@ -720,14 +727,14 @@
       </select>
       <input type="number" id="lockStartTargetCustom" class="hidden" min="12" max="90" value="14" style="width:100%;margin-top:8px;">
       <button type="button" id="btnLockStartRandom" class="btn-secondary" style="width:100%;margin-top:10px;" onclick="rollLockStartDays()">캐릭터 범위로 랜덤</button>
-      <p id="lockStartQueenNote" class="hidden" style="font-size:0.78rem;color:#c9a0e8;margin-top:10px;line-height:1.45;text-align:center;">여왕: 시작 11일 고정. 끝날 무렵 짧게 연장될 수 있다 (런당 최대 2회, 합 5일 이하).</p>
+      <p id="lockStartQueenNote" class="hidden" style="font-size:0.78rem;color:#c9a0e8;margin-top:10px;line-height:1.45;text-align:center;">여왕: 11일 이상 자유 선택. 끝날 무렵 짧게 연장될 수 있다 (런당 최대 2회, 합 5일 이하).</p>
       <label style="font-size:0.8rem;color:var(--muted);margin-top:12px;display:block;">하드코어 모드</label>
-      <select id="lockStartHardcore">
+      <select id="lockStartHardcore" onchange="onLockStartHardcoreChange()">
         <option value="false">끄기 (기본)</option>
         <option value="true">켜기</option>
       </select>
-      <p style="font-size:0.72rem;color:#e0a0a0;margin-top:4px;line-height:1.4;text-align:center;">이번 감금에만 적용. 신체·사회적 부담이 큰 과제가 포함될 수 있으니, 상태가 나쁘면 즉시 중단하라.</p>
-      <p id="lockStartHardcoreNote" class="hidden" style="font-size:0.78rem;color:#e07070;margin-top:10px;line-height:1.4;text-align:center;">하드코어 ON — 처벌·규칙이 가혹하다.</p>
+      <p style="font-size:0.72rem;color:#e0a0a0;margin-top:4px;line-height:1.4;text-align:center;">이번 감금에만 적용. 신체·사회적 부담이 큰 과제가 포함될 수 있으니, 상태가 나쁘면 즉시 중단하라.<br><b style="color:#e08080;">ON 시 풀기·사정 요청 불가</b> (위생·비상이 아닌 일반 요청 잠김).</p>
+      <p id="lockStartHardcoreNote" class="hidden" style="font-size:0.78rem;color:#e07070;margin-top:10px;line-height:1.4;text-align:center;">하드코어 ON — 처벌·규칙이 가혹하다. 풀기·사정 요청은 잠긴다.</p>
       <div style="display:flex;gap:8px;margin-top:16px;">
         <button class="btn-secondary" style="flex:1;" onclick="closeModal('lockStartModal')">취소</button>
         <button class="btn-primary" style="flex:1;" onclick="confirmLockStart()">가두기 시작</button>
@@ -1374,8 +1381,16 @@ const ACHIEVEMENTS = [
       state.punishQueue = [];
       state.goalUnlockReady = false;
       state.hygieneDue = false;
+      // 미션 초기화 (패배 선언·런 실패 시 이어지지 않게)
       state.forcedSideId = null;
       state.forcedSideDone = false;
+      state.statusDone = false;
+      state.missionDate = null;
+      state.optAccepted = [];
+      state.optDoneIds = [];
+      state.missionDailyDone = false;
+      state.forcedDoubleMission = false;
+      state.lastMissionPenaltyDate = null;
       state.startTimestamp = null;
       state.pausedWearMs = 0;
       state.savedWearMs = null;
@@ -2582,8 +2597,8 @@ function isGoalCleared() {
     }
 
     function syncPersonalityGrid(where, value) {
-      const gridId = where === 'setup' ? 'setupFaceGrid' : 'settingsFaceGrid';
-      const inputId = where === 'setup' ? 'setupPersonality' : 'inputPersonality';
+      const gridId = where === 'setup' ? 'setupFaceGrid' : (where === 'lockStart' ? 'lockStartFaceGrid' : 'settingsFaceGrid');
+      const inputId = where === 'setup' ? 'setupPersonality' : (where === 'lockStart' ? 'lockStartPersonality' : 'inputPersonality');
       const inp = document.getElementById(inputId);
       if (inp) inp.value = value || 'noona';
       document.querySelectorAll('#' + gridId + ' .face-opt').forEach(el => {
@@ -2798,6 +2813,17 @@ function isGoalCleared() {
       }
     }
 
+
+    function onLockStartHardcoreChange() {
+      try {
+        const sel = document.getElementById('lockStartHardcore');
+        const note = document.getElementById('lockStartHardcoreNote');
+        if (!sel || !note) return;
+        if (sel.value === 'true') note.classList.remove('hidden');
+        else note.classList.add('hidden');
+      } catch (e) {}
+    }
+
     function openLockStart() {
       try { playSfx('click'); } catch (e) {}
       if (state.locked && !(state.currentUnlockUntil && now() < state.currentUnlockUntil)) {
@@ -2823,10 +2849,10 @@ function isGoalCleared() {
         const qn = document.getElementById('lockStartQueenNote');
         const sel = document.getElementById('lockStartTargetDays');
         if (p === 'queen') {
-          if (hint) hint.textContent = (labels[p] || '') + (state.hardcoreMode ? ' · 하드코어' : '') + ' · 시작 11일 고정';
-          syncTargetDaysUI('lockStart', 11);
-          if (sel) { sel.value = '11'; sel.disabled = true; }
-          if (rnd) rnd.classList.add('hidden');
+          if (hint) hint.textContent = (labels[p] || '') + (state.hardcoreMode ? ' · 하드코어' : '') + ' · 11일 이상 선택';
+          syncTargetDaysUI('lockStart', Math.max(11, state.targetDays || 11));
+          if (sel) sel.disabled = false;
+          if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '11~20일 랜덤'; }
           if (qn) qn.classList.remove('hidden');
         } else if (p === 'mesugaki') {
           if (hint) hint.textContent = (labels[p] || '') + (state.hardcoreMode ? ' · 하드코어' : '') + ' · 랜덤 6~10일 가능';
@@ -2846,26 +2872,60 @@ function isGoalCleared() {
         const hc = document.getElementById('lockStartHardcoreNote');
         if (hc) { if (state.hardcoreMode) hc.classList.remove('hidden'); else hc.classList.add('hidden'); }
       } catch (e) {}
+      try {
+        const p0 = normalizePersonality(state.masterPersonality || 'noona');
+        const lp = document.getElementById('lockStartPersonality');
+        if (lp) lp.value = p0;
+        if (typeof syncPersonalityGrid === 'function') syncPersonalityGrid('lockStart', p0);
+        if (typeof initFaceGridImages === 'function') initFaceGridImages();
+      } catch (eLS) {}
       document.getElementById('lockStartModal').classList.remove('hidden');
     }
 
     function rollLockStartDays() {
-      const p = normalizePersonality(state.masterPersonality || 'noona');
+      let p = 'noona';
+      try {
+        const lp = document.getElementById('lockStartPersonality');
+        if (lp && lp.value) p = lp.value;
+        else p = state.masterPersonality || 'noona';
+      } catch (e) { p = state.masterPersonality || 'noona'; }
+      p = normalizePersonality(p);
       let v;
       if (p === 'mesugaki') v = 6 + Math.floor(Math.random() * 5); // 6-10
-      else if (p === 'queen') v = 11;
+      else if (p === 'queen') v = 11 + Math.floor(Math.random() * 10); // 11-20
       else v = 1 + Math.floor(Math.random() * 5); // 1-5
       syncTargetDaysUI('lockStart', v);
       const sel = document.getElementById('lockStartTargetDays');
-      if (sel && v <= 11) { sel.disabled = (p === 'queen'); sel.value = String(v); }
+      if (sel) { sel.disabled = false; if (v <= 11) sel.value = String(v); }
       try { showToast('이번 목표: ' + v + '일'); } catch (e) {}
     }
 
 
     function confirmLockStart() {
+      let p = 'noona';
+      try {
+        const lp = document.getElementById('lockStartPersonality');
+        if (lp && lp.value) p = lp.value;
+      } catch (e) {}
+      p = normalizePersonality(p || state.masterPersonality || 'noona');
+      if (p !== normalizePersonality(state.masterPersonality || 'noona')) {
+        state.masterPersonality = p;
+        try {
+          ensureAffectionMap();
+          if (!state.hardcoreMode) {
+            const k = personaKey();
+            setAffection(state.affectionByPersona[k] != null ? state.affectionByPersona[k] : initialAffection(k));
+          }
+        } catch (e) {}
+        try { if (typeof faceData === 'function' && faceData(p)) localStorage.setItem('masterFaceData', faceData(p)); } catch (e) {}
+        try { applyPersonalityStyle(); } catch (e) {}
+        try { loadMasterFace(); } catch (e) {}
+      } else {
+        state.masterPersonality = p;
+      }
+
       let v = readTargetDays('lockStart');
-      const p = normalizePersonality(state.masterPersonality || 'noona');
-      if (p === 'queen') v = 11;
+      if (p === 'queen') v = Math.min(90, Math.max(11, v));
       else if (p === 'mesugaki') v = Math.min(10, Math.max(6, v));
       else v = Math.min(5, Math.max(1, v)); // noona
       if (isNaN(v) || v < 1 || v > 90) {
@@ -2883,7 +2943,7 @@ function isGoalCleared() {
       const hcSel = document.getElementById('lockStartHardcore');
       const wantHc = hcSel && hcSel.value === 'true';
       if (wantHc && !state.hardcoreMode) {
-        if (!confirm('하드코어 모드로 감금합니다. 신체·사회적 부담이 큰 과제가 포함될 수 있으며, 상태가 나쁘면 즉시 중단해야 합니다. 계속할까요?')) {
+        if (!confirm('하드코어 모드로 감금합니다.\n\n· 풀기 요청 · 사정 요청 불가\n· 처벌·규칙이 더 가혹함\n· 상태가 나쁘면 즉시 중단해야 함\n\n계속할까요?')) {
           return;
         }
         state.hardcoreMode = true;
@@ -3241,6 +3301,33 @@ function isGoalCleared() {
       { id: 'q_still', title: '무릎 봉인 자세', desc: '바닥에 무릎 꿇고, 허리를 곧게, 양손은 허벅지 위. 시선은 아래. 잠긴 자지가 화면 중앙에 오게 찍어라. 서 있거나 손으로 가리면 무효.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen' },
       { id: 'q_label', title: '남은 일수 표기', desc: '허벅지 안쪽 또는 아랫배에 「남은 잠금 ○일」을 적고, 그 글씨와 잠긴 자지가 한 장에 나오게 찍어라.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen' },
       { id: 'q_begpose', title: '애원 자세', desc: '무릎 꿇고 잠긴 자지를 내민 채, 메모에 「싸게 해 주세요」가 아니라 「잠근 채로 두세요」라고 적어 같이 찍어라. 애원이 아니라 소유 확인이다.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen' }
+,
+      // ===== 하드코어 전용 보조 =====
+      { id: 'hc_n_touch', title: '만지다 멈춰', desc: '정조대 바깥만 짧게(2~3분) 쓰다듬다가 손을 떼고, 그 직후 잠긴 자지를 찍어라. 사정·준사정 금지. 「아직 못 싸요」한 줄.', needPhoto: true, kind: 'opt', aff: 2, persona: 'noona', hardcore: true },
+      { id: 'hc_n_want', title: '싸고 싶은 말', desc: '지금 가장 야한 욕구를 한 줄로 적고, 마지막에 「그래도 잠긴 채」를 붙여라. 사진 선택.', needPhoto: false, kind: 'opt', aff: 2, persona: 'noona', hardcore: true },
+      { id: 'hc_n_night', title: '자기 전 발기', desc: '자기 직전, 잠긴 채로 단단해진 상태를 근접 촬영. 얼굴·식별 가능한 배경 금지.', needPhoto: true, kind: 'opt', aff: 2, persona: 'noona', hardcore: true },
+      { id: 'hc_n_out', title: '나가기 전 봉인', desc: '집 안에서 외출 직전, 옷 입기 전후 잠긴 인증 1장 + 「잠긴 채 나간다」한 줄. 공공장소 촬영 금지.', needPhoto: true, kind: 'opt', aff: 2, persona: 'noona', hardcore: true },
+      { id: 'hc_n_home', title: '귀가 직후 보고', desc: '집에 오자마자 잠긴 상태를 찍어 바쳐라. 하루를 잠긴 채로 마쳤다는 한 줄.', needPhoto: true, kind: 'opt', aff: 2, persona: 'noona', hardcore: true },
+      { id: 'hc_n_wet', title: '스며든 자백', desc: '분비·자극으로 젖은 느낌이 있으면 인정하는 한 줄 + 잠긴 근접샷. 과장하지 말고 솔직히.', needPhoto: true, kind: 'opt', aff: 2, persona: 'noona', hardcore: true },
+
+      { id: 'hc_m_intro', title: '허접 자지 소개', desc: '메모에 「이게 제 허접 자지입니다」를 쓰고 무릎 꿇은 채 잠긴 자지와 함께 찍어라.', needPhoto: true, kind: 'opt', aff: 2, persona: 'mesugaki', hardcore: true },
+      { id: 'hc_m_rank', title: '풀고 싶은 이유 말소', desc: '풀고 싶은 야한 이유 3개를 적은 뒤 전부 긋고, 잠긴 사진과 함께. 「그래도 잠금」한 줄.', needPhoto: true, kind: 'opt', aff: 2, persona: 'mesugaki', hardcore: true },
+      { id: 'hc_m_hands', title: '손 들기 금지 만짐', desc: '양손을 머리 위(또는 등 뒤)로 올린 채, 만지지 못하는 잠긴 자지만 중앙에. 한심해 보이게.', needPhoto: true, kind: 'opt', aff: 2, persona: 'mesugaki', hardcore: true },
+      { id: 'hc_m_noshoot', title: '오늘도 못 쌌다', desc: '큰 글씨로 「오늘도 못 쌌다」+ 잠긴 인증. 놀림당해도 되는 각오로.', needPhoto: true, kind: 'opt', aff: 2, persona: 'mesugaki', hardcore: true },
+      { id: 'hc_m_erect', title: '한심한 발기', desc: '잠긴 채 발기한 상태를 장난스럽게(?) 찍어라. 얼굴 제외.', needPhoto: true, kind: 'opt', aff: 2, persona: 'mesugaki', hardcore: true },
+      { id: 'hc_m_private', title: '방 안 실루엣', desc: '집 방 안에서만, 바지 위로 잠긴 윤곽이 티 나게. 공공·직장 금지.', needPhoto: true, kind: 'opt', aff: 2, persona: 'mesugaki', hardcore: true },
+
+      { id: 'hc_q_oath', title: '사정 금지 서약', desc: '「허락 없이 사정하지 않는다」를 자기 문장으로 쓰고 잠긴 자지와 한 장에 담아라.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen', hardcore: true },
+      { id: 'hc_q_display', title: '소유물 전시', desc: '무릎 꿇고 허리를 곧게, 잠긴 자지가 화면 중앙. 60초 유지한 뒤 촬영. 손으로 가리면 무효.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen', hardcore: true },
+      { id: 'hc_q_desire', title: '욕구 보고 (요청 금지)', desc: '싸고 싶다는 욕구만 한 줄로 보고하라. 풀기·사정 요청 문장은 쓰지 마라. 사진 선택.', needPhoto: false, kind: 'opt', aff: 1, persona: 'queen', hardcore: true },
+      { id: 'hc_q_after', title: '자극 후 봉인', desc: '옷 위로만 짧게 자극한 뒤 손을 떼고, 잠긴 상태를 즉시 찍어 바쳐라. 사정 금지.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen', hardcore: true },
+      { id: 'hc_q_key', title: '열쇠 없음', desc: '「지금 내 손엔 열쇠가 없다」는 취지의 문장 + 잠긴 정조대. 소유 확인용.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen', hardcore: true },
+      { id: 'hc_q_out', title: '외출 전 소유 확인', desc: '집 문 안쪽에서, 나가기 전 잠긴 자지 인증. 공공 촬영 금지. 「잠긴 채 나간다」.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen', hardcore: true },
+      { id: 'hc_q_day', title: '하루 참기 자백', desc: '「오늘 만지지 않고 참았다」또는 솔직한 예외를 숫자/사실로 보고. 귀가 후 잠긴 사진.', needPhoto: true, kind: 'opt', aff: 2, persona: 'queen', hardcore: true },
+
+      { id: 'hc_a_dry', title: '씻고 말리기', desc: '잠긴 채 씻은 뒤 물기를 제대로 말린 상태 근접샷. 공공 욕실 말고 집/사적 공간만.', needPhoto: true, kind: 'opt', aff: 2, persona: 'all', hardcore: true },
+      { id: 'hc_a_timer', title: '손 금지 타이머', desc: '15분 동안 정조대에 손 대지 말고, 끝난 직후 잠긴 사진. 메모에 대략 시각.', needPhoto: true, kind: 'opt', aff: 2, persona: 'all', hardcore: true }
+    
     ];
 
     let _missionDoing = null;
@@ -3341,12 +3428,17 @@ function isGoalCleared() {
 
     function pickSideMission() {
       const persona = getPersonaKey();
+      const hc = !!state.hardcoreMode;
       const used = new Set((state.optAccepted || []).map(x => x.id).concat(state.optDoneIds || []));
-      let pool = MISSION_POOL.filter(m => m.kind === 'opt' && (m.persona === persona || m.persona === 'all') && !used.has(m.id));
-      if (!pool.length) {
-        pool = MISSION_POOL.filter(m => m.kind === 'opt' && (m.persona === persona || m.persona === 'all'));
+      function ok(m) {
+        if (!m || m.kind !== 'opt') return false;
+        if (hc) { if (!m.hardcore) return false; }
+        else { if (m.hardcore) return false; }
+        if (!(m.persona === persona || m.persona === 'all')) return false;
+        return true;
       }
-      if (!pool.length) pool = MISSION_POOL.filter(m => m.kind === 'opt');
+      let pool = MISSION_POOL.filter(m => ok(m) && !used.has(m.id));
+      if (!pool.length) pool = MISSION_POOL.filter(ok);
       if (!pool.length) return null;
       return pool[Math.floor(Math.random() * pool.length)];
     }
@@ -4152,14 +4244,14 @@ if (!assertNotSilenced('고백')) return;
         html = `
           <p style="font-size:0.9rem;margin-bottom:10px;">${tone.unlockAsk}</p>
           <label>이유</label>
-          <select id="reqReasonType">
-            <option value="edge">에징·자극</option>
+          <select id="reqReasonType" onchange="syncUnlockMinutesByReason()">
             <option value="hygiene">위생·세척</option>
             <option value="pain">통증·불편</option>
+            <option value="edge">에징·자극</option>
             <option value="other">기타</option>
           </select>
-          <label>얼마나 (분)</label>
-          <input type="number" id="reqMinutes" min="1" max="180" value="20">
+          <p id="reqMinutesHint" style="font-size:0.78rem;color:var(--muted);margin:8px 0 0;line-height:1.45;">허락되면 시간은 주인님이 정한다. (위생 대략 10~40분 사이)</p>
+          <input type="hidden" id="reqMinutes" value="0">
           <label>사연 (짧게)</label>
           <textarea id="reqReason" placeholder="왜 잠깐 풀어야 하는지"></textarea>
           <label>지금 자지 사진 (카메라만)</label>
@@ -4272,22 +4364,66 @@ if (!assertNotSilenced('고백')) return;
       return Math.max(0.03, Math.min(0.92, chance));
     }
 
+    function unlockMinutesLimit(reason) {
+      const r = reason || 'other';
+      const p = (typeof normalizePersonality === 'function')
+        ? normalizePersonality(state.masterPersonality || 'noona')
+        : (state.masterPersonality || 'noona');
+      // 누나 여유 · 메스가키 중간 · 여왕 짧게
+      // 전체 최대 30분. 누나 여유 · 메스가키 중간 · 여왕 짧게
+      const byPersona = {
+        noona: {
+          hygiene: { min: 10, max: 30 },
+          pain:    { min: 10, max: 30 },
+          edge:    { min: 8,  max: 20 },
+          other:   { min: 8,  max: 25 }
+        },
+        mesugaki: {
+          hygiene: { min: 8,  max: 25 },
+          pain:    { min: 8,  max: 25 },
+          edge:    { min: 5,  max: 15 },
+          other:   { min: 5,  max: 18 }
+        },
+        queen: {
+          hygiene: { min: 5,  max: 18 },
+          pain:    { min: 5,  max: 20 },
+          edge:    { min: 5,  max: 12 },
+          other:   { min: 5,  max: 15 }
+        }
+      };
+      const pack = byPersona[p] || byPersona.noona;
+      return pack[r] || pack.other;
+    }
+
+    function rollUnlockMinutes(reason) {
+      const lim = unlockMinutesLimit(reason);
+      const min = lim.min, max = lim.max;
+      const t = (Math.random() + Math.random()) / 2; // 짧은~중간 쪽 약간 유리
+      let m = Math.round(min + (max - min) * t);
+      if (max - min >= 10) m = Math.round(m / 5) * 5;
+      return Math.max(min, Math.min(max, m));
+    }
+
+    function syncUnlockMinutesByReason() {
+      try {
+        const rt = document.getElementById('reqReasonType');
+        const hint = document.getElementById('reqMinutesHint');
+        if (!rt || !hint) return;
+        const lim = unlockMinutesLimit(rt.value);
+        const labels = { hygiene: '위생·세척', pain: '통증·불편', edge: '에징·자극', other: '기타' };
+        hint.textContent = '허락되면 주인님이 시간을 정한다. (' + (labels[rt.value] || '') + ' 대략 ' + lim.min + '~' + lim.max + '분)';
+      } catch (e) {}
+    }
+
     function submitRequest() {
       const type = currentRequestType;
       const photoInput = document.getElementById('reqPhoto');
       const reqFile = getPhotoFileFromInput(photoInput);
-      let minutes = 15;
-      if (type !== 'orgasm') {
-        const rawMin = document.getElementById('reqMinutes')?.value;
-        minutes = parseInt(rawMin === '' || rawMin == null ? '15' : rawMin, 10);
-        if (isNaN(minutes) || minutes < 1) {
-          showToast('시간은 1분 이상으로 입력해라.');
-          return;
-        }
-        if (minutes > 180) {
-          showToast('최대 180분까지다.');
-          return;
-        }
+      let minutes = 0;
+      if (type === 'orgasm') {
+        minutes = 30; // 사후 재잠금 안내용 (실제 개방 길이와 별개일 수 있음)
+      } else if (type === 'unlock') {
+        minutes = 0; // 허락 시 rollUnlockMinutes
       }
 
       if (!reqFile) {
@@ -4316,7 +4452,13 @@ if (!assertNotSilenced('고백')) return;
         const rt = document.getElementById('reqReasonType');
         if (rt) reason = rt.value || '';
       } catch (e) {}
-      let chance = calcApprovalChance(type, minutes, reason);
+      // 확률 계산용 대표 분(중간값) — 실제 개방 시간은 허락 시 랜덤
+      let chanceMinutes = minutes;
+      if (type === 'unlock') {
+        const lim = unlockMinutesLimit(reason);
+        chanceMinutes = Math.round((lim.min + lim.max) / 2);
+      }
+      let chance = calcApprovalChance(type, chanceMinutes, reason);
       if (isSpam) chance *= 0.45;
       if (type === 'orgasm') {
         // 일반 상한 22%, 하드코어는 더 낮게
@@ -4335,7 +4477,6 @@ if (!assertNotSilenced('고백')) return;
         } else if (type === 'unlock' && (state.rewardTickets.unlockLong || 0) > 0) {
           usedTicket = 'unlockLong';
           chance = 1;
-          minutes = Math.max(minutes || 20, 60);
         }
       }
 
@@ -4355,6 +4496,8 @@ if (!assertNotSilenced('고백')) return;
       if (approved) {
         if (type === 'unlock') {
           pauseWearTimer('unlock');
+          minutes = rollUnlockMinutes(reason);
+          if (usedTicket === 'unlockLong') minutes = Math.max(minutes, 60);
           state.currentUnlockUntil = now() + minutes * 60000;
           try {
             const rt = document.getElementById('reqReasonType');
@@ -4362,8 +4505,7 @@ if (!assertNotSilenced('고백')) return;
           } catch (e) {}
           state.unlockDeadlinePunished = false;
           state.unlockGrantedMinutes = minutes;
-          // 일시 해제는 locked false + 타이머 정지, 시간 끝나면 다시 잠그라고 안내
-          addLog('approve', toyName() + ' 풀기 허락 (' + minutes + '분)');
+          addLog('approve', toyName() + ' 풀기 허락 (' + minutes + '분 · 주인 지정)');
           playSfx('approve');
           const warn = getTone().unlockOk(minutes) + '\n\n※ ' + minutes + '분 안에 다시 잠그지 않으면 처벌한다.';
           showResult(master, warn);
