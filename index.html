@@ -2277,12 +2277,15 @@ function isGoalCleared() {
         showToast(pol.reason);
         return;
       }
+      const pk = (typeof normalizePersonality === 'function')
+        ? normalizePersonality(pol.p || state.masterPersonality || 'noona')
+        : (pol.p || 'noona');
       const lines = {
         noona: '누나한테 패배를 선언하는 거야?\n이번 감금은 실패로 끝난다.\n호감이 크게 떨어진다. 계속할까?',
         mesugaki: '벌써 패배 선언? 푸후…\n7일 안이라 한 번만 받아줄게.\n이번 런 실패 + 호감 왕창 감소. 괜찮아?',
         queen: '구제불능 쓰레기네.. 패배는 받지 않는다.'
       };
-      if (!confirm(lines[pol.p] || lines.noona)) return;
+      if (!confirm(lines[pk] || lines.noona)) return;
       if (!confirm('패배를 확정한다. 되돌릴 수 없다. 마지막 확인.')) return;
 
       const wasHc = !!state.hardcoreMode;
@@ -2315,7 +2318,7 @@ function isGoalCleared() {
           mesugaki: '하, 패배 선언한 거 기억해둘게. 호감 왕창 깎였어~',
           queen: '구제불능 쓰레기네..'
         };
-        try { showResult(master, after[pol.p] || after.noona); } catch (e3) {}
+        try { showResult(master, after[pk] || after.noona); } catch (e3) {}
       } catch (e) {}
 
       try { addLog('fail', '패배 선언 — 이번 런 취소 · 호감 하락'); } catch (e) {}
@@ -2578,21 +2581,66 @@ function isGoalCleared() {
         showToast('지금은 성격을 바꿀 수 없다. 목표 달성 후 다시 가두기 전에 변경해.');
         return;
       }
+      if (!el) return;
       const p = el.getAttribute('data-p');
-      const gridId = where === 'setup' ? 'setupFaceGrid' : 'settingsFaceGrid';
-      const inputId = where === 'setup' ? 'setupPersonality' : 'inputPersonality';
-      document.getElementById(inputId).value = p;
-      document.querySelectorAll('#' + gridId + ' .face-opt img').forEach(img => {
-        img.style.border = '2px solid transparent';
+      if (!p) return;
+      const gridId = where === 'setup' ? 'setupFaceGrid'
+        : (where === 'lockStart' ? 'lockStartFaceGrid' : 'settingsFaceGrid');
+      const inputId = where === 'setup' ? 'setupPersonality'
+        : (where === 'lockStart' ? 'lockStartPersonality' : 'inputPersonality');
+      const inp = document.getElementById(inputId);
+      if (inp) inp.value = p;
+
+      // 해당 그리드만 하이라이트
+      document.querySelectorAll('#' + gridId + ' .face-opt').forEach(function (x) {
+        x.classList.remove('selected');
+        const img = x.querySelector('img');
+        if (img) img.style.border = '2px solid transparent';
       });
-      el.querySelector('img').style.border = '2px solid var(--accent)';
-      // 캐릭터 → 난이도·일수 자동 연동
-      try { applyPersonaDifficulty(where, p, false); } catch (e) {}
-      // 미리보기: 메인 얼굴도 바로 반영
+      el.classList.add('selected');
+      const im = el.querySelector('img');
+      if (im) im.style.border = '2px solid var(--accent)';
+
+      if (where === 'setup' || where === 'settings') {
+        try { applyPersonaDifficulty(where, p, where === 'settings'); } catch (e) {}
+      }
+      if (where === 'lockStart') {
+        const labels = { noona: '옆집 누나', mesugaki: '메스가키', queen: '밤의 여왕' };
+        const hint = document.getElementById('lockStartDiffHint');
+        const rnd = document.getElementById('btnLockStartRandom');
+        const qn = document.getElementById('lockStartQueenNote');
+        const sel = document.getElementById('lockStartTargetDays');
+        let hcOn = !!state.hardcoreMode;
+        try {
+          const h = document.getElementById('lockStartHardcore');
+          if (h) hcOn = h.value === 'true';
+        } catch (e) {}
+        if (p === 'queen') {
+          if (hint) hint.textContent = labels.queen + (hcOn ? ' · 하드코어' : '') + ' · 11일 이상 선택';
+          try { syncTargetDaysUI('lockStart', Math.max(11, state.targetDays || 11)); } catch (e) {}
+          if (sel) sel.disabled = false;
+          if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '11~20일 랜덤'; }
+          if (qn) qn.classList.remove('hidden');
+        } else if (p === 'mesugaki') {
+          if (hint) hint.textContent = labels.mesugaki + (hcOn ? ' · 하드코어' : '') + ' · 6~10일';
+          try { syncTargetDaysUI('lockStart', Math.min(10, Math.max(6, state.targetDays || 7))); } catch (e) {}
+          if (sel) sel.disabled = false;
+          if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '6~10일 랜덤'; }
+          if (qn) qn.classList.add('hidden');
+        } else {
+          if (hint) hint.textContent = labels.noona + (hcOn ? ' · 하드코어' : '') + ' · 1~5일';
+          try { syncTargetDaysUI('lockStart', Math.min(5, Math.max(1, state.targetDays || 3))); } catch (e) {}
+          if (sel) sel.disabled = false;
+          if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '1~5일 랜덤'; }
+          if (qn) qn.classList.add('hidden');
+        }
+        return; // 가두기 시작은 확정 전까지 state.masterPersonality 미변경
+      }
+      // setup/settings: 메인 얼굴 미리보기
       const main = document.getElementById('masterFace');
-      if (main && faceData(p)) {
+      if (main && typeof faceData === 'function' && faceData(p)) {
         main.src = faceData(p);
-        localStorage.setItem('masterFaceData', faceData(p));
+        try { localStorage.setItem('masterFaceData', faceData(p)); } catch (e) {}
       }
     }
 
@@ -2603,7 +2651,9 @@ function isGoalCleared() {
       if (inp) inp.value = value || 'noona';
       document.querySelectorAll('#' + gridId + ' .face-opt').forEach(el => {
         const on = el.getAttribute('data-p') === (value || 'noona');
-        el.querySelector('img').style.border = on ? '2px solid var(--accent)' : '2px solid transparent';
+        if (on) el.classList.add('selected'); else el.classList.remove('selected');
+        const img = el.querySelector('img');
+        if (img) img.style.border = on ? '2px solid var(--accent)' : '2px solid transparent';
       });
     }
 
@@ -3056,7 +3106,11 @@ function isGoalCleared() {
       loadMasterFace();
       updateUI();
       showToast(`${state.masterName}의 ${state.toyName}으로 등록됐다.`);
-      setTimeout(() => { try { updateMissionCard(); } catch (e) {} }, 600);
+      // 신상등록 직후 바로 감금 시작
+      setTimeout(function () {
+        try { updateMissionCard(); } catch (e) {}
+        try { openLockStart(); } catch (e) {}
+      }, 350);
     }
 
     // ========== 매일 검진 ==========
