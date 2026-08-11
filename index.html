@@ -466,22 +466,87 @@
     body.hardcore-mode .app-title {
       text-shadow: 0 0 12px rgba(180, 40, 40, 0.5);
     }
+
+    .hero-card { padding: 10px !important; margin-bottom: 6px !important; }
+    .hero-row {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+      text-align: left;
+    }
+    .hero-left {
+      flex-shrink: 0;
+      width: 42%;
+      max-width: 150px;
+      text-align: center;
+    }
+    .hero-left img {
+      width: 100% !important;
+      height: auto !important;
+      aspect-ratio: 3 / 4;
+      max-height: 200px;
+      object-fit: cover;
+      margin: 0 !important;
+      display: block;
+      border-radius: 12px;
+    }
+    .hero-right {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 6px;
+    }
+    .hero-right .big-time {
+      font-size: 1.25rem !important;
+      margin: 0 !important;
+      line-height: 1.2;
+    }
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+    .hero-actions button {
+      width: 100% !important;
+      margin: 0 !important;
+      padding: 10px 8px !important;
+      font-size: 0.82rem !important;
+      border-radius: 10px !important;
+    }
+    #dashboard .card { margin-bottom: 6px; padding: 10px; }
+    #lockedActions { margin-bottom: 6px; }
+    #statusText, #todayGuide { margin: 4px 2px 6px !important; font-size: 0.75rem !important; }
+    #activeStatusBox { max-width: none !important; margin: 8px 0 0 !important; }
     .toast {
       position: fixed;
-      top: 16px;
+      top: 12px;
       bottom: auto;
       left: 50%;
       transform: translateX(-50%);
-      background: #1a1412;
-      border: 1px solid #3a2a28;
-      padding: 12px 20px;
-      border-radius: 8px;
-      z-index: 200; /* 모달(300)보다 아래 → 대화창을 가리지 않음 */
-      font-size: 0.9rem;
-      max-width: 90%;
+      background: linear-gradient(180deg, #3a2418 0%, #1e1410 100%);
+      border: 2px solid #e8a060;
+      color: #fff5eb;
+      padding: 14px 22px;
+      border-radius: 12px;
+      z-index: 9999; /* 모달·카메라 위에 항상 표시 */
+      font-size: 1rem;
+      font-weight: 600;
+      line-height: 1.45;
+      max-width: min(92vw, 420px);
       text-align: center;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.6),
+        0 8px 28px rgba(0,0,0,0.75),
+        0 0 24px rgba(232, 160, 96, 0.25);
       pointer-events: none;
+      animation: toastIn 0.25s ease-out;
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
     .photo-preview {
       max-width: 100%; max-height: 180px;
@@ -508,33 +573,47 @@
 </head>
 <body>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-    <h1 style="margin:0;font-size:1.15rem;">자지 관리 대장</h1>
+    <h1 id="appTitleEl" style="margin:0;font-size:1.15rem;cursor:pointer;user-select:none;" onclick="editAppTitle()" title="탭해서 이름 변경">자지 관리 대장</h1>
   </div>
 
   <div id="dashboard">
     <!-- 1. 상태: 얼굴 + 남은시간 + 호감/티켓 -->
-    <div class="card" style="text-align:center;padding:14px 12px 12px;">
+    <div class="card hero-card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
         <span class="badge" id="modeBadge">—</span>
-        <span style="font-size:0.72rem;color:var(--muted);" id="masterCaption">주인님이 보고 있다</span>
+        <span style="font-size:0.7rem;color:var(--muted);" id="masterCaption">주인님이 보고 있다</span>
       </div>
-      <img id="masterFace" src="" alt="주인님" style="width:108px;height:144px;object-fit:cover;border-radius:12px;border:2px solid var(--accent);display:block;margin:0 auto 8px;box-shadow:0 6px 20px rgba(0,0,0,.35);">
-      <div style="font-size:0.7rem;color:var(--muted);letter-spacing:0.5px;">남은 시간</div>
-      <div class="big-time" id="remainTime" style="font-size:1.55rem;margin:2px 0 4px;letter-spacing:0.5px;">—</div>
-      <div class="progress-bar" style="margin:6px auto;max-width:280px;"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-      <div style="display:flex;justify-content:center;gap:14px;font-size:0.72rem;color:var(--muted);flex-wrap:wrap;margin-top:4px;">
-        <span>목표 <b style="color:var(--text);" id="targetDays">—</b></span>
-        <span>진행 <b style="color:var(--text);" id="progressPct">—</b></span>
-        <span>달성 <b style="color:var(--accent);" id="wearTime">—</b></span>
+      <div class="hero-row">
+        <div class="hero-left">
+          <img id="masterFace" src="" alt="주인님" style="width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:2px solid var(--accent);box-shadow:0 4px 14px rgba(0,0,0,.35);">
+          <div style="margin-top:8px;text-align:left;">
+            <div style="font-size:0.65rem;color:var(--muted);">호감 <b id="affValue" style="color:var(--text);">—</b></div>
+            <div class="progress-bar" style="height:5px;margin-top:3px;"><div class="progress-fill" id="affFill" style="width:50%;background:linear-gradient(90deg,#8b5a4a,#c4a090);"></div></div>
+            <div id="ticketStrip" style="margin-top:4px;display:none;flex-wrap:wrap;gap:4px;justify-content:flex-start;"></div>
+            <button id="btnAffRecovery" class="btn-secondary hidden" style="margin:4px 0 0;width:100%;padding:5px;font-size:0.7rem;" onclick="doAffectionRecovery()">호감 만회</button>
+          </div>
+        </div>
+        <div class="hero-right">
+          <div>
+            <div style="font-size:0.65rem;color:var(--muted);letter-spacing:0.4px;">기간 · 남은 시간</div>
+            <div class="big-time" id="remainTime">—</div>
+            <div class="progress-bar" style="margin:6px 0 4px;"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+            <div style="display:flex;gap:8px;font-size:0.65rem;color:var(--muted);flex-wrap:wrap;">
+              <span>목표 <b style="color:var(--text);" id="targetDays">—</b></span>
+              <span>진행 <b style="color:var(--text);" id="progressPct">—</b></span>
+              <span>달성 <b style="color:var(--accent);" id="wearTime">—</b></span>
+            </div>
+            <div id="hygieneInfo" style="margin-top:4px;font-size:0.68rem;color:var(--muted);line-height:1.3;">위생 —</div>
+          </div>
+          <div class="hero-actions" id="heroActions">
+            <button type="button" class="btn-primary" onclick="openMissionPanel()">미션</button>
+            <button type="button" class="btn-secondary" id="btnTalkHero" onclick="openTalk()">대화</button>
+            <button type="button" class="btn-secondary" onclick="openRequestMenu()">요청</button>
+          </div>
+        </div>
       </div>
-      <!-- 호감·티켓 약표시 -->
-      <div style="margin-top:10px;padding-top:10px;border-top:1px solid #2a2220;">
-        <div style="font-size:0.68rem;color:var(--muted);margin-bottom:3px;text-align:left;">호감 <b id="affValue" style="color:var(--text);font-weight:600;">—</b></div>
-        <div class="progress-bar" style="height:6px;"><div class="progress-fill" id="affFill" style="width:50%;background:linear-gradient(90deg,#8b5a4a,#c4a090);"></div></div>
-        <div id="ticketStrip" style="margin-top:8px;display:none;flex-wrap:wrap;gap:5px;justify-content:center;"></div>
-        <button id="btnAffRecovery" class="btn-secondary hidden" style="margin:8px 0 0;width:100%;padding:8px;font-size:0.78rem;" onclick="doAffectionRecovery()">호감 만회 (1회)</button>
-      </div>
-    </div>
+      <div id="activeStatusBox" class="hidden" style="text-align:left;padding:6px 8px;border-radius:8px;border:1px solid #5a3030;background:rgba(40,16,14,0.85);font-size:0.7rem;line-height:1.35;color:#f0c8b8;"></div>
+    </div></div>
 
     <div id="statusText" style="font-size:0.8rem;color:var(--muted);margin:6px 4px 10px;line-height:1.4;">아직 잠기지 않았다.</div>
     <p id="todayGuide" style="font-size:0.78rem;color:#c4a090;margin:0 4px 10px;line-height:1.4;" class="hidden">오늘은 필수 미션만 하면 된다.</p>
@@ -548,36 +627,24 @@
     </div>
 
     <!-- 3. 오늘 할 일: 미션 (가장 강조) -->
-    <div id="missionCard" class="card" style="border-color:#7a5040;background:#1a1410;box-shadow:0 0 0 1px rgba(160,100,70,.15);">
+    <div id="missionCard" class="card" style="border-color:#7a5040;background:#1a1410;box-shadow:0 0 0 1px rgba(160,100,70,.15);cursor:pointer;" onclick="if(state.locked)openMissionPanel();">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-        <div style="font-size:0.72rem;color:#c4a090;letter-spacing:0.5px;font-weight:600;">오늘 할 일</div>
-        <div style="font-size:0.68rem;color:var(--muted);" id="missionBadge">필수</div>
+        <div style="font-size:0.7rem;color:#c4a090;letter-spacing:0.4px;font-weight:600;">오늘 할 일 <span style="color:var(--muted);font-weight:500;" id="missionBadge">필수</span></div>
       </div>
-      <div id="missionStatusLine" style="font-weight:600;margin:6px 0 4px;font-size:1rem;">불러오는 중…</div>
-      <p id="missionHintLine" style="font-size:0.78rem;color:var(--muted);line-height:1.4;margin-bottom:10px;">상태 바치기(사진) 필수.</p>
-      <button class="btn-primary" style="margin:0;width:100%;padding:14px 12px;font-size:0.95rem;" onclick="openMissionPanel()">미션 하기</button>
+      <div id="missionStatusLine" style="font-weight:600;margin:4px 0 2px;font-size:0.92rem;">불러오는 중…</div>
+      <p id="missionHintLine" style="font-size:0.72rem;color:var(--muted);line-height:1.35;margin-bottom:0;">상태 바치기(사진) 필수.</p>
     </div>
 
-    <!-- 4. 주요 행동 -->
-    <div id="lockedActions">
-      <button id="btnTalk" class="btn-secondary" style="width:100%;margin:0 0 8px;padding:12px;" onclick="openTalk()"><span class="btn-ico"><svg viewBox="0 0 24 24"><path d="M4 6h16v10H8l-4 4V6z"/></svg>대화</span></button>
-      <details id="requestDrawer" class="fold">
-        <summary>
-          <span>요청 · 비상</span>
-          <span class="fold-hint">탭해서 펼치기</span>
-        </summary>
-        <div class="fold-body" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
-          <button id="btnReqUnlock" class="btn-secondary" style="margin:0;font-size:0.8rem;" onclick="openRequest('unlock')">풀기</button>
-          <button id="btnReqOrgasm" class="btn-secondary" style="margin:0;font-size:0.8rem;" onclick="openRequest('orgasm')">사정</button>
-          <button class="btn-secondary" style="margin:0;grid-column:1/-1;font-size:0.8rem;border-color:#6a5040;" onclick="openConfess()">양심 고백</button>
-          <button class="btn-danger" style="margin:0;grid-column:1/-1;font-size:0.8rem;" onclick="openEmergency()">비상 해제</button>
-        </div>
-      </details>
+    <!-- 요청·비상: 히어로 「요청」에서만 연다 -->
+    <div id="lockedActions" class="hidden">
+      <button id="btnTalk" class="hidden" onclick="openTalk()"></button>
+      <details id="requestDrawer" class="hidden"></details>
     </div>
 
     <div id="unlockedActions" class="hidden">
       <p id="relockHint" class="hidden" style="font-size:0.82rem;color:#e0a090;margin-bottom:8px;line-height:1.4;">풀린 상태다. 다시 잠근 뒤 카메라로 보고해야 한다.</p>
       <button id="btnCompleteGoal" class="btn-primary hidden" onclick="completeGoalAndPrepare()">목표 달성 · 잠금 해제</button>
+      <button id="btnHygiene" class="btn-secondary hidden" onclick="openHygieneBreak()" style="margin-bottom:8px;">위생 · 휴식 개방 (1시간)</button>
       <button id="btnRelock" class="btn-success" onclick="onRelockClick()"><span class="btn-ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>다시 가두기</span></button>
     </div>
 
@@ -616,7 +683,8 @@
         <label>한 줄 보고 (선택)</label>
         <textarea id="missionNote" placeholder="짧게 적어라"></textarea>
         <br>
-        <button class="btn-primary" onclick="submitMission()">미션 완료</button>
+        <button class="btn-primary" onclick="submitMission()">완료 보고</button>
+        <button class="btn-secondary" style="border-color:#8a5050;color:#e0b0a0;" onclick="failMission()">실패했다</button>
         <button class="btn-secondary" onclick="backMissionList()">목록으로</button>
       </div>
       <button class="btn-secondary" onclick="closeModal('missionModal')">닫기</button>
@@ -758,7 +826,8 @@
       <div style="font-size:0.88rem;line-height:1.55;color:var(--text);margin:12px 0 18px;">
         <p style="margin-bottom:10px;">이 앱에 등록하는 순간,<br>네 자지에 대한 통제권은 주인님에게 넘어간다.</p>
         <p style="margin-bottom:10px;">잠금·보고·처벌·금지는 모두 계약의 일부다.<br>앱이 너를 물리적으로 막지는 않는다.<br>다만 계약을 어기는 것은 주인님을 속이는 행위다.</p>
-        <p style="color:var(--muted);font-size:0.82rem;">위 내용에 동의하면 소유물로 등록할 수 있다.</p>
+        <p style="margin-bottom:10px;color:#e0b090;font-size:0.84rem;line-height:1.5;">이 앱의 규칙·미션·처벌을 따르며 발생하는 신체적·정신적·사회적 결과와 모든 책임은 전적으로 사용자 본인에게 있다. 어떠한 경우에도 앱·제작자·제3자에게 책임을 물을 수 없으며, 동의 버튼은 이에 대한 확인이다.</p>
+        <p style="color:var(--muted);font-size:0.82rem;">위 내용과 책임 범위에 동의하면 소유물로 등록할 수 있다.</p>
       </div>
       <button class="btn-primary" onclick="acceptContract()">계약에 동의한다</button>
     </div>
@@ -822,7 +891,7 @@
       <input type="text" id="inputMasterName" placeholder="주인님">
 
       <label>주인님 성격</label>
-      <p id="personaLockHint" class="hidden" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.35;">감금 중에는 성격을 바꿀 수 없다. 목표 달성 후, 다시 가두기 전에만 변경 가능.</p>
+      <p id="personaLockHint" class="hidden" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.35;">감금 중에는 캐릭터를 변경할 수 없다. 목표 달성 후, 다시 가두기 전에만 변경 가능.</p>
       <input type="hidden" id="inputPersonality" value="noona">
       <div id="settingsFaceGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;">
         <div class="face-opt selected" data-p="noona" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="noona" style="width:100%;border-radius:8px;border:2px solid var(--accent);">
@@ -873,7 +942,8 @@
       <h3>자지 상태 바치기</h3>
       <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">잠긴 자지를 사진으로 보여주고, 상태를 솔직히 고백해.</p>
       
-      <label>잠긴 자지 사진 (필수)</label>
+      <label id="dailyPhotoLabel">잠긴 자지 사진 (필수)</label>
+      <p id="dailyHairHint" class="hidden" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.4;">인증 강화 중: 새로 뽑은 자지/불알 털을 사진에 함께 담아라.</p>
       <input type="file" id="dailyPhoto" class="cam-only" accept="image/*" capture="environment" onchange="previewPhoto(this, 'dailyPreview')">
       <button type="button" class="btn-secondary cam-btn" data-cam-for="dailyPhoto" data-cam-preview="dailyPreview" onclick="openCameraFor('dailyPhoto','dailyPreview')">카메라로 촬영</button>
       <p style="font-size:0.72rem;color:var(--muted);margin:-4px 0 10px;line-height:1.35;">안 열리면 APK 설정에서 카메라 권한을 허용해라. 시스템 카메라 앱이 실행된다.</p>
@@ -1027,6 +1097,7 @@
       masterName: '주인님',
       showMasterFace: true,
                         setupDone: false,
+      appTitle: '자지 관리 대장',
       sfxEnabled: true,
       masterPersonality: 'noona',
       goalNotified: false,
@@ -1060,22 +1131,29 @@
     let currentRequestType = null;
 
 const ACHIEVEMENTS = [
-      { id: 'wear_24h', cat: '시간', title: '첫 24시간', desc: '연속 감금 24시간 달성', reward: null },
-      { id: 'wear_3d', cat: '시간', title: '3일 생존', desc: '연속 감금 3일 달성', reward: { type: 'softPunish', n: 1, label: '다음 처벌 1단계 완화 1회' } },
-      { id: 'wear_7d', cat: '시간', title: '일주일', desc: '연속 감금 7일 달성', reward: { type: 'unlockLong', n: 1, label: '긴 풀기(60분) 확정 1회' } },
-      { id: 'wear_14d', cat: '시간', title: '2주', desc: '연속 감금 14일 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회' } },
-      { id: 'wear_30d', cat: '시간', title: '한 달', desc: '연속 감금 30일 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회 (30일 특전)' } },
+      { id: 'wear_24h', cat: '시간', title: '첫 24시간', desc: '연속 감금 24시간', reward: null },
+      { id: 'wear_3d', cat: '시간', title: '3일 생존', desc: '연속 감금 3일', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
+      { id: 'wear_7d', cat: '시간', title: '일주일', desc: '연속 감금 7일', reward: { type: 'unlockLong', n: 1, label: '긴 풀기 확정 1회' } },
+      { id: 'wear_14d', cat: '시간', title: '2주', desc: '연속 감금 14일', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
+      { id: 'wear_30d', cat: '시간', title: '한 달', desc: '연속 감금 30일', reward: { type: 'orgasm', n: 1, label: '사정 확정 1회 (30일 특전)' } },
       { id: 'check_3', cat: '성실', title: '성실한 장난감', desc: '상태 바치기 3일 연속', reward: null },
       { id: 'check_7', cat: '성실', title: '완벽한 보고', desc: '상태 바치기 7일 연속', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
-      { id: 'check_no_ignore', cat: '성실', title: '항상 응답', desc: '확인 요청을 한 번도 무시하지 않음 (감금 3일+)', reward: null },
+      { id: 'check_14', cat: '성실', title: '보고 기계', desc: '상태 바치기 14일 연속', reward: { type: 'unlockLong', n: 1, label: '긴 풀기 확정 1회' } },
+      { id: 'reject_5', cat: '인내', title: '거절 5회', desc: '요청 거절 5회 견딤', reward: null },
+      { id: 'reject_15', cat: '인내', title: '거절 15회', desc: '요청 거절 15회', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
+      { id: 'punish_done', cat: '인내', title: '처벌 수용', desc: '처벌 과업 1회 완료', reward: null },
+      { id: 'punish_3', cat: '인내', title: '처벌 단골', desc: '처벌 과업 3회 완료', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
+      { id: 'punish_lv6', cat: '인내', title: '무거운 처벌', desc: '처벌 Lv.6 이상 완료', reward: null },
       { id: 'no_emergency', cat: '인내', title: '비상 없이', desc: '비상 해제 없이 목표 달성', reward: { type: 'unlockLong', n: 1, label: '긴 풀기 확정 1회' } },
-      { id: 'punish_done', cat: '인내', title: '처벌 수용', desc: '처벌을 끝까지 완료', reward: null },
-      { id: 'reject_10', cat: '인내', title: '거절 10회', desc: '요청이 10번 거절되어도 버팀', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
-      { id: 'mode_normal', cat: '특별', title: '일반 진입', desc: '일반 난이도(4일+) 감금', reward: null },
-      { id: 'mode_expert', cat: '특별', title: '숙련 진입', desc: '숙련 난이도(8일+) 감금', reward: null },
-      { id: 'punish_lv5', cat: '특별', title: '중한 처벌', desc: '처벌 Lv.5 이상 완료', reward: null },
-      { id: 'goal_clear', cat: '특별', title: '목표 완주', desc: '설정한 감금 기간 달성', reward: { type: 'orgasm', n: 1, label: '사정 확정 허용 1회' } }
-    ];
+      { id: 'talk_1', cat: '관계', title: '말 걸기', desc: '대화 1회', reward: null },
+      { id: 'talk_10', cat: '관계', title: '수다쟁이', desc: '대화 10회 (누적)', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
+      { id: 'queen_hello', cat: '관계', title: '먼저 인사', desc: '여왕님께 하루 첫 인사를 함', reward: null },
+      { id: 'mode_normal', cat: '특별', title: '일반 난이도', desc: '목표 6~10일로 감금', reward: null },
+      { id: 'mode_expert', cat: '특별', title: '숙련 난이도', desc: '목표 11일 이상으로 감금', reward: null },
+      { id: 'hardcore_enter', cat: '특별', title: '하드코어', desc: '하드코어 모드로 감금 시작', reward: null },
+      { id: 'goal_clear', cat: '특별', title: '목표 완주', desc: '설정한 감금 기간 달성', reward: { type: 'unlockLong', n: 1, label: '긴 풀기 확정 1회' } },
+      { id: 'mission_side_5', cat: '특별', title: '보조 모범', desc: '보조 미션 5회 완료 (누적)', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } }
+    ];;
 
     function loadState() {
       try {
@@ -1134,7 +1212,7 @@ const ACHIEVEMENTS = [
         // 디스크가 이 탭보다 최신 → 덮어쓰지 않고 당겨옴
         if (diskRev > (_stateLoadedAt || 0)) {
           pullStateFromStorage('conflict');
-          try { showToast('다른 탭 진행이 더 최신이라 그쪽을 따랐다. 탭은 하나만 쓰는 게 안전하다.'); } catch (e) {}
+          try { showToast('다른 탭 상태가 더 최신이다. 탭은 하나만 사용한다.'); } catch (e) {}
           return;
         }
         const copy = Object.assign({}, state);
@@ -1165,7 +1243,7 @@ const ACHIEVEMENTS = [
         if (ev.key === 'chastityToyState' && ev.newValue) {
           try {
             pullStateFromStorage('storage');
-            showToast('다른 탭 내용으로 동기화했다. 가능하면 탭 하나만 열어라.');
+            showToast('다른 탭과 동기화했다. 탭은 하나만 연다.');
           } catch (e) {}
         }
       });
@@ -1395,6 +1473,7 @@ const ACHIEVEMENTS = [
       state.pausedWearMs = 0;
       state.savedWearMs = null;
       state.totalPenalties = 0;
+      state.hairAuthRequired = false;
       // 기록·호감·티켓·업적·사진은 유지
       try {
         addLog('fail', toyName() + ' 런 실패: ' + reason);
@@ -1492,7 +1571,9 @@ function onOpenCheck() {
             state.lastReportMissPunishKey = missKey;
             const lvl = Math.min(10, 2 + missedDays);
             saveState();
-            assignPunishment(lvl, '자지 상태 바치기 ' + missedDays + '일 누락');
+            const missReason = '필수 상태 보고 ' + missedDays + '일 누락 (마지막 검진 이후 너무 오래 지남)';
+            assignPunishment(lvl, missReason);
+            try { showToastLatest('처벌 사유: ' + missReason); } catch (e) {}
           } else {
             saveState();
           }
@@ -1530,7 +1611,10 @@ function onOpenCheck() {
         if (state.locked && !isAllMandatoryDone()) {
           g.classList.remove('hidden');
           let t = needsForcedSide() ? (toyName() + ', 오늘 필수: 상태 바치기 + 하명 1.') : (toyName() + ', 오늘 필수: 상태 바치기.');
-          if (typeof needsHygieneBreak === 'function' && needsHygieneBreak()) t += ' · 위생 개방 예정(3일)';
+          if (typeof needsHygieneBreak === 'function' && needsHygieneBreak()) {
+            const hd = (typeof hygieneIntervalDays === 'function') ? hygieneIntervalDays() : 3;
+            t += ' · 위생 개방 가능(' + (hd != null ? hd + '일 주기' : '해당 없음') + ')';
+          }
           g.textContent = t;
         } else if (state.locked && isAllMandatoryDone()) {
           g.classList.remove('hidden');
@@ -1561,15 +1645,118 @@ function onOpenCheck() {
       return state.lastHygieneAt || state.startTimestamp || 0;
     }
 
+    function hygieneIntervalDays() {
+      // 하드코어: 위생 개방 없음. 누나 2일 / 메스가키 3일 / 여왕 5일
+      if (state.hardcoreMode) return null;
+      const p = (typeof normalizePersonality === 'function')
+        ? normalizePersonality(state.masterPersonality || 'noona')
+        : (state.masterPersonality || 'noona');
+      if (p === 'noona') return 2;
+      if (p === 'queen') return 5;
+      return 3; // mesugaki
+    }
+
     function needsHygieneBreak() {
-      if (!state.locked && !(state.currentUnlockUntil && now() < state.currentUnlockUntil)) {
-        // 이미 풀려 있으면 위생 독촉 불필요
-      }
+      if (state.hardcoreMode) return false;
+      if (!state.locked) return false;
       if (!state.startTimestamp) return false;
+      const days = hygieneIntervalDays();
+      if (days == null) return false;
+      const tk = (typeof todayKey === 'function') ? todayKey() : null;
+      if (!tk) return false;
+
+      // 과거 오퍼가 남아 있으면 소멸 (아껴 쓰기 방지)
+      if (state.hygieneOfferDate && state.hygieneOfferDate !== tk) {
+        state.lastHygieneAt = now();
+        state.hygieneOfferDate = null;
+        try { saveState(); } catch (e) {}
+        return false;
+      }
+
+      // 오늘 오퍼가 열려 있으면 오늘만 가능
+      if (state.hygieneOfferDate === tk) return true;
+
       const last = lastHygieneTs();
-      // 착용 경과 기준: 마지막 위생 이후 3일
       const elapsed = now() - last;
-      return elapsed >= 3 * 86400000;
+      if (elapsed < days * 86400000) return false;
+
+      // 주기 도래 → 오늘 하루만 오퍼
+      state.hygieneOfferDate = tk;
+      try { saveState(); } catch (e) {}
+      return true;
+    }
+
+    /** 위생 개방 시도. 누나는 확인 후, 나머지는 자동. 거절 시 다음 주기까지 미룸 */
+    function hygieneAskText() {
+      const p = (typeof normalizePersonality === 'function')
+        ? normalizePersonality(state.masterPersonality || 'noona')
+        : (state.masterPersonality || 'noona');
+      if (p === 'mesugaki') {
+        return '위생 타이밍이야~\n1시간 풀까? (씻기·엣징, 사정 금지)\n\n지금은 말고 나중에 할 거면 취소.';
+      }
+      if (p === 'queen') {
+        return '위생 주기다.\n1시간 개방할까? (씻기·엣징만. 사정 없음)\n\n지금은 싫으면 취소해. 창은 나중에 다시 열 수 있어.';
+      }
+      return '위생·휴식 타이밍이야.\n잠깐 풀까? (1시간, 사정은 안 돼)\n\n지금은 말고 나중에 할 거면 취소.';
+    }
+
+    /** 확인 후 개방. 거절해도 주기는 유지 → 원할 때 다시 선택 가능 */
+    function tryGrantHygieneBreak() {
+      if (!needsHygieneBreak()) return 0;
+      if (state.hardcoreMode) {
+        try { showToast('하드코어: 위생 개방 불가.'); } catch (e) {}
+        return 0;
+      }
+      const ok = confirm(hygieneAskText());
+      if (!ok) {
+        try { showToast('보류. 오늘은 아직 개방 가능하다.'); } catch (e) {}
+        return 0;
+      }
+      try {
+        return grantHygieneBreak(60) || 60;
+      } catch (e) {
+        return 0;
+      }
+    }
+
+    function openRequestMenu() {
+      if (!state.locked && !(state.currentUnlockUntil && now() < state.currentUnlockUntil)) {
+        try { showToast('감금 중이 아니다.'); } catch (e) {}
+        return;
+      }
+      const m = document.getElementById('requestMenuModal');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function openHygieneBreak() {
+      if (!state.locked) {
+        showToast('이미 개방 상태다.');
+        return;
+      }
+      if (state.hardcoreMode) {
+        showToast('하드코어: 위생 개방 불가.');
+        return;
+      }
+      if (!needsHygieneBreak()) {
+        const d = hygieneIntervalDays();
+        showToast(d ? ('아직이다. 약 ' + d + '일 주기야.') : '위생 개방 대상이 아니다.');
+        return;
+      }
+      const mins = tryGrantHygieneBreak();
+      if (mins) {
+        try {
+          const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+          const p = (typeof normalizePersonality === 'function')
+            ? normalizePersonality(state.masterPersonality || 'noona') : 'noona';
+          const lines = {
+            noona: mins + '분 개방이야. 씻고, 엣징까지. 사정은 안 돼. 시간 안에 다시 잠가줘.',
+            mesugaki: mins + '분 개방~ 씻고 엣징만. 싸면 끝인 거 알지? 끝나면 다시 잠가.',
+            queen: mins + '분. 씻기·엣징만. 사정은 안 된다. 끝나면 다시 잠가.'
+          };
+          showResult(master, lines[p] || lines.noona);
+        } catch (e) {}
+        try { updateUI(); } catch (e) {}
+      }
     }
 
     function grantHygieneBreak(minutes) {
@@ -1581,6 +1768,7 @@ function onOpenCheck() {
       state.needsRelockReport = false;
       state.hygieneDue = false;
       state.lastHygieneAt = now();
+      state.hygieneOfferDate = null;
       state.locked = false; // 일시 개방
       try { playSfx('approve'); } catch (e) {}
       saveState();
@@ -1629,6 +1817,99 @@ function checkUnlockDeadline() {
           try { showToast('사정 기한 초과. 잠금 +' + extMin + '분 · 처벌.'); } catch (e) {}
         }
       }
+    }
+
+
+    function hygieneStatusText() {
+      if (!state.locked) return '위생 —';
+      if (state.hardcoreMode) return '위생 개방: 하드코어에서는 없음';
+      const days = (typeof hygieneIntervalDays === 'function') ? hygieneIntervalDays() : null;
+      if (days == null) return '위생 개방: 없음';
+      const due = (typeof needsHygieneBreak === 'function') && needsHygieneBreak();
+      if (due) {
+        return '위생 개방: 오늘만 가능 · 안 쓰면 소멸';
+      }
+      const last = (typeof lastHygieneTs === 'function') ? lastHygieneTs() : (state.lastHygieneAt || state.startTimestamp || 0);
+      const intervalMs = days * 86400000;
+      const nextAt = last + intervalMs;
+      const remainMs = Math.max(0, nextAt - now());
+      const remainDays = Math.ceil(remainMs / 86400000);
+      if (remainDays <= 0) {
+        return '위생 개방: 곧 가능 (주기 ' + days + '일)';
+      }
+      if (remainDays === 1) {
+        return '위생 개방: 내일 가능 (주기 ' + days + '일)';
+      }
+      return '위생 개방: ' + remainDays + '일 후 가능 (주기 ' + days + '일)';
+    }
+
+    function updateHygieneButton() {
+      const btn = document.getElementById('btnHygiene');
+      if (btn) {
+        const show = !!(state.locked && !state.hardcoreMode && typeof needsHygieneBreak === 'function' && needsHygieneBreak());
+        if (show) {
+          btn.classList.remove('hidden');
+          btn.textContent = '위생 · 휴식 개방 (오늘만 · 1시간)';
+        } else {
+          btn.classList.add('hidden');
+        }
+      }
+      const info = document.getElementById('hygieneInfo');
+      if (info) {
+        if (state.hardcoreMode || !state.locked) {
+          info.classList.add('hidden');
+          info.textContent = '';
+        } else {
+          info.classList.remove('hidden');
+          try {
+            info.textContent = hygieneStatusText();
+            if (typeof needsHygieneBreak === 'function' && needsHygieneBreak()) {
+              info.style.color = '#e0a090';
+              info.style.fontWeight = '600';
+            } else {
+              info.style.color = '';
+              info.style.fontWeight = '';
+            }
+          } catch (e) {
+            info.textContent = '위생 —';
+          }
+        }
+      }
+    }
+
+    function updateActiveStatusBox() {
+      try { updateHygieneButton(); } catch (e) {}
+      const box = document.getElementById('activeStatusBox');
+      if (!box) return;
+      const lines = [];
+      if (state.activePunishment) {
+        lines.push('처벌 수행 중 · Lv.' + state.activePunishment.level + ' 「' + (state.activePunishment.title || '') + '」');
+        if (state.activePunishment.reason) lines.push('사유: ' + state.activePunishment.reason);
+      }
+      if (state.punishQueue && state.punishQueue.length) {
+        lines.push('대기 처벌 ' + state.punishQueue.length + '건');
+      }
+      if (state.hairAuthRequired) {
+        lines.push('인증 강화: 뽑은 털을 사진에 포함');
+      }
+      if (state.forcedDoubleMission) {
+        lines.push('필수 미션 강화 (하루 2개)');
+      }
+      if (state.requestBanUntil && now() < state.requestBanUntil) {
+        const h = Math.ceil((state.requestBanUntil - now()) / 3600000);
+        lines.push('요청 금지 약 ' + h + '시간 남음');
+      }
+      if (typeof isSilenced === 'function' && isSilenced()) {
+        lines.push('침묵 중 · 보고/대화 제한');
+      }
+      if (!lines.length || !state.setupDone) {
+        box.classList.add('hidden');
+        box.innerHTML = '';
+        return;
+      }
+      box.classList.remove('hidden');
+      box.innerHTML = '<div style="font-size:0.68rem;color:#c08070;margin-bottom:4px;">나의 상태</div>' +
+        lines.map(function (t) { return '<div>· ' + String(t).replace(/</g, '&lt;') + '</div>'; }).join('');
     }
 
     function updateUI() {
@@ -1844,7 +2125,11 @@ function checkUnlockDeadline() {
           const qn = (state.punishQueue || []).length;
           document.getElementById('punishLevel').textContent = 'Lv.' + state.activePunishment.level + ' / 10' + (qn ? (' · 대기 ' + qn) : '');
           document.getElementById('punishTitle').textContent = state.activePunishment.title;
-          document.getElementById('punishTask').textContent = state.activePunishment.task;
+          let taskTxt = state.activePunishment.task || '';
+          if (state.activePunishment.reason) {
+            taskTxt = '사유: ' + state.activePunishment.reason + '\n' + taskTxt;
+          }
+          document.getElementById('punishTask').textContent = taskTxt;
         } else {
           pc.classList.add('hidden');
         }
@@ -1862,6 +2147,7 @@ function checkUnlockDeadline() {
       renderAchievements();
       try { updateMissionCard(); } catch (e) {}
       try { updateAffTicketUI(); } catch (e) {}
+      try { updateActiveStatusBox(); } catch (e) {}
     }
 
     function isDailyDue() {
@@ -1895,7 +2181,7 @@ function checkUnlockDeadline() {
 
     function completeGoalAndPrepare() {
       if (!isGoalCleared() && !state.goalUnlockReady) {
-        showToast('아직 목표 시간이 되지 않았다.');
+        showToast('아직 목표 시간에 도달하지 않았다.');
         return;
       }
       const p = normalizePersonality(state.masterPersonality || 'noona');
@@ -1973,7 +2259,7 @@ function checkUnlockDeadline() {
       state.goalUnlockReady = true;
       saveState();
       try { playSfx('approve'); } catch (e) {}
-      showToast('목표 시간 달성 — 해제 버튼이 열렸다.');
+      showToast('목표 시간 달성. 해제 가능.');
       try { setTimeout(function() { celebrateMilestone('goal_time'); }, 350); } catch (e) {}
     }
 
@@ -2086,7 +2372,7 @@ function notifyGoalNear() {
       saveState();
       updateUI();
       try { playSfx('lock'); } catch (e) {}
-      showToast('자지가 잠겼다.');
+      showToast('감금되었다.');
     }
 
     function onRelockClick() {
@@ -2325,7 +2611,7 @@ function isGoalCleared() {
       saveState();
       try { closeModal('settingsModal'); } catch (e) {}
       try { updateUI(); } catch (e) {}
-      showToast('패배 선언. 이번 런은 실패 처리.');
+      showToast('패배 선언. 이번 런 실패.');
       try { playSfx('warn'); } catch (e) {}
     }
 
@@ -2346,7 +2632,7 @@ function isGoalCleared() {
           localStorage.setItem('masterFaceData', faceData(state.masterPersonality));
         }
       } else if (newPersona !== (state.masterPersonality || 'noona')) {
-        showToast('감금 중에는 성격을 바꿀 수 없다.');
+        showToast('감금 중에는 캐릭터를 변경할 수 없다.');
       }
       state.showMasterFace = document.getElementById('inputShowFace').value === 'true';
             const sfxEl = document.getElementById('inputSfx');
@@ -2372,7 +2658,34 @@ function isGoalCleared() {
     function toyName() { return state.toyName || '허접 자지'; }
     function masterName() { return state.masterName || '주인님'; }
 
+
+    function getAppTitle() {
+      const t = (state.appTitle || '').trim();
+      return t || '자지 관리 대장';
+    }
+
+    function applyAppTitle() {
+      const t = getAppTitle();
+      try {
+        const el = document.getElementById('appTitleEl');
+        if (el) el.textContent = t;
+      } catch (e) {}
+      try { document.title = t; } catch (e) {}
+    }
+
+    function editAppTitle() {
+      const cur = getAppTitle();
+      const next = prompt('앱 표시 이름 (비우면 기본값)', cur);
+      if (next == null) return;
+      const v = String(next).trim().slice(0, 24);
+      state.appTitle = v || '자지 관리 대장';
+      try { saveState(); } catch (e) {}
+      applyAppTitle();
+      try { showToast('이름: ' + getAppTitle()); } catch (e) {}
+    }
+
     function applyNames() {
+      try { applyAppTitle(); } catch (e) {}
       const toy = toyName();
       const master = masterName();
       const faceCard = document.querySelector('#masterFace')?.closest('.card');
@@ -2578,7 +2891,7 @@ function isGoalCleared() {
 
     function pickPersonality(where, el) {
       if (where === 'settings' && !canChangePersonality()) {
-        showToast('지금은 성격을 바꿀 수 없다. 목표 달성 후 다시 가두기 전에 변경해.');
+        showToast('캐릭터 변경은 목표 달성 후, 다시 가두기 전에만 가능하다.');
         return;
       }
       if (!el) return;
@@ -2605,6 +2918,7 @@ function isGoalCleared() {
         try { applyPersonaDifficulty(where, p, where === 'settings'); } catch (e) {}
       }
       if (where === 'lockStart') {
+        try { rebuildLockStartDayOptions(p); } catch (e) {}
         const labels = { noona: '옆집 누나', mesugaki: '메스가키', queen: '밤의 여왕' };
         const hint = document.getElementById('lockStartDiffHint');
         const rnd = document.getElementById('btnLockStartRandom');
@@ -2755,11 +3069,11 @@ function isGoalCleared() {
     function doAffectionRecovery() {
       try { playSfx('click'); } catch (e) {}
       if (state.hardcoreMode) {
-        showToast('하드코어에서는 호감 만회가 없다.');
+        showToast('하드코어: 호감 만회 불가.');
         return;
       }
       if (typeof isSilenced === 'function' && isSilenced()) {
-        showToast('침묵 중에는 할 수 없다.');
+        showToast('침묵 중에는 사용할 수 없다.');
         return;
       }
       if (getAffection() >= 35) {
@@ -2769,7 +3083,7 @@ function isGoalCleared() {
       state.recoveryUsed = state.recoveryUsed || {};
       const rk = recoveryKey();
       if (state.recoveryUsed[rk]) {
-        showToast('이미 이 상대(모드)에서 만회 기회를 썼다.');
+        showToast('이 상대에서는 만회를 이미 사용했다.');
         return;
       }
       state.recoveryUsed[rk] = true;
@@ -2790,6 +3104,49 @@ function isGoalCleared() {
 
 
 
+
+
+    function rebuildLockStartDayOptions(persona) {
+      const sel = document.getElementById('lockStartTargetDays');
+      const custom = document.getElementById('lockStartTargetCustom');
+      if (!sel) return;
+      const diff = personaDifficulty(persona);
+      let prev = parseInt(sel.value, 10);
+      if (sel.value === 'custom' && custom) prev = parseInt(custom.value, 10) || diff.defaultDays;
+      if (!prev || isNaN(prev)) prev = diff.defaultDays;
+
+      let html = '';
+      const listMax = Math.min(diff.max, 20);
+      for (let d = diff.min; d <= listMax; d++) {
+        html += '<option value="' + d + '">' + d + '일</option>';
+      }
+      if (diff.max > listMax) {
+        html += '<option value="custom">직접 입력 (' + diff.min + '~' + diff.max + '일)</option>';
+      }
+      sel.innerHTML = html;
+      sel.disabled = false;
+
+      let pick = Math.min(diff.max, Math.max(diff.min, prev));
+      if (pick > listMax && diff.max > listMax) {
+        sel.value = 'custom';
+        if (custom) {
+          custom.classList.remove('hidden');
+          custom.min = String(diff.min);
+          custom.max = String(diff.max);
+          custom.value = String(pick);
+        }
+      } else {
+        if (sel.querySelector('option[value="' + pick + '"]')) sel.value = String(pick);
+        else sel.value = String(diff.defaultDays);
+        if (custom) {
+          custom.classList.add('hidden');
+          custom.min = String(diff.min);
+          custom.max = String(diff.max);
+        }
+      }
+      const modeEl = document.getElementById('lockStartTargetMode');
+      if (modeEl) modeEl.value = diff.mode;
+    }
 
     function personaDifficulty(p) {
       p = (typeof normalizePersonality === 'function') ? normalizePersonality(p) : p;
@@ -2888,7 +3245,7 @@ function isGoalCleared() {
       }
       if (state.needsRelockReport || state.postOrgasmPending) {
         if (typeof openRelockReport === 'function') openRelockReport();
-        else showToast('다시 가둔 뒤 보고가 필요하다.');
+        else showToast('재감금 후 보고가 필요하다.');
         return;
       }
       try {
@@ -2929,6 +3286,16 @@ function isGoalCleared() {
         if (typeof syncPersonalityGrid === 'function') syncPersonalityGrid('lockStart', p0);
         if (typeof initFaceGridImages === 'function') initFaceGridImages();
       } catch (eLS) {}
+      try {
+        const lp = document.getElementById('lockStartPersonality');
+        const p0 = (lp && lp.value) ? lp.value : (state.masterPersonality || 'noona');
+        rebuildLockStartDayOptions(p0);
+        const grid = document.getElementById('lockStartFaceGrid');
+        if (grid) {
+          const selEl = grid.querySelector('.face-opt[data-p="' + p0 + '"]') || grid.querySelector('.face-opt.selected');
+          if (selEl) pickPersonality('lockStart', selEl);
+        }
+      } catch (e) {}
       document.getElementById('lockStartModal').classList.remove('hidden');
     }
 
@@ -2947,7 +3314,7 @@ function isGoalCleared() {
       syncTargetDaysUI('lockStart', v);
       const sel = document.getElementById('lockStartTargetDays');
       if (sel) { sel.disabled = false; if (v <= 11) sel.value = String(v); }
-      try { showToast('이번 목표: ' + v + '일'); } catch (e) {}
+      try { showToastLatest('이번 목표: ' + v + '일'); } catch (e) {}
     }
 
 
@@ -2975,14 +3342,14 @@ function isGoalCleared() {
       }
 
       let v = readTargetDays('lockStart');
-      if (p === 'queen') v = Math.min(90, Math.max(11, v));
-      else if (p === 'mesugaki') v = Math.min(10, Math.max(6, v));
-      else v = Math.min(5, Math.max(1, v)); // noona
-      if (isNaN(v) || v < 1 || v > 90) {
-        showToast('일수를 올바르게 선택해라.');
+      const diff = personaDifficulty(p);
+      v = Math.min(diff.max, Math.max(diff.min, v || diff.defaultDays));
+      if (isNaN(v) || v < diff.min || v > diff.max) {
+        showToast('일수는 ' + diff.min + '~' + diff.max + '일 범위에서 선택한다.');
         return;
       }
       state.targetDays = v;
+      state.hairAuthRequired = false;
       state.queenExtendCount = 0;
       state.queenExtendTotalDays = 0;
       state.queenExtendGate = false;
@@ -2998,7 +3365,9 @@ function isGoalCleared() {
         }
         state.hardcoreMode = true;
         state.hardcoreAffection = 28;
-        try { showToast('하드코어 · 호감 낮게 시작'); } catch (e) {}
+        state.hardcoreEver = true;
+        try { unlockAchieve('hardcore_enter'); } catch (e) {}
+        try { showToast('하드코어 시작. 호감은 낮게 설정된다.'); } catch (e) {}
       } else if (!wantHc && state.hardcoreMode) {
         state.hardcoreMode = false;
         try {
@@ -3124,6 +3493,17 @@ function isGoalCleared() {
       document.getElementById('checkFit').checked = false;
       document.getElementById('skinGrade').value = 'good';
       document.getElementById('dailyNote').value = '';
+      try {
+        const hh = document.getElementById('dailyHairHint');
+        if (hh) {
+          if (state.hairAuthRequired) hh.classList.remove('hidden');
+          else hh.classList.add('hidden');
+        }
+        const lb = document.getElementById('dailyPhotoLabel');
+        if (lb) lb.textContent = state.hairAuthRequired
+          ? '잠긴 자지 + 뽑은 털 사진 (필수)'
+          : '잠긴 자지 사진 (필수)';
+      } catch (e) {}
       const title = document.querySelector('#dailyModal h3');
       if (title) {
         title.textContent = (state._dailyIsMandatory || !state.statusDone)
@@ -3136,13 +3516,13 @@ function isGoalCleared() {
     function submitDaily() {
       const photoInput = document.getElementById('dailyPhoto');
       if (!photoInput.files || !photoInput.files[0]) {
-        showToast('사진을 반드시 첨부하세요.');
+        showToast('사진이 필요하다.');
         return;
       }
       if (!document.getElementById('checkSkin').checked ||
           !document.getElementById('checkHygiene').checked ||
           !document.getElementById('checkFit').checked) {
-        showToast('체크리스트를 모두 확인하세요.');
+        showToast('체크리스트를 모두 확인한다.');
         return;
       }
 
@@ -3151,7 +3531,7 @@ function isGoalCleared() {
 
       const file = getPhotoFileFromInput(photoInput);
       if (!file) {
-        showToast('카메라로 사진을 촬영해야 한다.');
+        showToast('카메라로 촬영한 사진이 필요하다.');
         return;
       }
       compressImageFile(file).then(dataUrl => {
@@ -3200,10 +3580,8 @@ function isGoalCleared() {
             } catch (e) {}
           }
           if (typeof needsHygieneBreak === 'function' && needsHygieneBreak()) {
-            try {
-              if (typeof grantHygieneBreak === 'function') grantHygieneBreak();
-              rewardMsg += ' · 위생 개방';
-            } catch (e) {}
+            rewardMsg += ' · 위생 개방 가능';
+            try { showToast('위생 개방 가능. 메인에서 선택한다.'); } catch (e) {}
           }
           try { addAffection((typeof getStatusMission === 'function' ? (getStatusMission().aff || 1) : 1)); } catch (e) {}
           if (rewardMsg) {
@@ -3412,7 +3790,59 @@ function isGoalCleared() {
 
     function getMissionById(id) {
       if (id === 'status_daily') return getStatusMission();
+      if (id === 'free_daily') return getFreeMission();
       return MISSION_POOL.find(m => m.id === id) || null;
+    }
+
+    function freeMissionThreshold() {
+      const p = (typeof normalizePersonality === 'function')
+        ? normalizePersonality(state.masterPersonality || 'noona')
+        : (state.masterPersonality || 'noona');
+      if (p === 'mesugaki') return 75;
+      if (p === 'queen') return 80;
+      return 70;
+    }
+
+    function canOfferFreeMission() {
+      if (!state.locked) return false;
+      if (state.hardcoreMode) return false;
+      const tk = (typeof todayKey === 'function') ? todayKey() : '';
+      if (state.freeMissionDoneDate === tk) return false;
+      try {
+        return (typeof getAffection === 'function' ? getAffection() : 0) >= freeMissionThreshold();
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function getFreeMission() {
+      const p = (typeof normalizePersonality === 'function')
+        ? normalizePersonality(state.masterPersonality || 'noona')
+        : (state.masterPersonality || 'noona');
+      const pack = {
+        noona: {
+          title: '하고 싶은 것',
+          desc: '호감이 좋으니까… 오늘은 네가 하고 싶은 걸 해. 대신 뭐 했는지 솔직히 보고해.'
+        },
+        mesugaki: {
+          title: '자유 특권',
+          desc: '호감 꽤 높네~ 오늘은 하고 싶은 거 해 봐. 대신 보고는 올려~'
+        },
+        queen: {
+          title: '허용된 자유',
+          desc: '호감이 있으니 오늘은 네가 하고 싶은 걸 해도 된다. 단, 보고는 올려라.'
+        }
+      };
+      const t = pack[p] || pack.noona;
+      return {
+        id: 'free_daily',
+        kind: 'free',
+        title: t.title,
+        desc: t.desc,
+        needPhoto: true,
+        aff: 2,
+        persona: ['noona', 'mesugaki', 'queen']
+      };
     }
 
     function optAcceptLimit() {
@@ -3444,9 +3874,33 @@ function isGoalCleared() {
             // 같은 날짜 키로 중복 패널티 방지
             if (state.lastMissionPenaltyDate !== state.missionDate) {
               state.lastMissionPenaltyDate = state.missionDate;
-              addLog('mission', '일일 미션 미완료 → 패널티');
-              try { assignPunishment(2, '일일 미션 미완료'); } catch (e) {}
-              try { showToast('어제 미션을 다 못 했다. 패널티.'); } catch (e) {}
+              const why = [];
+              if (!state.statusDone) why.push('필수 상태 보고를 하지 않음');
+              if (typeof needsForcedSide === 'function' && needsForcedSide() && !state.forcedSideDone) {
+                why.push('강제 보조 미션을 끝내지 않음');
+              }
+              const pendingList = (state.optAccepted || []).filter(function (x) {
+                return !(state.optDoneIds || []).includes(x.id);
+              });
+              if (pendingList.length) {
+                const names = pendingList.map(function (x) {
+                  const m = (typeof getMissionById === 'function') ? getMissionById(x.id) : null;
+                  return (m && m.title) ? m.title : String(x.id);
+                }).join(', ');
+                why.push('수주한 보조 미완료 (' + names + ')');
+              }
+              const reasonText = why.length ? why.join(' · ') : '일일 미션 미완료';
+              addLog('mission', '일일 미션 미완료 → 처벌: ' + reasonText);
+              try { assignPunishment(2, reasonText); } catch (e) {}
+              try {
+                if (typeof showToastLatest === 'function') showToastLatest('처벌 사유: ' + reasonText);
+                else showToast('처벌 사유: ' + reasonText);
+              } catch (e) {}
+              try {
+                const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+                const lines = why.map(function (w) { return '· ' + w; }).join('\n');
+                showResult(master, '날짜가 바뀌었다.\n\n처벌 사유:\n' + lines + '\n\n어제 해야 할 일을 남긴 대가다.');
+              } catch (e) {}
             }
           }
         }
@@ -3559,6 +4013,14 @@ function isGoalCleared() {
           card.classList.add('hidden');
         } else {
           card.classList.remove('hidden');
+          // 필수 보고 미완료: 카드 강조
+          if (!state.statusDone) {
+            card.style.borderColor = '#c45a40';
+            card.style.boxShadow = '0 0 0 1px rgba(196,90,64,.35)';
+          } else {
+            card.style.borderColor = '#7a5040';
+            card.style.boxShadow = '0 0 0 1px rgba(160,100,70,.15)';
+          }
         }
         if (state.locked && isAllMandatoryDone() && !pendingOpt.length && canAcceptMore) {
           card.style.opacity = '0.85';
@@ -3609,7 +4071,7 @@ function isGoalCleared() {
       try { playSfx('click'); } catch (e) {}
 if (!assertNotSilenced('미션')) return;
             if (!state.locked) {
-        showToast('감금 중에만 미션을 한다.');
+        showToast('감금 중에만 미션을 진행한다.');
         return;
       }
       rollDailyMission();
@@ -3634,7 +4096,13 @@ if (!assertNotSilenced('미션')) return;
         }
       }
 
-      // 3) 필수 상태 바친 뒤 추가 보고 (선택)
+      // 3) 호감 특권: 자유 과업 (하드코어 제외)
+      if (typeof canOfferFreeMission === 'function' && canOfferFreeMission()) {
+        const fr = getFreeMission();
+        html += `<button class="btn-primary" style="margin:0;text-align:left;border-color:#c4a090;" onclick="startMission('free_daily')">[특권] ${fr.title}<br><span style="font-size:0.75rem;font-weight:400;opacity:.85">${fr.desc}</span></button>`;
+      }
+
+      // 4) 필수 상태 바친 뒤 추가 보고 (선택)
       if (state.statusDone) {
         html += `<button class="btn-secondary" style="margin:0;text-align:left;font-size:0.82rem;" onclick="closeModal('missionModal');openDailyCheck()">[선택] 추가 상태 보고<br><span style="font-size:0.72rem;font-weight:400;opacity:.85">필수는 아님. 점검이 더 필요할 때만.</span></button>`;
       }
@@ -3670,7 +4138,7 @@ if (!assertNotSilenced('미션')) return;
       }
       const m = pickSideMission();
       if (!m) {
-        showToast('내려줄 미션이 없다.');
+        showToast('받을 수 있는 미션이 없다.');
         return;
       }
       // 캐릭터가 제안 → 수주 확인
@@ -3706,7 +4174,7 @@ if (!assertNotSilenced('미션')) return;
       addLog('mission', toyName() + ' 보조 수주: ' + ((getMissionById(id) || {}).title || id));
       saveState();
       try { playSfx('click'); } catch (e) {}
-      showToast('미션을 받았다.');
+      showToast('미션을 수주했다.');
       openMissionPanel();
     }
 
@@ -3715,7 +4183,7 @@ if (!assertNotSilenced('미션')) return;
       const el = document.getElementById('sideOfferModal');
       if (el) el.remove();
       try { playSfx('click'); } catch (e) {}
-      showToast('거절했다.');
+      showToast('미션을 거절했다.');
       openMissionPanel();
     }
 
@@ -3723,17 +4191,23 @@ if (!assertNotSilenced('미션')) return;
       const m = getMissionById(id);
       if (!m) return;
       if (m.kind === 'status' && state.statusDone) {
-        showToast('오늘 상태 바치기는 끝났다.');
+        showToast('오늘 상태 보고는 완료되었다.');
         return;
+      }
+      if (m.kind === 'free') {
+        if (!canOfferFreeMission()) {
+          showToast('지금은 자유 특권을 쓸 수 없다.');
+          return;
+        }
       }
       if (m.kind === 'opt') {
         const acc = (state.optAccepted || []).find(x => x.id === m.id);
         if (!acc) {
-          showToast('먼저 미션을 수주해라.');
+          showToast('먼저 미션을 수주한다.');
           return;
         }
         if ((state.optDoneIds || []).includes(m.id)) {
-          showToast('이미 끝낸 미션이다.');
+          showToast('이미 완료한 미션이다.');
           return;
         }
       }
@@ -3809,6 +4283,52 @@ if (!assertNotSilenced('미션')) return;
       return pack[Math.floor(Math.random() * pack.length)];
     }
 
+
+    function missionFailLine() {
+      const p = (typeof normalizePersonality === 'function')
+        ? normalizePersonality(state.masterPersonality || 'noona')
+        : (state.masterPersonality || 'noona');
+      const lines = {
+        noona: [
+          '실패했다고? …무리하진 마. 대신 다음엔 제대로 보고해.',
+          '음, 솔직히 말해 줘서 고마워. 그래도 할 일은 남아 있어.',
+          '괜찮아요. 실패도 보고야. 몸 상태만 챙기고, 다시 해보자.'
+        ],
+        mesugaki: [
+          '푸후, 실패~? 허접이네. 다시 해.',
+          '못 했다고? 귀엽긴. 그렇다고 끝이 아닌 거 알지?',
+          '실패 신고 접수~ 호감은 좀 깎을게. 다시 도전해 봐.'
+        ],
+        queen: [
+          '실패했다고 솔직히 말했군. 그래도 과업은 남아 있다.',
+          '못한 걸 숨기지 않은 건 인정한다. 다시 수행해라.',
+          '실패도 네 몫이다. 변명은 됐고, 다음을 준비해.'
+        ]
+      };
+      const arr = lines[p] || lines.noona;
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function failMission() {
+      if (!assertNotSilenced('미션')) return;
+      const m = _missionDoing;
+      if (!m) return;
+      try {
+        if (typeof addAffection === 'function') addAffection(-2);
+      } catch (e) {}
+      try {
+        addLog('mission', toyName() + ' 미션 실패 신고: ' + (m.title || m.id));
+      } catch (e) {}
+      const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+      const line = missionFailLine();
+      try { showResult(master, line); } catch (e) { showToast(line); }
+      try { playSfx('warn'); } catch (e) {}
+      try { saveState(); } catch (e) {}
+      try { updateUI(); } catch (e) {}
+      try { updateMissionCard(); } catch (e) {}
+      try { backMissionList(); } catch (e) {}
+    }
+
     function submitMission() {
       if (!assertNotSilenced('미션')) return;
       const m = _missionDoing;
@@ -3818,6 +4338,13 @@ if (!assertNotSilenced('미션')) return;
       if (m.needPhoto && !file) {
         showToast('사진이 필요하다.');
         return;
+      }
+      if (m.kind === 'free') {
+        const n0 = (document.getElementById('missionNote').value || '').trim();
+        if (n0.length < 2) {
+          showToast('무엇을 했는지 한 줄 이상 적는다.');
+          return;
+        }
       }
       // 통과 확률 (표시 없음). 실패 시 말만 하고 재시도
       if (!rollMissionPass()) {
@@ -3841,6 +4368,11 @@ if (!assertNotSilenced('미션')) return;
       addAffection(aff);
       let rewardMsg = '호감 +' + aff;
 
+      if (m.kind === 'free') {
+        state.freeMissionDoneDate = (typeof todayKey === 'function') ? todayKey() : String(Date.now());
+        try { addLog('mission', toyName() + ' 자유 과업 보고'); } catch (e) {}
+      }
+
       if (m.kind === 'status') {
         state.statusDone = true;
         state.lastCheckTimestamp = now();
@@ -3859,15 +4391,16 @@ if (!assertNotSilenced('미션')) return;
           } catch (e) {}
         }
         if (typeof needsHygieneBreak === 'function' && needsHygieneBreak()) {
-          try {
-            const mins = grantHygieneBreak(60);
-            rewardMsg += ' · 위생 개방 ' + mins + '분';
-            state._hygieneJustGranted = true;
-          } catch (e) {}
+          rewardMsg += ' · 위생 개방 가능 (원할 때 「위생 개방」)';
+          try { showToast('위생 개방 가능. 메인에서 선택한다.'); } catch (e) {}
         }
       } else {
         state.optDoneIds = state.optDoneIds || [];
-        if (!state.optDoneIds.includes(m.id)) state.optDoneIds.push(m.id);
+        if (!state.optDoneIds.includes(m.id)) {
+          state.optDoneIds.push(m.id);
+          state.sideMissionTotal = (state.sideMissionTotal || 0) + 1;
+          try { checkAchievements(); } catch (e) {}
+        }
         if (state.forcedSideId === m.id) state.forcedSideDone = true;
       }
 
@@ -3891,9 +4424,9 @@ if (!assertNotSilenced('미션')) return;
         if (state._hygieneJustGranted) {
           state._hygieneJustGranted = false;
           const hy = {
-            noona: '\n\n3일지났네~ 위생 개방시간이야. 1시간 줄게. 씻고, 엣징 해도 돼. 사정은 안 되는거 알지? 시간 안에 다시 잠가줘?',
-            mesugaki: '\n\n뭐야 벌써 3일 지났네? 1시간 개방~ 씻고 엣징까지만 허가. 싸면 끝인 거 알지? 끝나면 다시 잠가.',
-            queen: '\n\n씻기와 엣징만 허가한다. 시간은 1시간. 사정은 당연히 안되고 끝나면 다시 내 소유물로 돌아와라.'
+            noona: '\n\n이틀 주기 위생·휴식이야. 1시간. 씻고 엣징까지. 사정은 안 돼. 시간 안에 다시 잠가줘.',
+            mesugaki: '\n\n3일 지났네? 1시간 개방~ 씻고 엣징만. 싸면 끝인 거 알지? 끝나면 다시 잠가.',
+            queen: '\n\n5일이나 됐네. 씻기랑 엣징만 1시간. 사정은 당연히 안 되고, 끝나면 다시 잠가.'
           };
           okLine += hy[p] || hy.noona;
         }
@@ -3909,7 +4442,7 @@ if (!assertNotSilenced('미션')) return;
       } catch (e) {}
       try {
         if (typeof hasActivePunishment === 'function' && hasActivePunishment()) {
-          showToast('처벌을 먼저 끝내라.');
+          showToast('처벌을 먼저 완료한다.');
           return;
         }
       } catch (e) {}
@@ -3927,7 +4460,7 @@ if (!assertNotSilenced('미션')) return;
       }
       if (state.lastTalkTs && (now() - state.lastTalkTs) < 1 * 3600000) {
         const left = Math.ceil((1 * 3600000 - (now() - state.lastTalkTs)) / 60000);
-        showToast('조금만 뒤에 다시 말해. 약 ' + left + '분 후. (1시간 간격 · 하루 3회)');
+        showToast('대화 쿨타임. 약 ' + left + '분 후. (1시간 간격 · 하루 3회)');
         return;
       }
       const p = normalizePersonality(state.masterPersonality || 'noona');
@@ -4172,7 +4705,9 @@ if (!assertNotSilenced('미션')) return;
         let line = pack[band] || pack.mid || '…알겠다.';
         if (typeof affLine === 'string' && affLine) line = line + '\n' + affLine;
         if (ticketLine) line = line + ticketLine;
-        try { addLog('talk', '대화', { reply: line, note: kind }); } catch (e) {}
+        try { state.talkTotal = (state.talkTotal || 0) + 1;
+          try { checkAchievements(); } catch (e0) {}
+          addLog('talk', '대화', { reply: line, note: kind }); } catch (e) {}
         showResult(state.masterName || '주인님', line);
         updateUI();
       } catch (err) {
@@ -4186,7 +4721,7 @@ if (!assertNotSilenced('미션')) return;
       try { playSfx('click'); } catch (e) {}
 if (!assertNotSilenced('고백')) return;
             if (hasActivePunishment()) {
-        showToast('처벌을 먼저 끝내라.');
+        showToast('처벌을 먼저 완료한다.');
         return;
       }
       if (!state.locked) {
@@ -4275,16 +4810,16 @@ if (!assertNotSilenced('고백')) return;
       try { playSfx('click'); } catch (e) {}
       if (!assertNotSilenced('요청')) return;
       if (state.hardcoreMode && (type === 'unlock' || type === 'orgasm')) {
-        showToast('하드코어에서는 풀기·사정 요청이 불가하다.');
+        showToast('하드코어: 풀기·사정 요청 불가.');
         return;
       }
       if (hasActivePunishment()) {
-        showToast('처벌을 먼저 끝내라.');
+        showToast('처벌을 먼저 완료한다.');
         return;
       }
       if (state.requestBanUntil && now() < state.requestBanUntil) {
         const h = Math.ceil((state.requestBanUntil - now()) / 3600000);
-        showToast('요청 금지 중이다. 약 ' + h + '시간 남음.');
+        showToast('요청 금지 중. 약 ' + h + '시간 남음.');
         return;
       }
       if (type === 'edging') type = 'unlock'; // 구버전 호환
@@ -4308,7 +4843,8 @@ if (!assertNotSilenced('고백')) return;
           <input type="hidden" id="reqMinutes" value="0">
           <label>사연 (짧게)</label>
           <textarea id="reqReason" placeholder="왜 잠깐 풀어야 하는지"></textarea>
-          <label>지금 자지 사진 (카메라만)</label>
+          <label id="reqPhotoLabel">지금 자지 사진 (카메라만)</label>
+          <p id="reqHairHint" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.4;${state.hairAuthRequired ? '' : 'display:none;'}">인증 강화: 새로 뽑은 털을 함께 찍어라.</p>
           <input type="file" id="reqPhoto" class="cam-only" accept="image/*" capture="environment">
           <button type="button" class="btn-secondary cam-btn" data-cam-for="reqPhoto" data-cam-preview="">카메라로 촬영</button>
         `;
@@ -4322,7 +4858,8 @@ if (!assertNotSilenced('고백')) return;
             · 허락 후: 사정 → 즉시 재잠금 → 카메라 보고<br>
             · 보고 없이 방치하면 추가 처벌
           </div>
-          <label>지금 자지 사진 (카메라만)</label>
+          <label id="reqPhotoLabel">지금 자지 사진 (카메라만)</label>
+          <p id="reqHairHint" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.4;${state.hairAuthRequired ? '' : 'display:none;'}">인증 강화: 새로 뽑은 털을 함께 찍어라.</p>
           <input type="file" id="reqPhoto" class="cam-only" accept="image/*" capture="environment">
           <button type="button" class="btn-secondary cam-btn" data-cam-for="reqPhoto" data-cam-preview="">카메라로 촬영</button>
         `;
@@ -4481,7 +5018,7 @@ if (!assertNotSilenced('고백')) return;
       }
 
       if (!reqFile) {
-        showToast('카메라로 사진을 촬영해야 요청할 수 있다. (갤러리 오래된 사진은 거부됨)');
+        showToast('요청에는 방금 촬영한 사진이 필요하다.');
         return;
       }
 
@@ -4747,7 +5284,7 @@ if (!assertNotSilenced('고백')) return;
       const reason = document.getElementById('emergencyReason').value.trim();
 
       if (reason.length < 5) {
-        showToast('사유를 구체적으로 적으세요.');
+        showToast('사유를 구체적으로 적는다.');
         return;
       }
 
@@ -5012,6 +5549,115 @@ if (!assertNotSilenced('고백')) return;
       } catch (e) {}
     }
 
+
+    const DAILY_GREET = {
+      noona: [
+        '일어났어? 잠긴 채로 하루 시작이네. 오늘도 보고 빠지지 마.',
+        '좋은 아침… 아니, 지금이 아침이든 아니든. 자지부터 잘 있는지 확인해 볼까.',
+        '또 왔네. 찬 채로 잘 잤어? 무리한 거 없으면 오늘도 그대로 가자.',
+        '접속한 거 봤어. 인사 대신 상태 하나 바치면 누나가 더 안심돼.',
+        '하루 열었구나. 급하게 풀고 싶어도 참는 거, 누나는 알고 있어.'
+      ],
+      mesugaki: [
+        '어, 허접 자지 주인 기상? 아직 잠긴 거 맞지~',
+        '접속했어? 설마 풀고 들어왔진 않겠지. 푸후.',
+        '하루 시작부터 앱 여는 거 귀엽네. 보고 안 하면 놀릴 거야.',
+        '왔으면 말 걸어. 잠긴 자지 자랑은 나중에~',
+        '또 왔네. 오늘도 참기 연습이다, 알지?'
+      ],
+      queen: [
+        '일어났네. 자지는 아직도 잠긴 채로지? …그 꼴이 더 귀엽긴 해.',
+        '접속했어? 풀고 싶어서 연 거면 실망인데. 당연히 그대로 두고 참아.',
+        '하루 시작부터 앱을 열어? 심심하면 잠긴 거나 만져 봐. 싸는 건 안 되고.',
+        '왔구나. 정조대 안에서 또 칭얼댔지? 그게 나랑 무슨 상관이야. 참아.',
+        '응, 보고 있어. 잠긴 자지 그대로인 거 확인되면 그걸로 충분해. 풀어줄 생각은 없고.'
+      ]
+    };
+
+    function pickDailyGreetLine(p) {
+      p = (typeof normalizePersonality === 'function') ? normalizePersonality(p || 'noona') : (p || 'noona');
+      const arr = DAILY_GREET[p] || DAILY_GREET.noona;
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+
+    function maybeReportReminder() {
+      try {
+        if (!state.setupDone || !state.locked) return;
+        if (state.statusDone) return;
+        if (typeof isSilenced === 'function' && isSilenced()) return;
+        const tk = (typeof todayKey === 'function') ? todayKey() : null;
+        if (!tk || state.lastReportRemindDate === tk) return;
+        state.lastReportRemindDate = tk;
+        try { saveState(); } catch (e) {}
+        try { showToast('오늘 필수 상태 보고가 남아 있다.'); } catch (e) {}
+        const g = document.getElementById('todayGuide');
+        if (g) {
+          g.classList.remove('hidden');
+          g.style.color = '#e0a090';
+          g.textContent = '필수: 오늘 상태 보고(사진)를 아직 하지 않았다.';
+        }
+      } catch (e) {}
+    }
+
+    function maybeDailyGreet() {
+      try {
+        if (!state.setupDone) return;
+        const tk = (typeof todayKey === 'function') ? todayKey() : new Date().toDateString();
+        if (state.lastGreetDate === tk) return;
+        // 계약/신상 모달이 떠 있으면 스킵 (다음에)
+        try {
+          const cm = document.getElementById('contractModal');
+          const sm = document.getElementById('setupModal');
+          if (cm && !cm.classList.contains('hidden')) return;
+          if (sm && !sm.classList.contains('hidden')) return;
+        } catch (e) {}
+
+        const p = (typeof normalizePersonality === 'function')
+          ? normalizePersonality(state.masterPersonality || 'noona')
+          : (state.masterPersonality || 'noona');
+        const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+
+        if (p === 'queen') {
+          const q = document.getElementById('queenGreetModal');
+          if (q) q.classList.remove('hidden');
+          return; // 인사 후에 lastGreetDate 기록
+        }
+        state.lastGreetDate = tk;
+        try { saveState(); } catch (e) {}
+        try { showResult(master, pickDailyGreetLine(p)); } catch (e) {}
+      } catch (e) {}
+    }
+
+
+    function dismissQueenGreet() {
+      try { closeModal('queenGreetModal'); } catch (e) {}
+      // 인사 미루기: 조용히 호감 감소 (표시 없음). 그날은 다시 안 뜸.
+      try {
+        const tk = (typeof todayKey === 'function') ? todayKey() : new Date().toDateString();
+        state.lastGreetDate = tk;
+        if (typeof addAffection === 'function') addAffection(-3);
+        else if (typeof setAffection === 'function' && typeof getAffection === 'function') {
+          setAffection(getAffection() - 3);
+        }
+        saveState();
+      } catch (e) {}
+    }
+
+    function doQueenGreet() {
+      try { closeModal('queenGreetModal'); } catch (e) {}
+      const tk = (typeof todayKey === 'function') ? todayKey() : new Date().toDateString();
+      state.lastGreetDate = tk;
+      state.queenGreetedOnce = true;
+      try { unlockAchieve('queen_hello'); } catch (e) {}
+      try { saveState(); } catch (e) {}
+      const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+      try {
+        showResult(master, pickDailyGreetLine('queen'));
+      } catch (e) {}
+      try { playSfx('click'); } catch (e) {}
+    }
+
     function showResult(title, msg) {
       try { playSfx('modal'); } catch (e) {}
       document.getElementById('resultTitle').textContent = title;
@@ -5024,6 +5670,18 @@ if (!assertNotSilenced('고백')) return;
 
     function showToast(msg) {
       if (msg == null || msg === '') return;
+      _toastQueue.push(String(msg));
+      _drainToasts();
+    }
+
+    /** 이전 큐·표시 중인 토스트를 지우고 마지막 메시지만 즉시 표시 */
+    function showToastLatest(msg) {
+      if (msg == null || msg === '') return;
+      try { _toastQueue.length = 0; } catch (e) {}
+      try {
+        document.querySelectorAll('.toast').forEach(function (el) { el.remove(); });
+      } catch (e) {}
+      _toastBusy = false;
       _toastQueue.push(String(msg));
       _drainToasts();
     }
@@ -5046,7 +5704,7 @@ if (!assertNotSilenced('고백')) return;
         try { t.remove(); } catch (e) {}
         _toastBusy = false;
         _drainToasts();
-      }, 2600);
+      }, 3800);
     }
 
     function openAchievements() {
@@ -5230,12 +5888,12 @@ async function viewHistory() {
         const data = e.target.result;
         // limit size roughly
         if (data.length > 500000) {
-          showToast('이미지가 너무 크다. 더 작은 걸로 올려.');
+          showToast('이미지가 너무 크다. 더 작게 올린다.');
           return;
         }
         localStorage.setItem('masterFaceData', data);
         document.getElementById('masterFace').src = data;
-        showToast('주인님 얼굴을 바꿨다.');
+        showToast('주인님 이미지를 변경했다.');
       };
       reader.readAsDataURL(input.files[0]);
     }
@@ -5336,26 +5994,40 @@ function unlockAchieve(id) {
     }
 
     function checkAchievements() {
-      if (!state.locked) return;
-      const wearMs = getWearMs();
+      if (!state.locked && !state.goalUnlockReady) {
+        // 감금 중이 아니어도 누적형 업적은 검사
+      }
+      const wearMs = (typeof getWearMs === 'function') ? getWearMs() : 0;
       const day = wearMs / 86400000;
-      if (day >= 1) unlockAchieve('wear_24h');
-      if (day >= 3) unlockAchieve('wear_3d');
-      if (day >= 7) unlockAchieve('wear_7d');
-      if (day >= 14) unlockAchieve('wear_14d');
-      if (day >= 30) unlockAchieve('wear_30d');
+      if (state.locked || wearMs > 0) {
+        if (day >= 1) unlockAchieve('wear_24h');
+        if (day >= 3) unlockAchieve('wear_3d');
+        if (day >= 7) unlockAchieve('wear_7d');
+        if (day >= 14) unlockAchieve('wear_14d');
+        if (day >= 30) unlockAchieve('wear_30d');
+      }
       if ((state.currentConsecutiveChecks || 0) >= 3) unlockAchieve('check_3');
       if ((state.currentConsecutiveChecks || 0) >= 7) unlockAchieve('check_7');
-      if (day >= 3 && (state.checkIgnoreCount || 0) === 0) unlockAchieve('check_no_ignore');
-      if ((state.rejectCount || 0) >= 10) unlockAchieve('reject_10');
-      const mode = getMode();
+      if ((state.currentConsecutiveChecks || 0) >= 14) unlockAchieve('check_14');
+      if ((state.rejectCount || 0) >= 5) unlockAchieve('reject_5');
+      if ((state.rejectCount || 0) >= 15) unlockAchieve('reject_15');
+      if ((state.punishDoneCount || 0) >= 1) unlockAchieve('punish_done');
+      if ((state.punishDoneCount || 0) >= 3) unlockAchieve('punish_3');
+      if ((state.talkTotal || 0) >= 1) unlockAchieve('talk_1');
+      if ((state.talkTotal || 0) >= 10) unlockAchieve('talk_10');
+      if ((state.sideMissionTotal || 0) >= 5) unlockAchieve('mission_side_5');
+      if (state.queenGreetedOnce) unlockAchieve('queen_hello');
+      if (state.hardcoreEver) unlockAchieve('hardcore_enter');
+      const mode = (typeof getMode === 'function') ? getMode() : 'beginner';
       if (mode === 'normal' || mode === 'expert') unlockAchieve('mode_normal');
       if (mode === 'expert') unlockAchieve('mode_expert');
-      const targetMs = getEffectiveTargetDays() * 86400000;
-      if (wearMs >= targetMs && targetMs > 0) {
-        unlockAchieve('goal_clear');
-        if ((state.emergencyUsed || 0) === 0) unlockAchieve('no_emergency');
-      }
+      try {
+        const targetMs = getEffectiveTargetDays() * 86400000;
+        if (wearMs >= targetMs && targetMs > 0) {
+          unlockAchieve('goal_clear');
+          if ((state.emergencyUsedThisRun || state.emergencyUsed || 0) === 0) unlockAchieve('no_emergency');
+        }
+      } catch (e) {}
     }
 
     function renderAchievements() {
@@ -5410,13 +6082,14 @@ function unlockAchieve(id) {
         ];
       }
       const m = getMode();
+      // 낮은 단계 = 시간 연장·가벼운 과제. 요청 금지는 체감이 커서 뒤로.
       const base = [
         { level: 1, title: '반나절 연장', task: '잠금 시간이 12시간 추가된다.', daysAdd: 0.5, auto: true },
         { level: 2, title: '하루 연장', task: '잠금 시간이 하루 추가된다.', daysAdd: 1, auto: true },
-        { level: 3, title: '요청 금지', task: '24시간 동안 풀기·사정 요청 금지. 인지했다고 보고해라.', daysAdd: 0, requestBanHours: 24 },
-        { level: 4, title: '야한 컨텐츠 금지', task: '처벌 기간 동안 야한 컨텐츠 금지. 잠긴 사진과 함께 보고해라.', daysAdd: 0.5 },
-        { level: 5, title: '필수 미션 2개', task: '남은 감금 기간 동안 매일 필수 미션이 2개가 된다. 이미 2개인데 다시 걸리면 잠금이 1일 추가된다. 인지 보고로 사진과 각오를 바쳐라.', daysAdd: 0, doubleMission: true },
-        { level: 6, title: '노팬티 하루', task: '하루 노팬티. 잠긴 상태가 보이게 인증 사진을 바쳐라.', daysAdd: 0.5 }
+        { level: 3, title: '야한 컨텐츠 금지', task: '처벌 기간 동안 야한 컨텐츠 금지. 잠긴 사진과 함께 보고해라.', daysAdd: 0.5 },
+        { level: 4, title: '필수 미션 2개', task: '남은 감금 기간 동안 매일 필수 미션이 2개가 된다. 이미 2개인데 다시 걸리면 잠금이 1일 추가된다. 인지 보고로 사진과 각오를 바쳐라.', daysAdd: 0, doubleMission: true },
+        { level: 5, title: '노팬티 하루', task: '하루 노팬티. 잠긴 상태가 보이게 인증 사진을 바쳐라.', daysAdd: 0.5 },
+        { level: 6, title: '요청 금지 24시간', task: '24시간 동안 풀기·사정 요청이 금지된다. (자동)', daysAdd: 0, requestBanHours: 24, auto: true }
       ];
       if (m === 'beginner') return base;
       const mid = base.concat([
@@ -5425,8 +6098,8 @@ function unlockAchieve(id) {
       ]);
       if (m === 'normal') return mid;
       return mid.concat([
-        { level: 9, title: '요청 봉인 + 연장', task: '48시간 동안 풀기·사정 요청을 할 수 없다. 잠금도 하루 추가된다. 규칙을 인지했다는 보고와 잠긴 사진을 바쳐라.', daysAdd: 1, requestBanHours: 48 },
-        { level: 10, title: '음모 제거 / 매일 유지', task: '처음이면 제모 후 잠긴 사진을 바쳐라. 이미 민 상태이거나 10단계가 다시 걸리면, 다음 정식 해제까지 매일 깔끔히 유지하고 상태 보고 때 제모 유지를 인증해라.', daysAdd: 2, dailyGroom: true }
+        { level: 9, title: '요청 봉인 + 연장', task: '48시간 요청 금지 + 잠금 1일. (자동)', daysAdd: 1, requestBanHours: 48, auto: true },
+        { level: 10, title: '털 뽑기 + 이후 인증 강화', task: '잠긴 채로 밑동·불알 쪽 짧은 털을 소량만 뽑아, 뽑은 털과 정조대가 같이 보이게 1회 인증한다. 과하게 뽑지 말 것. 완료 후 이번 감금이 끝날 때까지 모든 사진 인증에 새로 뽑은 자지/불알 털을 함께 담아야 한다.', daysAdd: 2, hairAuth: true }
       ]);
     }
 
@@ -5536,7 +6209,7 @@ function assignPunishment(level, reason) {
       if (def.doubleMission || def.reportTighter) {
         if (state.forcedDoubleMission) {
           addPenaltyDays(1);
-          try { showToast('이미 하명 보조 중. 잠금 +1일'); } catch (e) {}
+          try { showToast('강제 보조 진행 중. 잠금 +1일'); } catch (e) {}
         } else {
           state.forcedDoubleMission = true;
         }
@@ -5560,7 +6233,7 @@ function assignPunishment(level, reason) {
           state.punishQueue = state.punishQueue || [];
           if (state.punishQueue.length >= 3) {
             addPenaltyDays(Math.max(0.5, def.daysAdd || 0.5));
-            try { showToast('처벌 대기열 가득. 잠금 연장만 추가'); } catch (e) {}
+            try { showToast('처벌 대기열이 가득하다. 잠금만 연장한다.'); } catch (e) {}
           } else {
             state.punishQueue.push({
               level: def.level,
@@ -5582,7 +6255,7 @@ function assignPunishment(level, reason) {
         }
         // 누나(및 기본): 더 무거울 때만 교체
         if (def.level <= state.activePunishment.level) {
-          try { showToast('이미 같은 수준 이상 처벌 중. 유지'); } catch (e) {}
+          try { showToast('동일 이상 처벌이 이미 있다. 유지한다.'); } catch (e) {}
           saveState();
           return;
         }
@@ -5597,7 +6270,15 @@ function assignPunishment(level, reason) {
           add = Math.max(0.5, add);
         }
         addPenaltyDays(add);
-        try { showToast('처벌 Lv.' + def.level + ': ' + def.title + (add ? ' · +' + add + '일' : '')); } catch (e) {}
+        if (def.requestBanHours) {
+          const until = now() + def.requestBanHours * 3600000;
+          state.requestBanUntil = Math.max(state.requestBanUntil || 0, until);
+        }
+        let toastMsg = '처벌 Lv.' + def.level + ': ' + def.title;
+        if (add) toastMsg += ' · +' + add + '일';
+        if (def.requestBanHours) toastMsg += ' · 요청 금지 ' + def.requestBanHours + '시간';
+        try { showToast(toastMsg); } catch (e) {}
+        try { addLog('punish', '자동 처벌 Lv.' + def.level + ' 「' + def.title + '」'); } catch (e) {}
         saveState();
         updateUI();
         return;
@@ -5631,9 +6312,13 @@ function assignPunishment(level, reason) {
         reason: reason || '',
         assignedAt: now()
       };
+      if (def.hairAuth || def.dailyGroom) state.hairAuthRequired = true;
       saveState();
       updateUI();
-      showToast('처벌 Lv.' + def.level + ' 「' + def.title + '」' + note);
+      let toastMsg = '처벌 Lv.' + def.level + ' 「' + def.title + '」' + note;
+      if (reason) toastMsg += ' — 사유: ' + reason;
+      if (def.hairAuth) toastMsg += ' · 이후 모든 인증에 털 포함';
+      showToast(toastMsg);
       try {
         if (!def.auto) {
           const pp = (typeof normalizePersonality === 'function') ? normalizePersonality(state.masterPersonality || 'noona') : 'noona';
@@ -5674,12 +6359,12 @@ function openPunishComplete() {
       }
       const photo = document.getElementById('punishPhoto');
       if (!photo.files || !photo.files[0]) {
-        showToast('증거 사진을 첨부해라.');
+        showToast('증거 사진을 첨부한다.');
         return;
       }
       const note = document.getElementById('punishNote').value.trim();
       if (note.length < 4) {
-        showToast('처벌을 수행한 내용을 짧게라도 적어라.');
+        showToast('수행 내용을 짧게 적는다.');
         return;
       }
       const p = state.activePunishment;
@@ -5693,7 +6378,7 @@ function openPunishComplete() {
       saveState();
       closeModal('punishModal');
       updateUI();
-      showToast('처벌 완료. 다시 요청할 수 있다.');
+      showToast('처벌 완료. 요청이 가능하다.');
     }
 
     function hasActivePunishment() {
@@ -5731,7 +6416,7 @@ function openPunishComplete() {
     function attachFileToInput(input, file, previewId) {
       if (!input || !file) return false;
       if (isPhotoTooOld(file)) {
-        showToast('지금 찍은 사진만 된다.');
+        showToast('방금 촬영한 사진만 사용할 수 있다.');
         return false;
       }
       input._camFile = file;
@@ -5816,7 +6501,7 @@ function openPunishComplete() {
     }
 
     function shutterCamera() {
-      showToast('시스템 카메라로 촬영해라.');
+      showToast('시스템 카메라로 촬영한다.');
       if (camTarget) openCameraFor(camTarget.inputId, camTarget.previewId);
     }
 
@@ -5850,7 +6535,7 @@ function openPunishComplete() {
     });
     function installPWA() {
       if (!deferredInstall) {
-        showToast('브라우저 메뉴에서 「홈 화면에 추가」를 눌러라.');
+        showToast('브라우저 메뉴에서 홈 화면에 추가한다.');
         return;
       }
       deferredInstall.prompt();
@@ -5886,14 +6571,44 @@ function openPunishComplete() {
     updateUI();
     loadMasterFace();
     applyNames();
+    try { applyAppTitle(); } catch (e) {}
     try { updateMissionCard(); } catch (e) {}
     if (!state.setupDone) {
       document.getElementById('contractModal').classList.remove('hidden');
+    } else {
+      setTimeout(function () {
+        try { maybeReportReminder(); } catch (e) {}
+        try { maybeDailyGreet(); } catch (e) {}
+      }, 500);
     }
     setInterval(function() {
       try { updateUI(); } catch (e) {}
     }, 1000);
   </script>
+
+  <!-- 요청 · 비상 메뉴 -->
+  <div id="requestMenuModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 style="text-align:center;margin-bottom:12px;">요청 · 비상</h3>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <button type="button" id="btnReqUnlock" class="btn-secondary" style="margin:0;" onclick="closeModal('requestMenuModal');openRequest('unlock')">풀기</button>
+        <button type="button" id="btnReqOrgasm" class="btn-secondary" style="margin:0;" onclick="closeModal('requestMenuModal');openRequest('orgasm')">사정</button>
+        <button type="button" class="btn-secondary" style="margin:0;grid-column:1/-1;border-color:#6a5040;" onclick="closeModal('requestMenuModal');openConfess()">양심 고백</button>
+        <button type="button" class="btn-danger" style="margin:0;grid-column:1/-1;" onclick="closeModal('requestMenuModal');openEmergency()">비상 해제</button>
+      </div>
+      <button type="button" class="btn-secondary" style="margin-top:12px;" onclick="closeModal('requestMenuModal')">닫기</button>
+    </div>
+  </div>
+
+  <!-- 여왕: 하루 첫 인사 (사용자가 먼저) -->
+  <div id="queenGreetModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 style="text-align:center;">…</h3>
+      <p style="font-size:0.9rem;line-height:1.5;text-align:center;margin:12px 0 18px;color:var(--text);">여왕님은 먼저 말을 걸지 않는다.<br>네가 먼저 인사해.</p>
+      <button class="btn-primary" onclick="doQueenGreet()">인사한다</button>
+      <button class="btn-secondary" style="margin-top:8px;" onclick="dismissQueenGreet()">나중에</button>
+    </div>
+  </div>
 
   <!-- 카메라 전용 촬영 -->
   <div id="cameraModal" class="modal hidden">
