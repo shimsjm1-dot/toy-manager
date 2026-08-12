@@ -618,6 +618,13 @@
     <div id="statusText" style="font-size:0.8rem;color:var(--muted);margin:6px 4px 10px;line-height:1.4;">아직 잠기지 않았다.</div>
     <p id="todayGuide" style="font-size:0.78rem;color:#c4a090;margin:0 4px 10px;line-height:1.4;" class="hidden">오늘은 필수 미션만 하면 된다.</p>
 
+    <!-- 즉흥 지시 (메스가키/여왕) -->
+    <div id="whimCard" class="card hidden" style="border-color:#a07050;background:#1a1410;">
+      <div style="font-size:0.7rem;color:#e0a090;font-weight:600;" id="whimTitle">즉흥 지시</div>
+      <p id="whimTask" style="font-size:0.82rem;margin:6px 0 8px;line-height:1.4;"></p>
+      <button type="button" class="btn-primary" style="margin:0;width:100%;" onclick="openWhimComplete()">지금 바치기</button>
+    </div>
+
     <!-- 2. 처벌 (있을 때만) -->
     <div id="punishCard" class="card hidden" style="border-color:#a83b2a;background:#1a100e;">
       <div id="punishLevel" style="font-size:0.72rem;color:var(--muted);"></div>
@@ -629,10 +636,10 @@
     <!-- 3. 오늘 할 일: 미션 (가장 강조) -->
     <div id="missionCard" class="card" style="border-color:#7a5040;background:#1a1410;box-shadow:0 0 0 1px rgba(160,100,70,.15);cursor:pointer;" onclick="if(state.locked)openMissionPanel();">
       <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
-        <div style="font-size:0.7rem;color:#c4a090;letter-spacing:0.4px;font-weight:600;">오늘 할 일 <span style="color:var(--muted);font-weight:500;" id="missionBadge">필수</span></div>
+        <div style="font-size:0.68rem;color:var(--muted);letter-spacing:0.3px;">오늘 <span id="missionBadge"></span></div>
       </div>
-      <div id="missionStatusLine" style="font-weight:600;margin:4px 0 2px;font-size:0.92rem;">불러오는 중…</div>
-      <p id="missionHintLine" style="font-size:0.72rem;color:var(--muted);line-height:1.35;margin-bottom:0;">상태 바치기(사진) 필수.</p>
+      <div id="missionStatusLine" style="font-weight:600;margin:2px 0 0;font-size:0.88rem;">불러오는 중…</div>
+      <p id="missionHintLine" class="hidden" style="font-size:0.72rem;color:var(--muted);line-height:1.35;margin:4px 0 0;"></p>
     </div>
 
     <!-- 요청·비상: 히어로 「요청」에서만 연다 -->
@@ -1199,6 +1206,7 @@ const ACHIEVEMENTS = [
         try { applyNames(); } catch (e) {}
         try { loadMasterFace(); } catch (e) {}
         try { updateMissionCard(); } catch (e) {}
+    try { updateWhimUI(); } catch (e) {}
         return true;
       } catch (e) {
         return false;
@@ -1608,17 +1616,11 @@ function onOpenCheck() {
       }
       const g = document.getElementById('todayGuide');
       if (g) {
-        if (state.locked && !isAllMandatoryDone()) {
-          g.classList.remove('hidden');
-          let t = needsForcedSide() ? (toyName() + ', 오늘 필수: 상태 바치기 + 하명 1.') : (toyName() + ', 오늘 필수: 상태 바치기.');
-          if (typeof needsHygieneBreak === 'function' && needsHygieneBreak()) {
-            const hd = (typeof hygieneIntervalDays === 'function') ? hygieneIntervalDays() : 3;
-            t += ' · 위생 개방 가능(' + (hd != null ? hd + '일 주기' : '해당 없음') + ')';
-          }
-          g.textContent = t;
-        } else if (state.locked && isAllMandatoryDone()) {
-          g.classList.remove('hidden');
-          g.textContent = toyName() + ', 필수 완료. 보조는 수주로 받을 수 있다.';
+        // 감금 중 필수 안내는 missionCard 한곳으로. 침묵 등 특수 문구만 별도 표시
+        if (state.locked && typeof isSilenced === 'function' && isSilenced()) {
+          /* silence handler elsewhere may set text */
+        } else if (state.locked) {
+          g.classList.add('hidden');
         } else {
           g.classList.add('hidden');
         }
@@ -1879,6 +1881,7 @@ function checkUnlockDeadline() {
 
     function updateActiveStatusBox() {
       try { updateHygieneButton(); } catch (e) {}
+      try { updateWhimUI(); } catch (e) {}
       const box = document.getElementById('activeStatusBox');
       if (!box) return;
       const lines = [];
@@ -2688,9 +2691,10 @@ function isGoalCleared() {
       try { applyAppTitle(); } catch (e) {}
       const toy = toyName();
       const master = masterName();
-      const faceCard = document.querySelector('#masterFace')?.closest('.card');
-      if (faceCard) {
-        faceCard.style.display = state.showMasterFace !== false ? '' : 'none';
+      // 얼굴만 숨김 (기간·메뉴 카드 전체는 유지)
+      const faceImg = document.getElementById('masterFace');
+      if (faceImg) {
+        faceImg.style.display = state.showMasterFace !== false ? '' : 'none';
       }
       const caption = document.getElementById('masterCaption');
       if (caption) {
@@ -2930,19 +2934,19 @@ function isGoalCleared() {
           if (h) hcOn = h.value === 'true';
         } catch (e) {}
         if (p === 'queen') {
-          if (hint) hint.textContent = labels.queen + (hcOn ? ' · 하드코어' : '') + ' · 11일 이상 선택';
+          if (hint) hint.textContent = labels.queen + (hcOn ? ' · 하드코어 · 7~30일' : ' · 11일 이상 선택');
           try { syncTargetDaysUI('lockStart', Math.max(11, state.targetDays || 11)); } catch (e) {}
           if (sel) sel.disabled = false;
           if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '11~20일 랜덤'; }
           if (qn) qn.classList.remove('hidden');
         } else if (p === 'mesugaki') {
-          if (hint) hint.textContent = labels.mesugaki + (hcOn ? ' · 하드코어' : '') + ' · 6~10일';
+          if (hint) hint.textContent = labels.mesugaki + (hcOn ? ' · 하드코어 · 7~30일' : ' · 6~10일');
           try { syncTargetDaysUI('lockStart', Math.min(10, Math.max(6, state.targetDays || 7))); } catch (e) {}
           if (sel) sel.disabled = false;
           if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '6~10일 랜덤'; }
           if (qn) qn.classList.add('hidden');
         } else {
-          if (hint) hint.textContent = labels.noona + (hcOn ? ' · 하드코어' : '') + ' · 1~5일';
+          if (hint) hint.textContent = labels.noona + (hcOn ? ' · 하드코어 · 7~30일' : ' · 1~5일');
           try { syncTargetDaysUI('lockStart', Math.min(5, Math.max(1, state.targetDays || 3))); } catch (e) {}
           if (sel) sel.disabled = false;
           if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '1~5일 랜덤'; }
@@ -3106,43 +3110,43 @@ function isGoalCleared() {
 
 
 
+    function isLockStartHardcoreOn() {
+      try {
+        const h = document.getElementById('lockStartHardcore');
+        if (h) return h.value === 'true';
+      } catch (e) {}
+      return !!state.hardcoreMode;
+    }
+
     function rebuildLockStartDayOptions(persona) {
       const sel = document.getElementById('lockStartTargetDays');
       const custom = document.getElementById('lockStartTargetCustom');
       if (!sel) return;
-      const diff = personaDifficulty(persona);
+      const base = personaDifficulty(persona);
+      const hc = isLockStartHardcoreOn();
+      // 하드코어: 캐릭터 무관 7~30일
+      const diff = hc
+        ? { mode: 'hardcore', defaultDays: Math.min(30, Math.max(7, base.defaultDays || 14)), min: 7, max: 30, label: '하드코어 · 7~30일' }
+        : base;
       let prev = parseInt(sel.value, 10);
       if (sel.value === 'custom' && custom) prev = parseInt(custom.value, 10) || diff.defaultDays;
       if (!prev || isNaN(prev)) prev = diff.defaultDays;
 
       let html = '';
-      const listMax = Math.min(diff.max, 20);
+      const listMax = Math.min(diff.max, 30);
       for (let d = diff.min; d <= listMax; d++) {
         html += '<option value="' + d + '">' + d + '일</option>';
-      }
-      if (diff.max > listMax) {
-        html += '<option value="custom">직접 입력 (' + diff.min + '~' + diff.max + '일)</option>';
       }
       sel.innerHTML = html;
       sel.disabled = false;
 
       let pick = Math.min(diff.max, Math.max(diff.min, prev));
-      if (pick > listMax && diff.max > listMax) {
-        sel.value = 'custom';
-        if (custom) {
-          custom.classList.remove('hidden');
-          custom.min = String(diff.min);
-          custom.max = String(diff.max);
-          custom.value = String(pick);
-        }
-      } else {
-        if (sel.querySelector('option[value="' + pick + '"]')) sel.value = String(pick);
-        else sel.value = String(diff.defaultDays);
-        if (custom) {
-          custom.classList.add('hidden');
-          custom.min = String(diff.min);
-          custom.max = String(diff.max);
-        }
+      if (sel.querySelector('option[value="' + pick + '"]')) sel.value = String(pick);
+      else sel.value = String(diff.defaultDays);
+      if (custom) {
+        custom.classList.add('hidden');
+        custom.min = String(diff.min);
+        custom.max = String(diff.max);
       }
       const modeEl = document.getElementById('lockStartTargetMode');
       if (modeEl) modeEl.value = diff.mode;
@@ -3225,9 +3229,18 @@ function isGoalCleared() {
       try {
         const sel = document.getElementById('lockStartHardcore');
         const note = document.getElementById('lockStartHardcoreNote');
-        if (!sel || !note) return;
-        if (sel.value === 'true') note.classList.remove('hidden');
-        else note.classList.add('hidden');
+        if (sel && note) {
+          if (sel.value === 'true') note.classList.remove('hidden');
+          else note.classList.add('hidden');
+        }
+        const lp = document.getElementById('lockStartPersonality');
+        const p = (lp && lp.value) ? lp.value : (state.masterPersonality || 'noona');
+        rebuildLockStartDayOptions(p);
+        const grid = document.getElementById('lockStartFaceGrid');
+        if (grid) {
+          const el = grid.querySelector('.face-opt[data-p="' + p + '"]') || grid.querySelector('.face-opt.selected');
+          if (el) pickPersonality('lockStart', el);
+        }
       } catch (e) {}
     }
 
@@ -3342,7 +3355,16 @@ function isGoalCleared() {
       }
 
       let v = readTargetDays('lockStart');
-      const diff = personaDifficulty(p);
+      const hcStart = (function() {
+        try {
+          const h = document.getElementById('lockStartHardcore');
+          if (h) return h.value === 'true';
+        } catch (e) {}
+        return !!state.hardcoreMode;
+      })();
+      const diff = hcStart
+        ? { min: 7, max: 30, defaultDays: 14 }
+        : personaDifficulty(p);
       v = Math.min(diff.max, Math.max(diff.min, v || diff.defaultDays));
       if (isNaN(v) || v < diff.min || v > diff.max) {
         showToast('일수는 ' + diff.min + '~' + diff.max + '일 범위에서 선택한다.');
@@ -4024,13 +4046,17 @@ function isGoalCleared() {
         }
         if (state.locked && isAllMandatoryDone() && !pendingOpt.length && canAcceptMore) {
           card.style.opacity = '0.85';
-          if (btn) btn.textContent = '보조 미션 · 추가 보고';
         } else if (state.locked && isAllMandatoryDone() && !pendingOpt.length && !canAcceptMore) {
           card.style.opacity = '0.8';
-          if (btn) btn.textContent = '추가 상태 보고';
         } else if (state.locked && hasWork) {
           card.style.opacity = '';
-          if (btn) btn.textContent = '미션 하기';
+        }
+        const heroMission = document.querySelector('#heroActions button.btn-primary');
+        if (heroMission) {
+          if (!state.locked) heroMission.textContent = '미션';
+          else if (!state.statusDone) heroMission.textContent = '필수 보고';
+          else if (!isAllMandatoryDone()) heroMission.textContent = '미션';
+          else heroMission.textContent = '미션';
         }
       }
 
@@ -4045,26 +4071,28 @@ function isGoalCleared() {
         const om = getMissionById(pendingOpt[0].id);
         parts.push('수주: ' + (om ? om.title : '?'));
       }
+      const mb = document.getElementById('missionBadge');
       if (isAllMandatoryDone() && !pendingOpt.length) {
-        line.textContent = toyName() + ' · 오늘 필수 완료 (추가 보고 가능)';
+        line.textContent = '필수 완료 · 탭해서 추가 보고/보조';
         line.style.color = '#c0e0c8';
+        if (mb) mb.textContent = '완료';
       } else {
-        line.textContent = toyName() + ' · ' + parts.join(' · ');
+        line.textContent = parts.join(' · ') || '상태 보고';
         line.style.color = '#e0a090';
+        if (mb) mb.textContent = state.statusDone ? '진행 중' : '필수 남음';
       }
       if (hint) {
         if (isAllMandatoryDone() && !pendingOpt.length && canAcceptMore) {
-          hint.textContent = '필수 끝. 보조 수주 ' + volAccepted + '/' + lim + ' · 추가 상태 보고 가능';
+          hint.textContent = '보조 수주 ' + volAccepted + '/' + lim;
+          hint.classList.remove('hidden');
         } else if (isAllMandatoryDone()) {
-          hint.textContent = '필수·보조 끝. 필요할 때 추가 상태 보고 가능';
+          hint.classList.add('hidden');
         } else if (needsForcedSide()) {
-          hint.textContent = '필수: 상태 바치기 + 하명 보조 1 (사진 필수 포함)';
+          hint.classList.add('hidden');
         } else {
-          hint.textContent = '필수: 상태 바치기(사진). 보조는 수주로 받음.';
+          hint.classList.add('hidden');
         }
       }
-      const mb = document.getElementById('missionBadge');
-      if (mb) mb.textContent = isAllMandatoryDone() ? '완료' : '필수';
     }
 
     function openMissionPanel() {
@@ -5591,13 +5619,166 @@ if (!assertNotSilenced('고백')) return;
         state.lastReportRemindDate = tk;
         try { saveState(); } catch (e) {}
         try { showToast('오늘 필수 상태 보고가 남아 있다.'); } catch (e) {}
-        const g = document.getElementById('todayGuide');
-        if (g) {
-          g.classList.remove('hidden');
-          g.style.color = '#e0a090';
-          g.textContent = '필수: 오늘 상태 보고(사진)를 아직 하지 않았다.';
-        }
       } catch (e) {}
+    }
+
+
+    // ========== 즉흥 지시 (메스가키 30% / 여왕 50%, 기간 불변) ==========
+    function whimOrdersFor(persona) {
+      const p = (typeof normalizePersonality === 'function') ? normalizePersonality(persona) : persona;
+      if (p === 'mesugaki') {
+        return [
+          { id: 'mg_mpose', title: 'M자 인증', task: 'M자 포즈로 쪼그려 앉아서 정면샷. 정조대 잘 보이게~', needPhoto: true },
+          { id: 'mg_heart', title: '하트 놀림', task: '정조대 앞에서 손가락 하트 하고 찍어. 귀엽게 하라고~', needPhoto: true },
+          { id: 'mg_label', title: '허접 낙서', task: '자지나 복부에 「허접」적고 잠긴 거랑 같이 인증.', needPhoto: true },
+          { id: 'mg_tongue', title: '혀 내밀기', task: '최대한 정조대에 닿게 혓바닥 내밀고 찍어. 안 닿아도 노력한 티 내~', needPhoto: true },
+          { id: 'mg_peace', title: '억지 브이', task: '정조대가 보이게 찍고, 브이 하면서 억지로 웃어. 안 웃으면 다시~', needPhoto: true }
+        ];
+      }
+      if (p === 'queen') {
+        return [
+          { id: 'qn_kneel', title: '무릎', task: '무릎 꿇고 정조대가 정면에 오게 찍어 바쳐라. 고개는 들지 마라.', needPhoto: true },
+          { id: 'qn_own', title: '소유 낙서', task: '피부에 「{{master}}꺼」라고 적고 정조대와 함께 찍어 바쳐라.', needPhoto: true },
+          { id: 'qn_hide', title: '숨기기', task: '허벅지든 손이든 써서 자지·정조대가 안 보이게 가려라. 없는 것처럼.', needPhoto: true },
+          { id: 'qn_offer', title: '바치기', task: '양손으로 잠긴 자지를 떠받쳐 바치는 자세로 찍어라. 소유물 인계다.', needPhoto: true },
+          { id: 'qn_back', title: '뒤돌아', task: '카메라를 등지고 다리 벌려 정조대와 항문까지 나오게 찍어 바쳐라. 얼굴은 넣지 마라.', needPhoto: true }
+        ];
+      }
+      return [];
+    }
+
+    function whimChance(persona) {
+      const p = (typeof normalizePersonality === 'function') ? normalizePersonality(persona) : persona;
+      if (p === 'mesugaki') return 0.30;
+      if (p === 'queen') return 0.50;
+      return 0;
+    }
+
+    function hasPendingWhim() {
+      const w = state.whimOrder;
+      if (!w || w.done) return false;
+      const tk = (typeof todayKey === 'function') ? todayKey() : '';
+      return w.date === tk;
+    }
+
+    function maybeWhimOrder() {
+      try {
+        if (!state.setupDone || !state.locked) return;
+        if (typeof isSilenced === 'function' && isSilenced()) return;
+        const p = (typeof normalizePersonality === 'function')
+          ? normalizePersonality(state.masterPersonality || 'noona')
+          : (state.masterPersonality || 'noona');
+        if (p === 'noona') return;
+        const tk = (typeof todayKey === 'function') ? todayKey() : '';
+        if (!tk) return;
+        if (state.whimRollDate === tk) return; // 하루 1회 판정
+        state.whimRollDate = tk;
+        // 이미 미완료 지시가 있으면 유지
+        if (hasPendingWhim()) {
+          try { updateWhimUI(); } catch (e) {}
+          try { saveState(); } catch (e) {}
+          return;
+        }
+        const chance = whimChance(p);
+        if (Math.random() >= chance) {
+          state.whimOrder = null;
+          try { saveState(); } catch (e) {}
+          try { updateWhimUI(); } catch (e) {}
+          return;
+        }
+        const pool = whimOrdersFor(p);
+        if (!pool.length) return;
+        const pick = pool[Math.floor(Math.random() * pool.length)];
+        var taskText = pick.task || '';
+        try {
+          var mn = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+          taskText = taskText.replace(/\{\{master\}\}/g, mn);
+        } catch (e) {}
+        state.whimOrder = {
+          id: pick.id,
+          title: pick.title,
+          task: taskText,
+          needPhoto: !!pick.needPhoto,
+          date: tk,
+          done: false,
+          persona: p
+        };
+        pick = { id: pick.id, title: pick.title, task: taskText, needPhoto: pick.needPhoto };
+        try { saveState(); } catch (e) {}
+        try { updateWhimUI(); } catch (e) {}
+        try { playSfx('warn'); } catch (e) {}
+        const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+        const intro = (p === 'mesugaki')
+          ? ('심심해서 즉흥~ 「' + pick.title + '」\n' + pick.task + '\n(일수는 안 늘려 줄게. 사진만.)')
+          : ('불러 세운다. 「' + pick.title + '」\n' + pick.task + '\n기간은 안 늘린다. 대신 지금 바쳐라.');
+        try { showResult(master, intro); } catch (e) { try { showToast('즉흥 지시: ' + pick.title); } catch (e2) {} }
+      } catch (e) {}
+    }
+
+    function updateWhimUI() {
+      const card = document.getElementById('whimCard');
+      if (!card) return;
+      if (!state.locked || !hasPendingWhim()) {
+        card.classList.add('hidden');
+        return;
+      }
+      const w = state.whimOrder;
+      card.classList.remove('hidden');
+      const t = document.getElementById('whimTitle');
+      const d = document.getElementById('whimTask');
+      if (t) t.textContent = '즉흥 지시 · ' + (w.title || '');
+      if (d) d.textContent = w.task || '';
+    }
+
+    function openWhimComplete() {
+      if (!hasPendingWhim()) return;
+      const w = state.whimOrder;
+      const task = document.getElementById('whimModalTask');
+      if (task) task.textContent = (w.title ? '「' + w.title + '」\n' : '') + (w.task || '');
+      const photo = document.getElementById('whimPhoto');
+      if (photo) { photo.value = ''; photo._camFile = null; }
+      const prev = document.getElementById('whimPreview');
+      if (prev) { prev.classList.add('hidden'); prev.removeAttribute('src'); }
+      const note = document.getElementById('whimNote');
+      if (note) note.value = '';
+      const m = document.getElementById('whimModal');
+      if (m) m.classList.remove('hidden');
+    }
+
+    function submitWhim() {
+      if (!hasPendingWhim()) {
+        try { closeModal('whimModal'); } catch (e) {}
+        return;
+      }
+      const w = state.whimOrder;
+      const photoInput = document.getElementById('whimPhoto');
+      const file = typeof getPhotoFileFromInput === 'function' ? getPhotoFileFromInput(photoInput) : (photoInput && photoInput.files && photoInput.files[0]);
+      if (w.needPhoto && !file) {
+        showToast('사진이 필요하다.');
+        return;
+      }
+      const note = ((document.getElementById('whimNote') || {}).value || '').trim();
+      if (file) {
+        try {
+          compressImageFile(file).then(function (dataUrl) {
+            savePhotoRecord('whim', dataUrl, (w.title || '즉흥') + (note ? ' — ' + note.slice(0, 30) : ''));
+          }).catch(function () {});
+        } catch (e) {}
+      }
+      state.whimOrder.done = true;
+      try { addLog('whim', toyName() + ' 즉흥 지시 완료: ' + (w.title || w.id) + (note ? ' — ' + note.slice(0, 40) : '')); } catch (e) {}
+      try { if (typeof addAffection === 'function') addAffection(1); } catch (e) {}
+      try { saveState(); } catch (e) {}
+      try { closeModal('whimModal'); } catch (e) {}
+      try { updateWhimUI(); } catch (e) {}
+      try { updateUI(); } catch (e) {}
+      const p = (typeof normalizePersonality === 'function') ? normalizePersonality(state.masterPersonality || 'noona') : 'noona';
+      const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+      const ok = (p === 'mesugaki')
+        ? (['푸후, 이런 거 시키는 맛에 키운다니까~', '자지가 더 초라해 보이는데? 성공~', '오~ 빨리 바쳤네. 장난 값 했어.'][Math.floor(Math.random()*3)])
+        : '확인했다. 불러 세우면 이렇게 나와야 한다.';
+      try { showResult(master, ok); } catch (e) { showToast('즉흥 지시 완료'); }
+      try { playSfx('approve'); } catch (e) {}
     }
 
     function maybeDailyGreet() {
@@ -6065,21 +6246,34 @@ function unlockAchieve(id) {
 
     // ========== 처벌 시스템 ==========
 
+    /** 하드코어 중간 과업 목록 (단계 아님 · 뽑기용) */
+    function getHardcoreMidPunishments() {
+      return [
+        { level: 4, title: '노팬티 하루', task: '하루 노팬티. 무릎 꿇고 허벅지 메모+정조대가 보이게 인증해라.', daysAdd: 1 },
+        { level: 4, title: '야한 컨텐츠 금지', task: '하루 동안 야한 영상·소리를 보지 마라. 잠긴 인증샷을 바쳐라.', daysAdd: 1 },
+        { level: 4, title: '물 자주 마시기', task: '물을 자주 마셔 화장실을 자주 가게 만들어라. 과도한 한꺼번에 마시기는 금지. 기본 인증샷.', daysAdd: 1 },
+        { level: 4, title: '침 줄 인증', task: '입에서 침을 길게 늘어뜨려 정조대까지 이어지게 한 상태로 찍어 바쳐라.', daysAdd: 1 },
+        { level: 4, title: '밑동 낙서', task: '아랫배·밑동에 음란한 말을 쓰고 기본 인증샷(무릎·메모·정조대)으로 바쳐라.', daysAdd: 1 },
+        { level: 4, title: '알몸 도게자 인증', task: '알몸 도게자로 메모(호칭·남은 일)+정조대가 같이 보이게 찍어 바쳐라.', daysAdd: 2 }
+      ];
+    }
+
     function getPunishLevels() {
-      // 하드코어 전용 풀
+      // 하드코어: 1~3 고정, 4~9 구간은 중간 목록 랜덤, 10 침묵
       if (state.hardcoreMode) {
+        const mid = getHardcoreMidPunishments();
+        // 표시/필터용으로 4~9 슬롯을 두되, 실제 배정은 assignPunishment에서 랜덤
+        const midSlots = [];
+        for (let lv = 4; lv <= 9; lv++) {
+          midSlots.push(Object.assign({}, mid[(lv - 4) % mid.length], { level: lv }));
+        }
         return [
           { level: 1, title: '하루 연장', task: '잠금 시간이 하루 추가된다.', daysAdd: 1, auto: true },
           { level: 2, title: '3일 연장', task: '잠금 시간이 3일 추가된다.', daysAdd: 3, auto: true },
-          { level: 3, title: '보고 조이기', task: '남은 기간 동안 필수 미션/보고가 더 빡세진다. 인지 보고를 해라.', daysAdd: 1, doubleMission: true },
-          { level: 4, title: '노팬티 하루', task: '하루 노팬티. 무릎 꿇고 허벅지 메모+정조대가 보이게 인증해라.', daysAdd: 1 },
-          { level: 5, title: '야한 컨텐츠 금지', task: '하루 동안 야한 영상·소리를 보지 마라. 잠긴 인증샷을 바쳐라.', daysAdd: 1 },
-          { level: 6, title: '물 자주 마시기', task: '물을 자주 마셔 화장실을 자주 가게 만들어라. 과도한 한꺼번에 마시기는 금지. 기본 인증샷.', daysAdd: 1 },
-          { level: 7, title: '침 줄 인증', task: '입에서 침을 길게 늘어뜨려 정조대까지 이어지게 한 상태로 찍어 바쳐라.', daysAdd: 1 },
-          { level: 8, title: '밑동 낙서', task: '아랫배·밑동에 음란한 말을 쓰고 기본 인증샷(무릎·메모·정조대)으로 바쳐라.', daysAdd: 1 },
-          { level: 9, title: '알몸 도게자 인증', task: '알몸 도게자로 메모(호칭·남은 일)+정조대가 같이 보이게 찍어 바쳐라.', daysAdd: 2 },
-          { level: 10, title: '침묵 24시간', task: '실망이 크다. 24시간 동안 보고·대화·요청을 받지 않는다. 접속도 하지 마라. 접속할 때마다 잠금 +1시간.', daysAdd: 1, silenceHours: 24 }
-        ];
+          { level: 3, title: '보고 조이기', task: '남은 기간 동안 필수 미션/보고가 더 빡세진다. 인지 보고를 해라.', daysAdd: 1, doubleMission: true }
+        ].concat(midSlots).concat([
+          { level: 10, title: '침묵 24시간', task: '실망이 크다. 24시간 동안 보고·대화·요청을 받지 않는다. 접속도 하지 마라. 접속할 때마다 잠금 +1시간. 추가로 핸드폰 배경화면을 주인님 사진으로 바꿔라.', daysAdd: 1, silenceHours: 24 }
+        ]);
       }
       const m = getMode();
       // 낮은 단계 = 시간 연장·가벼운 과제. 요청 금지는 체감이 커서 뒤로.
@@ -6203,7 +6397,15 @@ function assignPunishment(level, reason) {
       }
 
       const levels = getPunishLevels();
-      const def = levels[Math.min(level, levels.length) - 1];
+      let def = levels[Math.min(level, levels.length) - 1];
+      // 하드코어 4~9: 단계가 아니라 중간 과업 목록에서 랜덤
+      if (state.hardcoreMode && level >= 4 && level <= 9) {
+        const mid = (typeof getHardcoreMidPunishments === 'function') ? getHardcoreMidPunishments() : [];
+        if (mid.length) {
+          def = Object.assign({}, mid[Math.floor(Math.random() * mid.length)]);
+          def.level = level; // 기록용 단계 번호는 유지
+        }
+      }
 
       // 이중 미션 플래그 (Lv5 계열)
       if (def.doubleMission || def.reportTighter) {
@@ -6578,6 +6780,7 @@ function openPunishComplete() {
     } else {
       setTimeout(function () {
         try { maybeReportReminder(); } catch (e) {}
+        try { maybeWhimOrder(); } catch (e) {}
         try { maybeDailyGreet(); } catch (e) {}
       }, 500);
     }
@@ -6585,6 +6788,22 @@ function openPunishComplete() {
       try { updateUI(); } catch (e) {}
     }, 1000);
   </script>
+
+  <!-- 즉흥 지시 완료 -->
+  <div id="whimModal" class="modal hidden">
+    <div class="modal-content">
+      <h3 style="text-align:center;">즉흥 지시</h3>
+      <p id="whimModalTask" style="font-size:0.88rem;line-height:1.45;margin:10px 0;white-space:pre-wrap;"></p>
+      <label>인증 사진</label>
+      <input type="file" id="whimPhoto" class="cam-only" accept="image/*" capture="environment" onchange="previewPhoto(this,'whimPreview')">
+      <button type="button" class="btn-secondary cam-btn" data-cam-for="whimPhoto" data-cam-preview="whimPreview" onclick="openCameraFor('whimPhoto','whimPreview')">카메라로 촬영</button>
+      <img id="whimPreview" class="photo-preview hidden">
+      <label>한 줄 (선택)</label>
+      <textarea id="whimNote" placeholder="짧게"></textarea>
+      <button type="button" class="btn-primary" onclick="submitWhim()">바쳤다</button>
+      <button type="button" class="btn-secondary" onclick="closeModal('whimModal')">닫기</button>
+    </div>
+  </div>
 
   <!-- 요청 · 비상 메뉴 -->
   <div id="requestMenuModal" class="modal hidden">
