@@ -206,27 +206,40 @@
 
     #faceLightbox:not(.hidden) { display: flex !important; }
     .face-opt.locked {
-      opacity: 0.4;
-      filter: grayscale(0.85);
+      opacity: 0.35;
+      filter: grayscale(1) brightness(0.42);
       position: relative;
+      cursor: not-allowed;
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,0.6);
     }
+    .face-opt.locked img { filter: brightness(0.5); }
     .face-opt.locked::after {
       content: '잠김';
       position: absolute;
       left: 50%;
-      top: 50%;
+      top: 42%;
       transform: translate(-50%, -50%);
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #f0e0d0;
-      background: rgba(0,0,0,0.65);
-      padding: 4px 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      color: #f5ebe0;
+      background: rgba(0,0,0,0.8);
+      padding: 6px 10px;
       border-radius: 6px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       pointer-events: none;
       z-index: 2;
+      border: 1px solid rgba(255,255,255,0.18);
     }
-    .face-opt.locked img { filter: brightness(0.55); }
+    .face-opt.locked.shake { animation: faceLockShake 0.45s ease; }
+    @keyframes faceLockShake {
+      0%, 100% { transform: translateX(0); }
+      15% { transform: translateX(-6px); }
+      30% { transform: translateX(6px); }
+      45% { transform: translateX(-5px); }
+      60% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
+      90% { transform: translateX(2px); }
+    }
     #masterFace, .master-face-img {
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
@@ -1037,7 +1050,7 @@
       <p id="relockHint" class="hidden" style="font-size:0.82rem;color:#e0a090;margin-bottom:8px;line-height:1.4;">풀린 상태다. 다시 잠근 뒤 카메라로 보고해야 한다.</p>
       <button id="btnCompleteGoal" class="btn-primary hidden" onclick="completeGoalAndPrepare()">목표 달성 · 잠금 해제</button>
       <button id="btnHygiene" class="btn-secondary hidden" onclick="openHygieneBreak()" style="margin-bottom:8px;">위생 개방</button>
-      <button id="btnRelock" class="btn-success" onclick="onRelockClick()"><span class="btn-ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>다시 가두기</span></button>
+      <button id="btnRelock" class="btn-success" onclick="onRelockClick()"><span class="btn-ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>감금 시작</span></button>
     </div>
 
     <div id="logList" class="hidden"></div>
@@ -1093,7 +1106,7 @@
         <option value="touch">허락 없이 만짐 / 엣징</option>
         <option value="unlock">잠깐 무단으로 풂</option>
         <option value="skip">보고·미션을 속이거나 대충 함</option>
-        <option value="cum">몰래 사정 / 거의 쌀 뻔함</option>
+        <option value="cum">몰래 사정</option>
         <option value="other">기타</option>
       </select>
       <label>구체적으로 (선택)</label>
@@ -1215,10 +1228,41 @@
   </div>
 
   <!-- 첫 실행 신상 등록 -->
+  
+  <div id="lockStartModal" class="modal hidden">
+    <div class="modal-content">
+      <h3>감금 시작</h3>
+      <p id="lockStartDiffHint" style="font-size:0.82rem;color:var(--muted);margin-bottom:10px;line-height:1.4;"></p>
+      <label>주인님</label>
+      <input type="hidden" id="lockStartPersonality" value="noona">
+      <div id="lockStartFaceGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:8px 0 12px;">
+        <div class="face-opt selected" data-p="noona" onclick="pickPersonality('lockStart',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="noona" style="width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover;"><div style="font-size:0.72rem;margin-top:4px;">옆집 누나</div></div>
+        <div class="face-opt" data-p="mesugaki" onclick="pickPersonality('lockStart',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="mesugaki" style="width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover;"><div style="font-size:0.72rem;margin-top:4px;">메스가키</div></div>
+        <div class="face-opt" data-p="queen" onclick="pickPersonality('lockStart',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="queen" style="width:100%;border-radius:8px;aspect-ratio:1;object-fit:cover;"><div style="font-size:0.72rem;margin-top:4px;">밤의 여왕</div></div>
+      </div>
+      <label>목표 일수</label>
+      <input type="hidden" id="lockStartTargetMode" value="beginner">
+      <select id="lockStartTargetDays">
+        <option value="1">1일</option><option value="2">2일</option><option value="3" selected>3일</option>
+        <option value="4">4일</option><option value="5">5일</option><option value="6">6일</option>
+        <option value="7">7일</option><option value="8">8일</option><option value="9">9일</option>
+        <option value="10">10일</option><option value="11">11일</option><option value="14">14일</option>
+        <option value="21">21일</option><option value="30">30일</option>
+      </select>
+      <input type="number" id="lockStartTargetCustom" class="hidden" min="1" max="90">
+      <button type="button" id="btnLockStartRandom" class="btn-secondary" style="margin-top:8px;" onclick="rollLockStartDays()">랜덤</button>
+      <p id="lockStartQueenNote" class="hidden" style="font-size:0.75rem;color:var(--muted);margin-top:6px;">여왕: 11일 이상</p>
+      <label style="margin-top:12px;display:block;">하드코어</label>
+      <select id="lockStartHardcore"><option value="false" selected>끄기</option><option value="true">켜기</option></select>
+      <button type="button" class="btn-primary" style="margin-top:14px;" onclick="confirmLockStart()">감금 시작</button>
+      <button type="button" class="btn-secondary" onclick="closeModal('lockStartModal')">취소</button>
+    </div>
+  </div>
+
   <div id="setupModal" class="modal hidden">
     <div class="modal-content">
-      <h3>신상 등록</h3>
-      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">처음이구나. 호칭과 주인님 성격을 정해 줘.</p>
+      <h3>튜토리얼 시작</h3>
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:14px;">처음이구나. 호칭을 정하고, <b>옆집 누나 · 1일</b>로 시작한다.</p>
 
       <label>너를 부를 호칭</label>
       <input type="text" id="setupToyName" value="허접 자지" placeholder="허접 자지">
@@ -1227,7 +1271,7 @@
       <input type="text" id="setupMasterName" value="주인님" placeholder="주인님">
 
       <label>관리받고 싶은 주인님 성격</label>
-      <input type="hidden" id="setupPersonality" value="noona">
+      <input type="hidden" id="setupPersonality" value="noona"><!-- tutorial fixed -->
       <div id="setupFaceGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;">
         <div class="face-opt selected" data-p="noona" onclick="pickPersonality('setup',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="noona" style="width:100%;border-radius:8px;border:2px solid var(--accent);">
           <div style="font-size:0.65rem;margin-top:4px;color:var(--muted);">옆집 누나 · 초보</div>
@@ -1272,7 +1316,7 @@
       <input type="text" id="inputMasterName" placeholder="주인님">
 
       <label>주인님 성격</label>
-      <p id="personaLockHint" class="hidden" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.35;">감금 중에는 캐릭터를 변경할 수 없다. 목표 달성 후, 다시 가두기 전에만 변경 가능.</p>
+      <p id="personaLockHint" class="hidden" style="font-size:0.75rem;color:#e0a090;margin:4px 0 8px;line-height:1.35;">감금 중에는 캐릭터를 변경할 수 없다. 목표 달성 후, 감금 시작 전에만 변경 가능.</p>
       <input type="hidden" id="inputPersonality" value="noona">
       <div id="settingsFaceGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;">
         <div class="face-opt selected" data-p="noona" onclick="pickPersonality('settings',this)" style="text-align:center;cursor:pointer;"><img src="" data-face="noona" style="width:100%;border-radius:8px;border:2px solid var(--accent);">
@@ -2458,13 +2502,13 @@ function checkUnlockDeadline() {
           br.style.pointerEvents = 'auto';
         }
       } else if (state.currentUnlockUntil && now() < state.currentUnlockUntil) {
-        // 일시 해제 중에도 다시 가두기 가능해야 함
+        // 일시 해제 중에도 감금 시작 가능해야 함
         const remainMs = state.currentUnlockUntil - now();
         const remain = Math.max(0, Math.ceil(remainMs / 60000));
         const urgent = remainMs <= 5 * 60000;
         const col = urgent ? '#e07070' : 'var(--warning)';
         statusEl.innerHTML = `<b style="color:${col}">${remain}분</b><br>` +
-          (urgent ? '시간이 거의 없다. 지금 「다시 가두기」를 눌러라. 넘기면 처벌.' : '시간 안에 「다시 가두기」로 잠그지 않으면 처벌한다.');
+          (urgent ? '시간이 거의 없다. 지금 「감금 시작」를 눌러라. 넘기면 처벌.' : '시간 안에 「감금 시작」로 잠그지 않으면 처벌한다.');
         document.getElementById('lockedActions').classList.add('hidden');
         document.getElementById('unlockedActions').classList.remove('hidden');
         const bg = document.getElementById('btnCompleteGoal');
@@ -2729,6 +2773,7 @@ function checkUnlockDeadline() {
         if (pClear === 'noona') {
           if (!state.tutorialDone) {
             state.tutorialDone = true;
+            state.targetDays = 3;
             try {
               setTimeout(function () {
                 showUnlockFx(['튜토리얼 완료', '누나 일수 1~5일 개방']);
@@ -3761,21 +3806,40 @@ function isGoalCleared() {
     }
 
 
+    function refreshFaceLockUI(gridId) {
+      try {
+        const grid = document.getElementById(gridId || 'setupFaceGrid');
+        if (!grid) return;
+        grid.querySelectorAll('.face-opt[data-p]').forEach(function (el) {
+          const p = el.getAttribute('data-p');
+          const unlocked = (typeof isPersonalityUnlocked !== 'function') || isPersonalityUnlocked(p);
+          el.classList.toggle('locked', !unlocked);
+          if (!unlocked) el.setAttribute('aria-disabled', 'true');
+          else { el.removeAttribute('aria-disabled'); el.classList.remove('shake'); }
+        });
+      } catch (e) {}
+    }
+
     function pickPersonality(where, el) {
       if (where === 'settings' && !canChangePersonality()) {
-        showToast('캐릭터 변경은 목표 달성 후, 다시 가두기 전에만 가능하다.');
+        showToast('캐릭터 변경은 목표 달성 후, 감금 시작 전에만 가능하다.');
         return;
       }
       if (!el) return;
       const p = el.getAttribute('data-p');
       if (!p) return;
       if (typeof isPersonalityUnlocked === 'function' && !isPersonalityUnlocked(p)) {
+        el.classList.remove('shake');
+        void el.offsetWidth;
+        el.classList.add('shake');
+        setTimeout(function () { try { el.classList.remove('shake'); } catch (e) {} }, 480);
+        try { playSfx('reject'); } catch (e) {}
         const msg = {
-          mesugaki: '메스가키는 누나 조교를 완주하면 열린다.',
-          queen: '여왕은 메스가키 조교를 완주하면 열린다.',
-          iljin: '여왕은 메스가키 조교를 완주하면 열린다.'
+          mesugaki: '잠김 · 누나 조교 완주 후',
+          queen: '잠김 · 메스가키 조교 완주 후',
+          iljin: '잠김 · 메스가키 조교 완주 후'
         };
-        showToast(msg[p] || '아직 해금되지 않았다.');
+        showToast(msg[p] || '잠김');
         return;
       }
       const gridId = where === 'setup' ? 'setupFaceGrid'
@@ -4308,6 +4372,7 @@ function acceptContract() {
       }
       closeModal('contractModal');
       document.getElementById('setupModal').classList.remove('hidden');
+      try { refreshFaceLockUI('setupFaceGrid'); } catch (e) {}
       try { applyPersonaDifficulty('setup', document.getElementById('setupPersonality').value || 'noona', true); } catch (e) {}
     }
 
@@ -4506,8 +4571,17 @@ function acceptContract() {
       sel.disabled = false;
 
       let pick = Math.min(diff.max, Math.max(diff.min, prev));
+      // 튜토리얼 1일 잔여 → 누나 개방 후 기본일
+      try {
+        const pn = normalizePersonality(persona || state.masterPersonality || 'noona');
+        if (pn === 'noona' && state.tutorialDone && prev === 1 && diff.max > 1) {
+          pick = diff.defaultDays || 3;
+        }
+      } catch (e) {}
       if (sel.querySelector('option[value="' + pick + '"]')) sel.value = String(pick);
       else sel.value = String(diff.defaultDays);
+      if (diff.min === diff.max) sel.disabled = true;
+      else sel.disabled = false;
       if (custom) {
         custom.classList.add('hidden');
         custom.min = String(diff.min);
@@ -4706,24 +4780,34 @@ function acceptContract() {
         const rnd = document.getElementById('btnLockStartRandom');
         const qn = document.getElementById('lockStartQueenNote');
         const sel = document.getElementById('lockStartTargetDays');
-        if (p === 'queen') {
-          if (hint) hint.textContent = (labels[p] || '') + (state.hardcoreMode ? ' · 하드코어' : '') + ' · 11일 이상 선택';
-          syncTargetDaysUI('lockStart', Math.max(11, state.targetDays || 11));
-          if (sel) sel.disabled = false;
-          if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '11~20일 랜덤'; }
-          if (qn) qn.classList.remove('hidden');
-        } else if (p === 'mesugaki') {
-          if (hint) hint.textContent = (labels[p] || '') + (state.hardcoreMode ? ' · 하드코어' : '') + ' · 랜덤 6~10일 가능';
-          syncTargetDaysUI('lockStart', Math.min(10, Math.max(6, state.targetDays || 7)));
-          if (sel) sel.disabled = false;
-          if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '6~10일 랜덤'; }
-          if (qn) qn.classList.add('hidden');
-        } else {
-          if (hint) hint.textContent = (labels[p] || '옆집 누나') + (state.hardcoreMode ? ' · 하드코어' : '') + ' · 랜덤 1~5일 가능';
-          syncTargetDaysUI('lockStart', Math.min(5, Math.max(1, state.targetDays || 3)));
-          if (sel) sel.disabled = false;
-          if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '1~5일 랜덤'; }
-          if (qn) qn.classList.add('hidden');
+        // 튜토리얼 직후: 누나 기본 3일 (1~5 선택)
+        if (p === 'noona' && state.tutorialDone && (state.targetDays === 1 || !state.targetDays)) {
+          state.targetDays = 3;
+        }
+        try { rebuildLockStartDayOptions(p); } catch (e) {
+          try { syncTargetDaysUI('lockStart', state.targetDays || 3); } catch (e2) {}
+        }
+        const diff = (typeof personaDifficulty === 'function') ? personaDifficulty(p) : { min: 1, max: 5 };
+        if (hint) {
+          let h = (labels[p] || '');
+          try {
+            const hc = document.getElementById('lockStartHardcore');
+            if ((hc && hc.value === 'true') || state.hardcoreMode) h += ' · 하드코어';
+          } catch (e) {}
+          if (diff.min === diff.max) h += ' · ' + diff.min + '일 고정';
+          else h += ' · ' + (diff.min || 1) + '~' + (diff.max || 5) + '일';
+          hint.textContent = h;
+        }
+        if (rnd) {
+          if (diff.min === diff.max) rnd.classList.add('hidden');
+          else {
+            rnd.classList.remove('hidden');
+            rnd.textContent = (diff.min || 1) + '~' + (diff.max || 5) + '일 랜덤';
+          }
+        }
+        if (qn) {
+          if (p === 'queen') qn.classList.remove('hidden');
+          else qn.classList.add('hidden');
         }
         const hcSel = document.getElementById('lockStartHardcore');
         if (hcSel) hcSel.value = (isHardcoreUnlocked() && state.hardcoreMode) ? 'true' : 'false';
@@ -4748,7 +4832,16 @@ function acceptContract() {
           if (selEl) pickPersonality('lockStart', selEl);
         }
       } catch (e) {}
-      document.getElementById('lockStartModal').classList.remove('hidden');
+      const _lsm = document.getElementById('lockStartModal');
+      if (_lsm) {
+        try {
+          _lsm.querySelectorAll('img[data-face]').forEach(function(img) {
+            try { const d = faceData(img.getAttribute('data-face')); if (d) img.src = d; } catch (e) {}
+          });
+        } catch (e) {}
+        try { if (typeof refreshFaceLockUI === 'function') refreshFaceLockUI('lockStartFaceGrid'); } catch (e) {}
+        _lsm.classList.remove('hidden');
+      }
     }
 
     function rollLockStartDays() {
@@ -4920,14 +5013,14 @@ function acceptContract() {
       } else {
         state.toyName = (document.getElementById('setupToyName').value || '허접 자지').trim();
         state.masterName = (document.getElementById('setupMasterName').value || '주인님').trim();
-        state.masterPersonality = normalizePersonality(document.getElementById('setupPersonality').value || 'noona');
       }
-      // 일수는 가두기 시작 모달에서 확정. 여기선 캐릭터 기본값만 임시로 둠.
+      // 튜토리얼: 누나 · 1일 고정
+      state.masterPersonality = 'noona';
       try {
-        state.targetDays = personaDifficulty(state.masterPersonality).defaultDays;
-      } catch (e) {
-        state.targetDays = 3;
-      }
+        const sp = document.getElementById('setupPersonality');
+        if (sp) sp.value = 'noona';
+      } catch (e) {}
+      state.targetDays = 1;
       state.affectionByPersona = {
         noona: initialAffection('noona'),
         mesugaki: initialAffection('mesugaki'),
@@ -4947,12 +5040,14 @@ function acceptContract() {
       applyNames();
       loadMasterFace();
       updateUI();
-      showToast(`${state.masterName}의 ${state.toyName}으로 등록됐다.`);
-      // 신상등록 직후 바로 감금 시작
+      showToast('튜토리얼 시작 · 1일');
       setTimeout(function () {
+        try { startLock(); } catch (e) {
+          try { openLockStart(); } catch (e2) {}
+        }
         try { updateMissionCard(); } catch (e) {}
-        try { openLockStart(); } catch (e) {}
-      }, 350);
+        try { updateUI(); } catch (e) {}
+      }, 200);
     }
 
     // ========== 매일 검진 ==========
@@ -6100,7 +6195,7 @@ function getStatusMission() {
         } else {
           intro = intros[p] || intros.noona || '';
         }
-        introEl.textContent = intro + (leftN < 3 ? ' ''' : '');
+        introEl.textContent = intro + (leftN < 3 ? (' · ' + leftN + '회') : '');
       }
       const box = document.getElementById('talkChoices');
       if (!box) {
@@ -6339,7 +6434,7 @@ if (!assertNotSilenced('고백')) return;
       // 가벼운 위반은 고정 단계, 무단 해제·사정은 고단계 리스트에서 하나
       const lightMap = { touch: 2, skip: 2, other: 2 };
       let lv = lightMap[type] || 2;
-      const severe = (type === 'unlock' || type === 'cum');
+      const severe = (type === 'unlock'); // cum은 런 실패로 별도 처리
       if (spam && !severe) lv = Math.min(6, lv + 2);
 
       const p = (typeof normalizePersonality === 'function')
@@ -6350,7 +6445,7 @@ if (!assertNotSilenced('고백')) return;
         porn: '야한 컨텐츠',
         unlock: '무단 해제',
         skip: '보고 부정/대충',
-        cum: '몰래 사정·준사정',
+        cum: '몰래 사정',
         other: '기타 위반'
       };
 
@@ -6380,7 +6475,30 @@ if (!assertNotSilenced('고백')) return;
           spam: pickLine(['고백이 잦다. 반성하는 태도가 안보이네?', '계속해서 말을 안듣는거야? 처벌이 좋은거야?', '복종하는 태도가 문제야. 네겐 더 큰 처벌이 필요해보인다.'])
         }
       };
-            const pack = replies[p] || replies.noona;
+            // 몰래 사정 = 이번 런 무조건 실패
+      if (type === 'cum') {
+        const failLines = {
+          noona: pickLine(['…사정했다고? 잠근 채로? 이번 건 끝이야.', '감금 중에 싸 버리면 이번 런은 실패야.']),
+          mesugaki: pickLine(['푸후, 몰래 싸? 잠긴 채로면 탈락이야~', '잠금 중 사정? 이번 판 끝.']),
+          queen: pickLine(['감금 중에 사정했다. 이번 런은 실패다.', '몰래 싸다니. 이번 목표는 끝이다.'])
+        };
+        let fline = failLines[p] || failLines.noona;
+        if (note) fline += '\n\n「' + note.slice(0, 60) + '」';
+        fline += '\n\n이번 런 실패 · 몰래 사정';
+        closeModal('confessModal');
+        try { playSfx('punish'); } catch (e) {}
+        try { failCurrentRun('양심 고백: 몰래 사정'); } catch (e) {
+          state.runFailed = true;
+          state.runFailReason = '몰래 사정';
+          state.locked = false;
+        }
+        showResult(master, fline);
+        saveState();
+        updateUI();
+        return;
+      }
+
+      const pack = replies[p] || replies.noona;
       let line = lv >= 4 ? pack.hard : pack.soft;
       if (spam) line = pack.spam;
       line += '\n\n「' + (labels[type] || type) + '」→ ' + (severe ? '고단계 처벌 목록에서 부여' : ('처벌 Lv.' + lv)) + (spam ? ' (반복 고백 가중)' : (severe ? '' : ' (자백 감면 적용)'));
@@ -7436,13 +7554,7 @@ if (!assertNotSilenced('고백')) return;
 
     function showToast(msg) {
       if (msg == null || msg === '') return;
-      _toastQueue.push(String(msg));
-      _drainToasts();
-    }
-
-    /** 이전 큐·표시 중인 토스트를 지우고 마지막 메시지만 즉시 표시 */
-    function showToastLatest(msg) {
-      if (msg == null || msg === '') return;
+      try { clearTimeout(window._toastTimer); } catch (e) {}
       try { _toastQueue.length = 0; } catch (e) {}
       try {
         document.querySelectorAll('.toast').forEach(function (el) { el.remove(); });
@@ -7452,13 +7564,16 @@ if (!assertNotSilenced('고백')) return;
       _drainToasts();
     }
 
+    function showToastLatest(msg) {
+      showToast(msg);
+    }
+
     function _drainToasts() {
       if (_toastBusy) return;
       if (!_toastQueue.length) return;
       _toastBusy = true;
       const msg = _toastQueue.shift();
       try { playSfx('toast'); } catch (e) {}
-      // 기존 토스트 제거 (겹침 방지)
       try {
         document.querySelectorAll('.toast').forEach(function (el) { el.remove(); });
       } catch (e) {}
@@ -7466,7 +7581,8 @@ if (!assertNotSilenced('고백')) return;
       t.className = 'toast';
       t.textContent = msg;
       document.body.appendChild(t);
-      setTimeout(function () {
+      try { clearTimeout(window._toastTimer); } catch (e) {}
+      window._toastTimer = setTimeout(function () {
         try { t.remove(); } catch (e) {}
         _toastBusy = false;
         _drainToasts();
