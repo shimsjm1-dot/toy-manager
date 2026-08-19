@@ -902,21 +902,41 @@
     #lockedActions { margin-bottom: 6px; }
     #statusText, #todayGuide { margin: 4px 2px 6px !important; font-size: 0.75rem !important; }
     #activeStatusBox { max-width: none !important; margin: 8px 0 0 !important; }
-    .hist-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .hist-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
     .hist-cal .hd { text-align: center; font-size: 0.65rem; color: var(--muted); padding: 2px 0; }
     .hist-cal .cell {
-      aspect-ratio: 1; border-radius: 8px; border: 1px solid #2a2220;
-      background: #120e0c; color: var(--text); font-size: 0.75rem;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      cursor: pointer; padding: 2px;
+      aspect-ratio: 1; border-radius: 6px; border: 1px solid #2a2220;
+      background: transparent; color: #6a5a50; font-size: 0.72rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      padding: 0; cursor: default; position: relative; overflow: hidden;
     }
-    .hist-cal .cell.mute { opacity: 0.35; cursor: default; }
-    .hist-cal .cell.today { border-color: #a83b2a; }
-    .hist-cal .cell.sel { background: #2a1814; border-color: #c4a090; }
-    .hist-cal .cell .dot {
-      width: 5px; height: 5px; border-radius: 50%; background: #c4a090; margin-top: 2px;
+    .hist-cal button.cell { cursor: pointer; color: #efe6dc; border-color: #3a322c; }
+    .hist-cal .cell .fill {
+      position: absolute; left: 0; bottom: 0; width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
     }
-    .hist-cal .cell .cnt { font-size: 0.58rem; color: #c4a090; line-height: 1; }
+    .hist-cal .cell .fill.ok { background: #2a5a3c; }
+    .hist-cal .cell .fill.fail { background: #6a3030; }
+    .hist-cal .cell .fill.active { background: #2a455a; }
+    .hist-cal .cell .fill.partial { /* height set inline */ }
+    .hist-cal .cell .n { position: relative; z-index: 1; }
+    .hist-cal .cell.mute { opacity: 0.4; color: #5a4a42; }
+    .hist-cal .cell.today { box-shadow: inset 0 0 0 1px #a83b2a; }
+    .hist-cal .cell.sel { outline: 2px solid #c4a090; outline-offset: 1px; }
+    .hist-cal .cell .n {
+      position: relative;
+      z-index: 1;
+      line-height: 1;
+    }
+    .hist-cal .cell.run-start .n::after {
+      content: '';
+      display: block;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #7eb8d4;
+      margin: 3px auto 0;
+    }
     .toast {
       position: fixed;
       top: 12px;
@@ -1514,10 +1534,22 @@
 
 <div id="historyModal" class="modal hidden">
     <div class="modal-content">
-      <h3>전체 기록</h3>
-      <div id="fullHistory"></div>
-      <br>
-      <button class="btn-secondary" onclick="closeModal('historyModal')">닫기</button>
+      <h3 style="text-align:center;">기록</h3>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+        <button type="button" class="btn-secondary" style="width:auto;margin:0;padding:6px 12px;" onclick="historyCalShift(-1)">‹</button>
+        <span id="historyCalLabel" style="font-size:0.9rem;font-weight:600;"></span>
+        <button type="button" class="btn-secondary" style="width:auto;margin:0;padding:6px 12px;" onclick="historyCalShift(1)">›</button>
+      </div>
+      <div id="historyCalendar"></div>
+      <p style="font-size:0.68rem;color:var(--muted);margin:8px 0 4px;line-height:1.4;">
+        <span style="display:inline-block;width:10px;height:10px;background:#2a455a;border-radius:2px;vertical-align:middle;"></span> 진행 중
+        <span style="display:inline-block;width:10px;height:10px;background:#2a5a3c;border-radius:2px;vertical-align:middle;margin-left:8px;"></span> 성공
+        <span style="display:inline-block;width:10px;height:10px;background:#6a3030;border-radius:2px;vertical-align:middle;margin-left:8px;"></span> 실패(전체)
+        <span style="display:inline-block;width:5px;height:5px;background:#7eb8d4;border-radius:50%;vertical-align:middle;margin-left:8px;"></span> 시작일
+      </p>
+      <p id="historyDayTitle" style="font-size:0.8rem;color:#c4a090;margin:10px 0 6px;"></p>
+      <div id="fullHistory" style="max-height:40vh;overflow-y:auto;"></div>
+      <button class="btn-secondary" style="margin-top:12px;" onclick="closeModal('historyModal')">닫기</button>
     </div>
   </div>
 
@@ -1557,13 +1589,16 @@
       appTitle: '자지 관리 대장',
       sfxEnabled: true,
       masterPersonality: 'noona',
+      hardcoreMode: false,
+      hardcoreUnlocked: false,
+      hardcoreEver: false,
       goalNotified: false,
       goalUnlockReady: false,
       talkCountToday: 0,
-      lastTalkTs: 0, // cold | sweet | playful | violent | scorn
-      // 확인 알림
-            lastCheckRequestTs: null,
+      lastTalkTs: 0,
+      lastCheckRequestTs: null,
       activePunishment: null,
+      punishQueue: [],
       punishmentHistory: [],
       requestBanUntil: null,
       reportEveryHours: 24,
@@ -1580,7 +1615,35 @@
       maxWearDays: 0,
       goalShrinkDays: 0,
       orgasmGrantWearMark: 0,
-      unlockLongCheckMark: 0
+      unlockLongCheckMark: 0,
+      // 일일 미션·날짜
+      missionDate: null,
+      statusDone: false,
+      statusFirstTs: null,
+      statusSecondDone: false,
+      forcedSideId: null,
+      forcedSideDone: false,
+      optAccepted: [],
+      optDoneIds: [],
+      missionDailyDone: false,
+      forcedDoubleMission: false,
+      lastMissionPenaltyDate: null,
+      lastSecondMissDate: null,
+      lastDayRolloverKey: null,
+      lastReportRemindDate: null,
+      // 위생
+      lastHygieneAt: null,
+      hygieneOfferDate: null,
+      hygieneDue: false,
+      // 런 상태
+      runFailed: false,
+      runFailReason: null,
+      silenceUntil: null,
+      hairAuthRequired: false,
+      photoList: [],
+      whimOrder: null,
+      whimRollDate: null,
+      lastGreetDate: null
     };
 
     let _stateLoadedAt = 0; // 이 탭이 알고 있는 저장본 시각
@@ -1616,7 +1679,7 @@ const ACHIEVEMENTS = [
       { id: 'quick_relock', cat: '특별', title: '여유 거부', desc: '목표 달성 해제 후 1시간 이내 다시 감금', reward: null },
       { id: 'quick_relock_streak', cat: '특별', title: '목줄로 돌아옴', desc: '클리어 후 1시간 이내 재감금을 연속 3회', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } },
       { id: 'mission_side_5', cat: '특별', title: '보조 모범', desc: '보조 미션 5회', reward: { type: 'softPunish', n: 1, label: '처벌 완화 1회' } }
-    ];;
+    ];
 
     function loadState() {
       try {
@@ -2004,6 +2067,14 @@ const ACHIEVEMENTS = [
       state.totalPenalties = 0;
       state.hairAuthRequired = false;
       // 기록·호감·티켓·업적·사진은 유지
+      // 튜토리얼 중 실패·포기 → 튜토리얼 스킵
+      let skippedTutorial = false;
+      if (!state.tutorialDone) {
+        state.tutorialDone = true;
+        state.targetDays = 3;
+        skippedTutorial = true;
+        try { addLog('fail', toyName() + ' 튜토리얼 스킵 (실패·포기)'); } catch (e) {}
+      }
       try {
         addLog('fail', toyName() + ' 런 실패: ' + reason);
       } catch (e) {}
@@ -2011,15 +2082,21 @@ const ACHIEVEMENTS = [
       try { playSfx('punish'); } catch (e) {}
       const p = (typeof normalizePersonality === 'function')
         ? normalizePersonality(state.masterPersonality || 'noona') : 'noona';
-      const lines = {
-        noona: '3일이나 보고가 없었어. …이번 감금은 실패네... 기록은 남겨 둘게. 다시 시작하려면 가두기를 해.',
-        mesugaki: '3일 동안 보고 잠수? 푸후, 이번 판은 실패야. 기록은 남는 거 알지? 다시 잠그려면 말해.',
-        queen: '3일간 보고를 안 했다. 이번 감금은 실패다. 기록은 남긴다. 다시 마음 다잡고 다시 와라.'
-      };
+      let msg;
+      if (skippedTutorial) {
+        if (p === 'mesugaki') msg = '푸후, 튜토리얼 실패? 스킵할게. 다음엔 일수 골라서 잠겨.';
+        else if (p === 'queen' || p === 'iljin') msg = '튜토리얼에서 무너졌군. 넘어간다. 다음 감금부터 일수를 선택해라.';
+        else msg = '이번엔 여기까지 하자. 튜토리얼은 넘어갈게. 다시 감금할 땐 1~5일 중에서 고르면 돼.';
+      } else {
+        if (p === 'mesugaki') msg = '이번 판은 실패야. 기록은 남는 거 알지?';
+        else if (p === 'queen' || p === 'iljin') msg = '이번 감금은 실패다. 기록은 남긴다.';
+        else msg = '이번 감금은 실패네. 기록은 남겨 둘게. 다시 시작하려면 감금 시작을 해.';
+      }
+      if (reason) msg = msg + String.fromCharCode(10) + String.fromCharCode(10) + reason;
       try {
-        showResult(masterName(), lines[p] || lines.noona);
+        showResult(masterName(), msg);
       } catch (e) {
-        try { showToast('런 실패: ' + reason); } catch (e2) {}
+        try { showToast(skippedTutorial ? '튜토리얼 스킵 · 런 실패' : ('런 실패: ' + reason)); } catch (e2) {}
       }
       try { updateUI(); } catch (e) {}
     }
@@ -2084,43 +2161,66 @@ const ACHIEVEMENTS = [
     }
 
     function hygieneIntervalDays() {
-      // 하드코어: 위생 개방 없음. 누나 2일 / 메스가키 3일 / 여왕 5일
-      if (state.hardcoreMode) return null;
+      // 누나 매일 / 메스·여왕 2일 / 하드코어 3일
+      if (state.hardcoreMode) return 3;
       const p = (typeof normalizePersonality === 'function')
         ? normalizePersonality(state.masterPersonality || 'noona')
         : (state.masterPersonality || 'noona');
-      if (p === 'noona') return 2;
-      if (p === 'queen') return 5;
-      return 3; // mesugaki
+      if (p === 'noona') return 1;
+      return 2; // mesugaki · queen
+    }
+
+    function hygieneDayKeyFromTs(ts) {
+      if (!ts) return '';
+      try {
+        if (typeof historyDayKey === 'function') {
+          const k = historyDayKey(ts);
+          if (k) return k;
+        }
+      } catch (e) {}
+      const d = new Date(ts);
+      if (isNaN(d.getTime())) return '';
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function hygieneCalendarDaysSince(ts) {
+      const lastKey = hygieneDayKeyFromTs(ts);
+      let tk = '';
+      try { tk = (typeof todayKey === 'function') ? todayKey() : ''; } catch (e) {}
+      if (!tk) tk = hygieneDayKeyFromTs(Date.now());
+      if (!lastKey || !tk) return 0;
+      const a = lastKey.split('-').map(Number);
+      const b = tk.split('-').map(Number);
+      const da = Date.UTC(a[0], a[1] - 1, a[2]);
+      const db = Date.UTC(b[0], b[1] - 1, b[2]);
+      return Math.max(0, Math.floor((db - da) / 86400000));
     }
 
     function needsHygieneBreak() {
-      if (state.hardcoreMode) return false;
       if (!state.locked) return false;
       if (!state.startTimestamp) return false;
       const days = hygieneIntervalDays();
-      if (days == null) return false;
-      const tk = (typeof todayKey === 'function') ? todayKey() : null;
+      if (days == null || days <= 0) return false;
+      let tk = null;
+      try { tk = (typeof todayKey === 'function') ? todayKey() : null; } catch (e) {}
       if (!tk) return false;
 
-      // 과거 오퍼가 남아 있으면 소멸 (아껴 쓰기 방지)
+      // 지난날 오퍼 미사용 → 소멸만 (lastHygieneAt 리셋 금지 · save는 하지 않음 — 1초 폴링 스팸 방지)
       if (state.hygieneOfferDate && state.hygieneOfferDate !== tk) {
-        state.lastHygieneAt = now();
         state.hygieneOfferDate = null;
-        try { saveState(); } catch (e) {}
-        return false;
       }
 
-      // 오늘 오퍼가 열려 있으면 오늘만 가능
       if (state.hygieneOfferDate === tk) return true;
 
-      const last = lastHygieneTs();
-      const elapsed = now() - last;
-      if (elapsed < days * 86400000) return false;
+      // 오늘 이미 개방 완료
+      if (state.lastHygieneAt && hygieneDayKeyFromTs(state.lastHygieneAt) === tk) return false;
 
-      // 주기 도래 → 오늘 하루만 오퍼
+      const last = lastHygieneTs();
+      const since = hygieneCalendarDaysSince(last);
+      if (since < days) return false;
+
+      // 오퍼 플래그만 세움. saveState는 open 시·updateUI 말미에
       state.hygieneOfferDate = tk;
-      try { saveState(); } catch (e) {}
       return true;
     }
 
@@ -2141,10 +2241,7 @@ const ACHIEVEMENTS = [
     /** 확인 후 개방. 거절해도 주기는 유지 → 원할 때 다시 선택 가능 */
     function tryGrantHygieneBreak() {
       if (!needsHygieneBreak()) return 0;
-      if (state.hardcoreMode) {
-        try { showToast('하드코어: 위생 개방 불가.'); } catch (e) {}
-        return 0;
-      }
+      // 하드코어도 위생 개방 허용
       const ok = confirm(hygieneAskText());
       if (!ok) {
         try { showToast('보류. 오늘은 아직 개방 가능하다.'); } catch (e) {}
@@ -2169,10 +2266,6 @@ const ACHIEVEMENTS = [
     function openHygieneBreak() {
       if (!state.locked) {
         showToast('이미 개방 상태다.');
-        return;
-      }
-      if (state.hardcoreMode) {
-        showToast('하드코어: 위생 개방 불가.');
         return;
       }
       if (!needsHygieneBreak()) {
@@ -2209,6 +2302,9 @@ const ACHIEVEMENTS = [
       state.lastHygieneAt = now();
       state.hygieneOfferDate = null;
       state.locked = false; // 일시 개방
+      try {
+        addLog('relock', toyName() + ' 위생 개방 ' + minutes + '분 (씻기·엣징 · 사정 금지)');
+      } catch (e) {}
       try { playSfx('approve'); } catch (e) {}
       saveState();
       return minutes;
@@ -2261,48 +2357,49 @@ function checkUnlockDeadline() {
 
     function hygieneStatusText() {
       if (!state.locked) return '위생 —';
-      if (state.hardcoreMode) return '위생 개방: 없음';
       const days = (typeof hygieneIntervalDays === 'function') ? hygieneIntervalDays() : null;
       if (days == null) return '위생 개방: 없음';
-      const due = (typeof needsHygieneBreak === 'function') && needsHygieneBreak();
-      if (due) {
-        return '위생 개방: 오늘';
+      // needsHygieneBreak() 재호출 금지 — 상태 변경·중복 판정 방지. 이미 계산된 오퍼/완료만 참조
+      let tk = '';
+      try { tk = (typeof todayKey === 'function') ? todayKey() : ''; } catch (e) {}
+      if (state.hygieneOfferDate && tk && state.hygieneOfferDate === tk) return '위생 개방: 오늘 가능';
+      if (state.lastHygieneAt && tk && hygieneDayKeyFromTs(state.lastHygieneAt) === tk) {
+        return '위생 개방: 오늘 완료';
       }
-      const last = (typeof lastHygieneTs === 'function') ? lastHygieneTs() : (state.lastHygieneAt || state.startTimestamp || 0);
-      const intervalMs = days * 86400000;
-      const nextAt = last + intervalMs;
-      const remainMs = Math.max(0, nextAt - now());
-      const remainDays = Math.ceil(remainMs / 86400000);
-      if (remainDays <= 0) {
-        return '위생 개방: 곧 · ' + days + '일 주기';
-      }
-      if (remainDays === 1) {
-        return '위생 개방: 내일';
-      }
-      return '위생 개방: ' + remainDays + '일 후';
+      const last = lastHygieneTs();
+      const since = hygieneCalendarDaysSince(last);
+      const remain = Math.max(0, days - since);
+      if (remain <= 0) return '위생 개방: 오늘 가능';
+      if (remain === 1) return '위생 개방: 내일';
+      return '위생 개방: ' + remain + '일 후';
     }
 
     function updateHygieneButton() {
       const btn = document.getElementById('btnHygiene');
+      let due = false;
+      try {
+        due = !!(state.locked && typeof needsHygieneBreak === 'function' && needsHygieneBreak());
+      } catch (e) { due = false; }
       if (btn) {
-        const show = !!(state.locked && !state.hardcoreMode && typeof needsHygieneBreak === 'function' && needsHygieneBreak());
-        if (show) {
+        if (due) {
           btn.classList.remove('hidden');
           btn.textContent = '위생 개방';
+          btn.style.display = '';
         } else {
           btn.classList.add('hidden');
         }
       }
       const info = document.getElementById('hygieneInfo');
       if (info) {
-        if (state.hardcoreMode || !state.locked) {
+        if (!state.locked) {
           info.classList.add('hidden');
           info.textContent = '';
         } else {
           info.classList.remove('hidden');
+          info.style.display = '';
           try {
             info.textContent = hygieneStatusText();
-            if (typeof needsHygieneBreak === 'function' && needsHygieneBreak()) {
+            if (due) {
               info.style.color = '#e0a090';
               info.style.fontWeight = '600';
             } else {
@@ -2352,9 +2449,75 @@ function checkUnlockDeadline() {
         lines.map(function (t) { return '<div>· ' + String(t).replace(/</g, '&lt;') + '</div>'; }).join('');
     }
 
-    function updateUI() {
+    /** 1초 폴링용: 시계·진행도만 (무거운 판정 없음) */
+    function updateUILight() {
+      try {
+        const wearMs = getWearMs();
+        const targetMs = getEffectiveTargetDays() * 86400000;
+        const pct = targetMs > 0 ? Math.min(100, (wearMs / targetMs) * 100) : 0;
+        const remainMs = Math.max(0, targetMs - wearMs);
+        const remainEl = document.getElementById('remainTime');
+        if (remainEl) {
+          if (!state.locked && state.postOrgasmPending && state.orgasmRelockDeadline) {
+            const left = state.orgasmRelockDeadline - now();
+            if (left > 0) {
+              remainEl.textContent = '사정·재잠금 ' + formatDuration(left);
+              remainEl.style.color = left <= 5 * 60000 ? '#e07070' : '#e0a090';
+            } else {
+              remainEl.textContent = '사정 기한 초과';
+              remainEl.style.color = '#e07070';
+            }
+          } else if (!state.locked && state.currentUnlockUntil && now() < state.currentUnlockUntil) {
+            const left = state.currentUnlockUntil - now();
+            remainEl.textContent = '재잠금 ' + formatDuration(left);
+            remainEl.style.color = left <= 5 * 60000 ? '#e07070' : '#e0a090';
+          } else if (!state.startTimestamp) {
+            remainEl.textContent = '—';
+            remainEl.style.color = '';
+          } else if (remainMs <= 0 && state.locked) {
+            remainEl.textContent = '목표 달성';
+            remainEl.style.color = '';
+          } else {
+            remainEl.textContent = formatDuration(remainMs) + (state.locked ? '' : ' (정지)');
+            remainEl.style.color = '';
+          }
+        }
+        const wt = document.getElementById('wearTime');
+        if (wt) wt.textContent = state.startTimestamp ? (formatDuration(wearMs) + (state.locked ? '' : ' (정지)')) : '—';
+        const td = document.getElementById('targetDays');
+        if (td) td.textContent = getEffectiveTargetDays() + '일';
+        const pp = document.getElementById('progressPct');
+        if (pp) pp.textContent = pct.toFixed(1) + '%';
+        const pf = document.getElementById('progressFill');
+        if (pf) pf.style.width = pct + '%';
+        // 일시해제 카운트 문구만 갱신
+        if (state.currentUnlockUntil && now() < state.currentUnlockUntil) {
+          const statusEl = document.getElementById('statusText');
+          if (statusEl) {
+            const rMs = state.currentUnlockUntil - now();
+            const remain = Math.max(0, Math.ceil(rMs / 60000));
+            const urgent = rMs <= 5 * 60000;
+            const col = urgent ? '#e07070' : 'var(--warning)';
+            statusEl.innerHTML = '<b style="color:' + col + '">' + remain + '분</b><br>' +
+              (urgent ? '시간이 거의 없다. 지금 「감금 시작」를 눌러라. 넘기면 처벌.' : '시간 안에 「감금 시작」로 잠그지 않으면 처벌한다.');
+          }
+        }
+      } catch (e) {}
+    }
+
+    /** 무거운 판정·카드 갱신 (15초·포커스·액션 시) */
+    function updateUIHeavy() {
       try { applyPersonalityStyle(); } catch (e) {}
+      try { updateHygieneButton(); } catch (e) {}
       try { renderDailyEventCard(); } catch (e) {}
+      try { updateMaxStreaks(); } catch (e) {}
+      try { checkUnlockDeadline(); } catch (e) {}
+      try { ensureMissionState(); } catch (e) {}
+    }
+
+    function updateUI() {
+      try { updateUILight(); } catch (e) {}
+      try { updateUIHeavy(); } catch (e) {}
       try {
         if (!window._statusSecondTick) {
           window._statusSecondTick = setInterval(function () {
@@ -2366,8 +2529,7 @@ function checkUnlockDeadline() {
           }, 10000);
         }
       } catch (e) {}
-      try { updateMaxStreaks(); } catch (e) {}
-      try { checkUnlockDeadline(); } catch (e) {}
+      try { /* checkUnlockDeadline already in heavy */ } catch (e) {}
 
       // 런 실패 표시
       try {
@@ -2381,10 +2543,9 @@ function checkUnlockDeadline() {
         }
       } catch (e) {}
 
-      // 침묵 상태 UI
+      // 침묵 상태 UI (접속 패널티는 visibility에서만 — 폴링으로 +1시간 쌓이지 않게)
       try {
         if (isSilenced()) {
-          applySilenceAccessPenalty('ui');
           const st = document.getElementById('statusText');
           if (st) {
             st.innerHTML = '<span style="color:#e07070">침묵 중</span> · 남은 <b>' + silenceRemainText() + '</b><br>보고·대화·요청 불가. 접속 시 잠금 +1시간.';
@@ -2593,8 +2754,8 @@ function checkUnlockDeadline() {
           b.style.pointerEvents = blocked ? 'none' : '';
         }
       });
-      checkAchievements();
-      renderAchievements();
+      try { checkAchievements(); } catch (e) {}
+      // renderAchievements는 업적 모달 열 때만 — 매초 DOM 재작성 방지
       try { updateMissionCard(); } catch (e) {}
       try { updateAffTicketUI(); } catch (e) {}
       try { updateActiveStatusBox(); } catch (e) {}
@@ -3893,6 +4054,10 @@ function isGoalCleared() {
           if (rnd) { rnd.classList.remove('hidden'); rnd.textContent = '1~5일 랜덤'; }
           if (qn) qn.classList.add('hidden');
         }
+        if (rnd && !state.tutorialDone) {
+          rnd.classList.add('hidden');
+          rnd.disabled = true;
+        }
         return; // 가두기 시작은 확정 전까지 state.masterPersonality 미변경
       }
       // setup/settings: 메인 얼굴 미리보기
@@ -4258,35 +4423,110 @@ function selectPlayMode(mode) {
       if (!isTrainingMode() || !state.locked) {
         host.innerHTML = '';
         host.classList.add('hidden');
+        host.removeAttribute('data-ev-sig');
         return;
       }
       const ev = getDailyEvent();
       if (!ev) {
         host.innerHTML = '';
         host.classList.add('hidden');
+        host.removeAttribute('data-ev-sig');
         return;
       }
       host.classList.remove('hidden');
+      const dayKey = (typeof todayKey === 'function') ? todayKey() : '';
+      const sig = dayKey + '|' + ev.id + '|' + (state.dailyEventDone ? '1' : '0');
+      // 1초마다 updateUI가 다시 그리면 입력이 지워짐 → 입력 중이거나 동일 카드면 스킵
+      try {
+        const ae = document.activeElement;
+        if (ae && host.contains(ae) && (ae.tagName === 'INPUT' || ae.tagName === 'TEXTAREA')) return;
+      } catch (e) {}
+      if (host.getAttribute('data-ev-sig') === sig && document.getElementById('dailyEventCard')) return;
+
+      let prevText = '';
+      try {
+        const prev = document.getElementById('dailyEventText');
+        if (prev) prevText = prev.value || '';
+      } catch (e) {}
+      host.setAttribute('data-ev-sig', sig);
+
       if (state.dailyEventDone) {
-        host.innerHTML = '<div id="dailyEventCard"><h4>오늘의 조교 이벤트</h4><p style="font-size:0.82rem;color:var(--muted);">완료 · ' + ev.title + '</p></div>';
+        host.innerHTML = '<div id="dailyEventCard" class="card" style="margin-bottom:10px;"><h4>오늘의 조교 이벤트</h4><p style="font-size:0.82rem;color:var(--muted);">완료 · ' + ev.title + '</p></div>';
         return;
       }
-      let body = '<div id="dailyEventCard"><h4>오늘의 조교 이벤트 · ' + ev.title + '</h4>';
-      body += '<p style="font-size:0.84rem;line-height:1.45;margin-bottom:8px;">' + ev.desc + '</p>';
+
+      const card = document.createElement('div');
+      card.id = 'dailyEventCard';
+      card.className = 'card';
+      card.style.marginBottom = '10px';
+      card.addEventListener('click', function (e) { e.stopPropagation(); });
+
+      const h4 = document.createElement('h4');
+      h4.textContent = '오늘의 조교 이벤트 · ' + ev.title;
+      card.appendChild(h4);
+
+      const desc = document.createElement('p');
+      desc.style.cssText = 'font-size:0.84rem;line-height:1.45;margin-bottom:8px;';
+      desc.textContent = ev.desc;
+      card.appendChild(desc);
+
       if (ev.need === 'text') {
-        body += '<input type="text" id="dailyEventText" placeholder="' + (ev.placeholder || '') + '" style="width:100%;margin-bottom:8px;">';
-        body += '<button type="button" class="btn-primary btn-small" onclick="submitDailyEventText()">제출</button>';
+        const inp = document.createElement('input');
+        inp.type = 'text';
+        inp.id = 'dailyEventText';
+        inp.placeholder = ev.placeholder || '';
+        inp.autocomplete = 'off';
+        inp.style.cssText = 'width:100%;margin-bottom:8px;';
+        if (prevText) inp.value = prevText;
+        inp.addEventListener('click', function (e) { e.stopPropagation(); });
+        inp.addEventListener('keydown', function (e) { e.stopPropagation(); });
+        card.appendChild(inp);
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-primary btn-small';
+        btn.textContent = '제출';
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          submitDailyEventText();
+        });
+        card.appendChild(btn);
       } else if (ev.need === 'photo') {
-        body += '<button type="button" class="btn-primary btn-small" onclick="submitDailyEventPhoto()">사진으로 인증</button>';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-primary btn-small';
+        btn.textContent = '사진으로 인증';
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          submitDailyEventPhoto();
+        });
+        card.appendChild(btn);
       } else if (ev.need === 'choice') {
         (ev.choices || []).forEach(function (ch) {
-          body += '<button type="button" class="btn-secondary btn-small" onclick="submitDailyEventChoice(\'' + ch.k + '\')">' + ch.t + '</button> ';
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'btn-secondary btn-small';
+          btn.textContent = ch.t;
+          btn.style.marginRight = '6px';
+          btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            submitDailyEventChoice(ch.k);
+          });
+          card.appendChild(btn);
         });
       } else if (ev.need === 'auto') {
-        body += '<button type="button" class="btn-primary btn-small" onclick="completeDailyEvent({})">확인</button>';
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn-primary btn-small';
+        btn.textContent = '확인';
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          completeDailyEvent({});
+        });
+        card.appendChild(btn);
       }
-      body += '</div>';
-      host.innerHTML = body;
+
+      host.innerHTML = '';
+      host.appendChild(card);
     }
 
     function submitDailyEventText() {
@@ -4799,9 +5039,13 @@ function acceptContract() {
           hint.textContent = h;
         }
         if (rnd) {
-          if (diff.min === diff.max) rnd.classList.add('hidden');
-          else {
+          // 튜토리얼 미완료: 랜덤 비활성(1일 고정)
+          if (!state.tutorialDone || diff.min === diff.max) {
+            rnd.classList.add('hidden');
+            rnd.disabled = true;
+          } else {
             rnd.classList.remove('hidden');
+            rnd.disabled = false;
             rnd.textContent = (diff.min || 1) + '~' + (diff.max || 5) + '일 랜덤';
           }
         }
@@ -4845,6 +5089,10 @@ function acceptContract() {
     }
 
     function rollLockStartDays() {
+      if (!state.tutorialDone) {
+        try { showToast('튜토리얼 중에는 1일 고정이다.'); } catch (e) {}
+        return;
+      }
       let p = 'noona';
       try {
         const lp = document.getElementById('lockStartPersonality');
@@ -5246,7 +5494,18 @@ function acceptContract() {
 
     function todayKey() {
       const d = new Date();
-      return d.getFullYear() + '-' + (d.getMonth()+1) + '-' + d.getDate();
+      return normalizeDateKey(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate());
+    }
+
+    /** 날짜 키 통일 (2026-8-9 → 2026-08-09). 비교·저장 전부 이 형식 */
+    function normalizeDateKey(k) {
+      if (k == null || k === '') return '';
+      const s = String(k).trim();
+      const m = s.match(/^(\d{4})\D+(\d{1,2})\D+(\d{1,2})/);
+      if (m) {
+        return m[1] + '-' + String(+m[2]).padStart(2, '0') + '-' + String(+m[3]).padStart(2, '0');
+      }
+      return s;
     }
 
 
@@ -5419,64 +5678,81 @@ function getStatusMission() {
     }
 
     function ensureMissionState() {
-      const tk = todayKey();
-      if (!state.missionDate) state.missionDate = null;
+      const tk = normalizeDateKey(typeof todayKey === 'function' ? todayKey() : '');
+      if (!tk) return;
+      // 저장본 날짜 키 정규화 (구버전 2026-8-19 등)
+      if (state.missionDate) state.missionDate = normalizeDateKey(state.missionDate);
+      if (state.lastMissionPenaltyDate) state.lastMissionPenaltyDate = normalizeDateKey(state.lastMissionPenaltyDate);
+      if (state.lastSecondMissDate) state.lastSecondMissDate = normalizeDateKey(state.lastSecondMissDate);
+      if (state.lastReportRemindDate) state.lastReportRemindDate = normalizeDateKey(state.lastReportRemindDate);
+      if (state.dailyEventDate) state.dailyEventDate = normalizeDateKey(state.dailyEventDate);
+      if (state.hygieneOfferDate) state.hygieneOfferDate = normalizeDateKey(state.hygieneOfferDate);
+
       if (state.statusDone == null) state.statusDone = false;
       if (!state.forcedSideId) state.forcedSideId = null;
       if (state.forcedSideDone == null) state.forcedSideDone = false;
-      if (!state.optAccepted) state.optAccepted = []; // {id, forced}
+      if (!state.optAccepted) state.optAccepted = [];
       if (!state.optDoneIds) state.optDoneIds = [];
+
       if (state.missionDate && state.missionDate !== tk) {
-        // 날짜 변경: 미완료 패널티
-        if (state.locked) {
-          // 1회만 하고 2회 안 함 → 강한 실패 대신 호감 감소
+        const prevDay = state.missionDate;
+        // 같은 prev→오늘 전환은 세션당 1회만 처리 (알림 루프 방지)
+        const rollKey = prevDay + '>' + tk;
+        const already = (state.lastDayRolloverKey === rollKey);
+
+        if (state.locked && !already) {
+          state.lastDayRolloverKey = rollKey;
+
+          // 2회차 점검 누락 → 호감만 (처벌 아님), 해당 날짜 1회
           if (state.statusDone && !state.statusSecondDone) {
-            try {
-              if (typeof addAffection === 'function') addAffection(-8);
-              else state.affection = Math.max(0, (state.affection || 50) - 8);
-              showToast('추가 점검 누락 · 호감↓');
-            } catch (e) {}
-          }
-          let fail = false;
-          if (!state.statusDone) fail = true;
-          if (needsForcedSide() && !state.forcedSideDone) fail = true;
-          // 수주한 보조 미완료도 패널티(강제 포함)
-          const pending = (state.optAccepted || []).filter(x => !(state.optDoneIds || []).includes(x.id));
-          if (pending.length) fail = true;
-          if (fail) {
-            // 같은 날짜 키로 중복 패널티 방지
-            if (state.lastMissionPenaltyDate !== state.missionDate) {
-              state.lastMissionPenaltyDate = state.missionDate;
-              const why = [];
-              if (!state.statusDone) why.push('필수 상태 보고를 하지 않음');
-              if (typeof needsForcedSide === 'function' && needsForcedSide() && !state.forcedSideDone) {
-                why.push('강제 보조 미션을 끝내지 않음');
-              }
-              const pendingList = (state.optAccepted || []).filter(function (x) {
-                return !(state.optDoneIds || []).includes(x.id);
-              });
-              if (pendingList.length) {
-                const names = pendingList.map(function (x) {
-                  const m = (typeof getMissionById === 'function') ? getMissionById(x.id) : null;
-                  return (m && m.title) ? m.title : String(x.id);
-                }).join(', ');
-                why.push('수주한 보조 미완료 (' + names + ')');
-              }
-              const reasonText = why.length ? why.join(' · ') : '일일 미션 미완료';
-              addLog('mission', '일일 미션 미완료 → 처벌: ' + reasonText);
-              try { assignPunishment(2, reasonText); } catch (e) {}
+            if (state.lastSecondMissDate !== prevDay) {
+              state.lastSecondMissDate = prevDay;
               try {
-                if (typeof showToastLatest === 'function') showToastLatest('처벌 사유: ' + reasonText);
-                else showToast('처벌 사유: ' + reasonText);
-              } catch (e) {}
-              try {
-                const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
-                const lines = why.map(function (w) { return '· ' + w; }).join('\n');
-                showResult(master, '날짜가 바뀌었다.\n\n처벌 사유:\n' + lines + '\n\n어제 해야 할 일을 남긴 대가다.');
+                if (typeof addAffection === 'function') addAffection(-8);
+                else state.affection = Math.max(0, (state.affection || 50) - 8);
+                showToast('추가 점검 누락 · 호감↓');
               } catch (e) {}
             }
           }
+
+          let fail = false;
+          if (!state.statusDone) fail = true;
+          if (typeof needsForcedSide === 'function' && needsForcedSide() && !state.forcedSideDone) fail = true;
+          const pending = (state.optAccepted || []).filter(function (x) {
+            return !(state.optDoneIds || []).includes(x.id);
+          });
+          if (pending.length) fail = true;
+
+          if (fail && state.lastMissionPenaltyDate !== prevDay) {
+            state.lastMissionPenaltyDate = prevDay;
+            const why = [];
+            if (!state.statusDone) why.push('필수 상태 보고를 하지 않음');
+            if (typeof needsForcedSide === 'function' && needsForcedSide() && !state.forcedSideDone) {
+              why.push('강제 보조 미션을 끝내지 않음');
+            }
+            if (pending.length) {
+              const names = pending.map(function (x) {
+                const m = (typeof getMissionById === 'function') ? getMissionById(x.id) : null;
+                return (m && m.title) ? m.title : String(x.id);
+              }).join(', ');
+              why.push('수주한 보조 미완료 (' + names + ')');
+            }
+            const reasonText = why.length ? why.join(' · ') : '일일 미션 미완료';
+            try { addLog('mission', '일일 미션 미완료 → 처벌: ' + reasonText); } catch (e) {}
+            try { assignPunishment(2, reasonText); } catch (e) {}
+            try {
+              if (typeof showToastLatest === 'function') showToastLatest('처벌 사유: ' + reasonText);
+              else showToast('처벌 사유: ' + reasonText);
+            } catch (e) {}
+            try {
+              const master = (typeof masterName === 'function') ? masterName() : (state.masterName || '주인님');
+              const lines = why.map(function (w) { return '· ' + w; }).join('\n');
+              showResult(master, '날짜가 바뀌었다.\n\n처벌 사유:\n' + lines + '\n\n어제 해야 할 일을 남긴 대가다.');
+            } catch (e) {}
+          }
         }
+
+        // 새 날짜로 미션 상태 리셋 (항상 1회)
         state.missionDate = tk;
         state.statusDone = false;
         state.statusFirstTs = null;
@@ -5485,22 +5761,21 @@ function getStatusMission() {
         state.forcedSideDone = false;
         state.optAccepted = [];
         state.optDoneIds = [];
+        try { saveState(); } catch (e) {}
       }
       if (!state.missionDate) state.missionDate = tk;
 
-      // 강제 보조 배정 (여왕 또는 Lv5)
-      if (needsForcedSide() && !state.forcedSideId) {
-        const m = pickSideMission();
+      if (typeof needsForcedSide === 'function' && needsForcedSide() && !state.forcedSideId) {
+        const m = (typeof pickSideMission === 'function') ? pickSideMission() : null;
         if (m) {
           state.forcedSideId = m.id;
           state.optAccepted = state.optAccepted || [];
-          if (!state.optAccepted.some(x => x.id === m.id)) {
+          if (!state.optAccepted.some(function (x) { return x.id === m.id; })) {
             state.optAccepted.push({ id: m.id, forced: true });
           }
         }
       }
-      // 레거시 필드 동기화 (UI 가이드용)
-      state.missionDailyDone = isAllMandatoryDone();
+      state.missionDailyDone = (typeof isAllMandatoryDone === 'function') ? isAllMandatoryDone() : !!state.statusDone;
     }
 
     function isAllMandatoryDone() {
@@ -6004,8 +6279,8 @@ function getStatusMission() {
         if (state._hygieneJustGranted) {
           state._hygieneJustGranted = false;
           const hy = {
-            noona: '\n\n이틀 주기 위생·휴식이야. 1시간. 씻고 엣징까지. 사정은 안 돼. 시간 안에 다시 잠가줘.',
-            mesugaki: '\n\n3일 지났네? 1시간 개방~ 씻고 엣징만. 싸면 끝인 거 알지? 끝나면 다시 잠가.',
+            noona: '\n\n매일 위생·휴식이야. 1시간. 씻고 엣징까지. 사정은 안 돼. 시간 안에 다시 잠가줘.',
+            mesugaki: '\n\n2일 지났네? 1시간 개방~ 씻고 엣징만. 싸면 끝인 거 알지? 끝나면 다시 잠가.',
             queen: '\n\n5일이나 됐네. 씻기랑 엣징만 1시간. 사정은 당연히 안 되고, 끝나면 다시 잠가.'
           };
           okLine += hy[p] || hy.noona;
@@ -6449,10 +6724,14 @@ if (!assertNotSilenced('고백')) return;
         other: '기타 위반'
       };
 
-      // 호감: 솔직함 가산, 무거운 죄는 일부 차감
-      let affDelta = spam ? -6 : 3;
-      if (type === 'cum' || type === 'unlock') affDelta -= 2;
-      if (type === 'touch' || type === 'skip') affDelta += 1;
+      // 호감: 솔직함 가산 / 무단해제·몰래사정은 큰 감점
+      let affDelta;
+      if (type === 'cum') affDelta = -20;
+      else if (type === 'unlock') affDelta = -10;
+      else {
+        affDelta = spam ? -6 : 3;
+        if (type === 'touch' || type === 'skip') affDelta += 1;
+      }
       addAffection(affDelta);
       try { if (affDelta) affectionReact(affDelta, true); } catch (e) {}
 
@@ -7729,7 +8008,72 @@ async function viewHistory() {
       if (!el) return;
 
       const ACTION = { start:1, relock:1, daily:1, mission:1, talk:1, confess:1, approve:1, reject:1, emergency:1, punish_ok:1, oral:1, goal:1, fail:1, request:1, whim:1 };
-      const all = (state.history || []).filter(function (l) { return ACTION[l.type]; }).slice().reverse();
+      const all = (state.history || []).filter(function (l) { return ACTION[l.type]; }).slice();
+      // chronological
+      all.sort(function (a, b) { return (a.ts || 0) - (b.ts || 0); });
+
+      // 런 구간 재구성: 시작 → 성공/실패 (실패 시 구간 전체 빨강)
+      const runs = [];
+      let cur = null;
+      all.forEach(function (l) {
+        const day = historyDayKey(l.ts);
+        if (!day) return;
+        if (l.type === 'start') {
+          const msg = String(l.text || l.msg || l.note || '');
+          if (msg.indexOf('다시 가둠') >= 0) return; // 일시해제 후 재잠금은 런 시작 아님
+          if (cur) {
+            // 종료 로그 없이 새 시작 → 이전 구간 미종료로 닫지 않고 새 런
+            runs.push(cur);
+          }
+          cur = { start: day, end: null, status: 'active', startTs: l.ts };
+        } else if (l.type === 'goal' && cur) {
+          cur.end = day;
+          cur.status = 'ok';
+          cur.endTs = l.ts;
+          runs.push(cur);
+          cur = null;
+        } else if (l.type === 'fail' && cur) {
+          cur.end = day;
+          cur.status = 'fail';
+          cur.endTs = l.ts;
+          runs.push(cur);
+          cur = null;
+        } else if ((l.type === 'goal' || l.type === 'fail') && !cur) {
+          // 시작 로그 유실 시 당일만
+          runs.push({ start: day, end: day, status: l.type === 'goal' ? 'ok' : 'fail', startTs: l.ts, endTs: l.ts });
+        }
+      });
+      // 진행 중 런
+      if (state.locked && state.startTimestamp) {
+        const sd = historyDayKey(state.startTimestamp);
+        if (sd) {
+          // history의 미종료 cur와 중복 방지
+          if (cur && cur.start === sd) {
+            cur.status = 'active';
+            cur.end = null;
+          } else if (!cur) {
+            cur = { start: sd, end: null, status: 'active', startTs: state.startTimestamp };
+          }
+        }
+      }
+      if (cur) runs.push(cur);
+
+      function dayToNum(k) {
+        if (!k) return 0;
+        const p = k.split('-');
+        return Date.UTC(+p[0], +p[1] - 1, +p[2]);
+      }
+      function runOnDay(key) {
+        const t = dayToNum(key);
+        for (let i = runs.length - 1; i >= 0; i--) {
+          const r = runs[i];
+          const a = dayToNum(r.start);
+          const b = r.end ? dayToNum(r.end) : (r.status === 'active' ? dayToNum(historyDayKey(Date.now())) : a);
+          if (t >= a && t <= b) return r;
+        }
+        return null;
+      }
+
       const byDay = {};
       all.forEach(function (l) {
         const k = historyDayKey(l.ts);
@@ -7743,40 +8087,73 @@ async function viewHistory() {
       if (label) label.textContent = y + '년 ' + (m + 1) + '월';
 
       const first = new Date(y, m, 1);
-      const startPad = first.getDay(); // 0 Sun
+      const startPad = first.getDay();
       const daysInMonth = new Date(y, m + 1, 0).getDate();
-      const todayKey = historyDayKey(Date.now());
+      const todayKeyStr = historyDayKey(Date.now());
       let cells = '';
-      const week = ['일', '월', '화', '수', '목', '금', '토'];
-      week.forEach(function (w) { cells += '<div class="hd">' + w + '</div>'; });
+      ['일','월','화','수','목','금','토'].forEach(function (w) {
+        cells += '<div class="hd">' + w + '</div>';
+      });
       for (let i = 0; i < startPad; i++) cells += '<div class="cell mute"></div>';
+
+      let targetMs = (state.targetDays || 3) * 24 * 3600 * 1000;
+      let progress = 0;
+      if (state.locked && state.startTimestamp) {
+        try {
+          const worn = (typeof getWornMs === 'function') ? getWornMs() : (Date.now() - state.startTimestamp);
+          progress = Math.max(0, Math.min(1, worn / targetMs));
+        } catch (e) {
+          progress = 0;
+        }
+      }
+
       for (let d = 1; d <= daysInMonth; d++) {
         const key = y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
-        const cnt = (byDay[key] || []).length;
+        const run = runOnDay(key);
+        const hasList = !!(byDay[key] && byDay[key].length);
         let cls = 'cell';
-        if (key === todayKey) cls += ' today';
+        let fill = '';
+        if (run) {
+          if (run.status === 'fail') {
+            fill = '<span class="fill fail"></span>';
+            cls += ' has';
+          } else if (run.status === 'ok') {
+            fill = '<span class="fill ok"></span>';
+            cls += ' has';
+          } else if (run.status === 'active') {
+            // 오늘: 진행률만큼, 이전 날: 풀
+            if (key === todayKeyStr) {
+              const pct = Math.max(8, Math.round(progress * 100));
+              fill = '<span class="fill active partial" style="height:' + pct + '%;"></span>';
+            } else if (dayToNum(key) < dayToNum(todayKeyStr)) {
+              fill = '<span class="fill active"></span>';
+            }
+            cls += ' has';
+          }
+          if (run.start === key) cls += ' run-start';
+        } else if (!hasList) {
+          cls += ' mute';
+        }
+        if (key === todayKeyStr) cls += ' today';
         if (window._histCal.sel === key) cls += ' sel';
-        if (!cnt) cls += ' mute';
-        const extra = cnt ? ('<span class="cnt">' + cnt + '</span>') : '';
-        const dot = cnt ? '<span class="dot"></span>' : '';
-        if (cnt) {
-          cells += '<button type="button" class="' + cls + '" onclick="historySelectDay(\'' + key + '\')"><span>' + d + '</span>' + dot + extra + '</button>';
+        const clickable = hasList || run;
+        if (clickable) {
+          cells += '<button type="button" class="' + cls + '" onclick="historySelectDay(\'' + key + '\')">' + fill + '<span class="n">' + d + '</span></button>';
         } else {
-          cells += '<div class="' + cls + '"><span>' + d + '</span></div>';
+          cells += '<div class="' + cls + '"><span class="n">' + d + '</span></div>';
         }
       }
       if (calEl) calEl.innerHTML = '<div class="hist-cal">' + cells + '</div>';
 
       let items = [];
       if (window._histCal.sel && byDay[window._histCal.sel]) {
-        items = byDay[window._histCal.sel];
+        items = byDay[window._histCal.sel].slice().reverse();
         if (dayTitle) dayTitle.textContent = window._histCal.sel + ' · ' + items.length + '건';
       } else {
-        // 선택 없으면 이번 달 기록만, 날짜 묶음
-        if (dayTitle) dayTitle.textContent = '날짜를 누르면 그날만 본다. 미선택 시 이달 전체.';
+        if (dayTitle) dayTitle.textContent = '날짜를 누르면 그날 기록. 미선택 시 이달 전체.';
         const prefix = y + '-' + String(m + 1).padStart(2, '0');
         Object.keys(byDay).filter(function (k) { return k.indexOf(prefix) === 0; }).sort().reverse().forEach(function (k) {
-          items = items.concat(byDay[k]);
+          items = items.concat(byDay[k].slice().reverse());
         });
       }
 
@@ -7785,7 +8162,6 @@ async function viewHistory() {
         return;
       }
 
-      // 날짜 헤더 끼워 넣기
       const parts = [];
       let lastDay = '';
       for (const l of items) {
@@ -7804,10 +8180,17 @@ async function viewHistory() {
             }
           } catch (e) {}
         }
-        parts.push(buildHistoryCardHtml(l, imgHtml));
+        if (typeof buildHistoryCardHtml === 'function') {
+          parts.push(buildHistoryCardHtml(l, imgHtml));
+        } else {
+          const t = new Date(l.ts);
+          const time = isNaN(t.getTime()) ? '' : t.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+          parts.push('<div style="padding:8px 0;border-bottom:1px solid #2a2220;font-size:0.82rem;"><span style="color:var(--muted);font-size:0.72rem;">' + time + '</span> ' + (l.text || l.msg || l.type) + imgHtml + '</div>');
+        }
       }
       el.innerHTML = parts.join('');
     }
+
 
     // ========== 주인님 얼굴 ==========
     const _FACE = {
@@ -8099,6 +8482,14 @@ function checkAchievements() {
           '<div>' + (a.desc || '') + '</div>' + rw;
         try { playSfx('click'); } catch (e) {}
       } catch (e) {}
+    }
+
+    function openAchievements() {
+      try { checkAchievements(); } catch (e) {}
+      try { renderAchievements(); } catch (e) {}
+      const m = document.getElementById('achieveModal');
+      if (m) m.classList.remove('hidden');
+      try { playSfx('click'); } catch (e) {}
     }
 
 
@@ -8611,8 +9002,18 @@ function openPunishComplete() {
         try { maybeDailyGreet(); } catch (e) {}
       }, 500);
     }
+    // 1초: 시계만 / 15초: 무거운 판정. 버튼·포커스 시에는 updateUI() 전체
+    var _uiHeavyTick = 0;
     setInterval(function() {
-      try { updateUI(); } catch (e) {}
+      try { updateUILight(); } catch (e) {}
+      _uiHeavyTick++;
+      if (_uiHeavyTick >= 15) {
+        _uiHeavyTick = 0;
+        try { updateUIHeavy(); } catch (e) {}
+        try { updateMissionCard(); } catch (e) {}
+        try { updateActiveStatusBox(); } catch (e) {}
+        try { checkUnlockDeadline(); } catch (e) {}
+      }
     }, 1000);
   </script>
 
